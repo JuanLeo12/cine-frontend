@@ -1,0 +1,41 @@
+.combo-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.combo-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.combo-card h3 {
+    padding: 0.5rem;
+    margin: 0;
+}
+
+.combo-card p {
+    padding: 0 0.5rem;
+    margin: 0.3rem 0;
+    color: #666;
+}
+
+.precio {
+    color: #e60000;
+    /* Rojo */
+    font-weight: bold;
+}
+
+.combo-card button {
+    background: #e60000;
+    /* Rojo */
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 1rem;
+}

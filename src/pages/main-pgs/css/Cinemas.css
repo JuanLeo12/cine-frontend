@@ -1,0 +1,19 @@
+.cinemas {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.filters {
+    margin-bottom: 2rem;
+}
+
+.filters h3 {
+    color: #e60000;
+}
+
+.cinema-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}

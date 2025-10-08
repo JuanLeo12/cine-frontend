@@ -1,0 +1,104 @@
+.movie-details {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #121212;
+    color: white;
+}
+
+.movie-header {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    align-items: flex-start;
+}
+
+.movie-header img {
+    width: 300px;
+    height: 450px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.movie-info-container {
+    flex: 1;
+    padding: 1rem;
+    background: #1e1e1e;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.movie-info-container h1 {
+    color: #e60000;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    text-align: center;
+}
+
+.movie-details-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 1rem;
+}
+
+.movie-details-list p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.movie-details-list strong {
+    color: #e60000;
+}
+
+.showtimes h2 {
+    color: #e60000;
+}
+
+.day-selector {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.day-selector button {
+    padding: 0.5rem 1rem;
+    background: #eee;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.day-selector button.active {
+    background: #e60000;
+    color: white;
+}
+
+.theaters {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.theater {
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.times {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.time-btn {
+    padding: 0.5rem 1rem;
+    background: #e60000;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
