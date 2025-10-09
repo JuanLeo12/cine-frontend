@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+//import React, { useState } from 'react';
+//import { peliculasEnCartelera, proximosEstrenos } from '../../data/mockData';
+
+import React, { useEffect, useState } from 'react';
 import MovieCard from '../../components/comp/MovieCard';
-import { peliculasEnCartelera, proximosEstrenos } from '../../data/mockData';
+import { getPeliculas } from '../../services/api';
 import './css/Movies.css';
 
 function Movies() {
+    const [peliculas, setPeliculas] = useState([]);
     const [filtro, setFiltro] = useState('cartelera');
     const [ciudad, setCiudad] = useState('Todas');
     const [cine, setCine] = useState('Todos');
@@ -13,34 +17,27 @@ function Movies() {
     const [formato, setFormato] = useState('Todos');
     const [clasificacion, setClasificacion] = useState('Todos');
 
-    // Extraer opciones únicas
-    const ciudades = ['Todas', ...new Set(peliculasEnCartelera.map(p => p.sedes[0]))];
-    const cines = ['Todos', ...new Set(peliculasEnCartelera.flatMap(p => p.sedes))];
-    const generos = ['Todos', ...new Set(peliculasEnCartelera.flatMap(p => p.genero.split(', ').map(g => g.trim())))];
-    const idiomas = ['Todos', ...new Set(peliculasEnCartelera.map(p => p.idioma || 'Español Latino'))];
-    const formatos = ['Todos', ...new Set(peliculasEnCartelera.map(p => p.formato || '2D'))];
-    const clasificaciones = ['Todos', ...new Set(peliculasEnCartelera.map(p => p.clasificacion || 'G'))];
+    // 🔹 Cargar películas desde el backend
+    useEffect(() => {
+        const cargarPeliculas = async () => {
+            const data = await getPeliculas();
+            setPeliculas(data);
+        };
+        cargarPeliculas();
+    }, []);
 
-    let peliculas = filtro === 'cartelera' ? peliculasEnCartelera : proximosEstrenos;
+    // 🔹 Extraer opciones únicas (solo si hay datos)
+    const generos = ['Todos', ...new Set(peliculas.map(p => p.genero || ''))];
+    const clasificaciones = ['Todos', ...new Set(peliculas.map(p => p.clasificacion || ''))];
 
-    // Aplicar filtros
-    if (ciudad !== 'Todas') {
-        peliculas = peliculas.filter(p => p.sedes.includes(ciudad));
-    }
-    if (cine !== 'Todos') {
-        peliculas = peliculas.filter(p => p.sedes.includes(cine));
-    }
+    // 🔹 Aplicar filtros básicos
+    let peliculasFiltradas = [...peliculas];
+
     if (genero !== 'Todos') {
-        peliculas = peliculas.filter(p => p.genero.includes(genero));
-    }
-    if (idioma !== 'Todos') {
-        peliculas = peliculas.filter(p => (p.idioma || 'Español Latino').includes(idioma));
-    }
-    if (formato !== 'Todos') {
-        peliculas = peliculas.filter(p => (p.formato || '2D').includes(formato));
+        peliculasFiltradas = peliculasFiltradas.filter(p => p.genero?.includes(genero));
     }
     if (clasificacion !== 'Todos') {
-        peliculas = peliculas.filter(p => p.clasificacion === clasificacion);
+        peliculasFiltradas = peliculasFiltradas.filter(p => p.clasificacion === clasificacion);
     }
 
     return (
@@ -50,67 +47,51 @@ function Movies() {
                 <div className="filter-group">
                     <label>Estado:</label>
                     <div>
-                        <label><input type="radio" name="filtro" value="cartelera" checked={filtro === 'cartelera'} onChange={() => setFiltro('cartelera')} /> En Cartelera</label>
-                        <label><input type="radio" name="filtro" value="estrenos" checked={filtro === 'estrenos'} onChange={() => setFiltro('estrenos')} /> Próximos Estrenos</label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="filtro"
+                                value="cartelera"
+                                checked={filtro === 'cartelera'}
+                                onChange={() => setFiltro('cartelera')}
+                            /> En Cartelera
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="filtro"
+                                value="estrenos"
+                                checked={filtro === 'estrenos'}
+                                onChange={() => setFiltro('estrenos')}
+                            /> Próximos Estrenos
+                        </label>
                     </div>
-                </div>
-
-                <div className="filter-group">
-                    <label>Ciudad:</label>
-                    <select value={ciudad} onChange={(e) => setCiudad(e.target.value)}>
-                        {ciudades.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                </div>
-
-                <div className="filter-group">
-                    <label>Cine:</label>
-                    <select value={cine} onChange={(e) => setCine(e.target.value)}>
-                        {cines.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                </div>
-
-                <div className="filter-group">
-                    <label>Día:</label>
-                    <select value={dia} onChange={(e) => setDia(e.target.value)}>
-                        <option>Hoy</option>
-                        <option>Mañana</option>
-                    </select>
                 </div>
 
                 <div className="filter-group">
                     <label>Género:</label>
                     <select value={genero} onChange={(e) => setGenero(e.target.value)}>
-                        {generos.map(g => <option key={g} value={g}>{g}</option>)}
-                    </select>
-                </div>
-
-                <div className="filter-group">
-                    <label>Idioma:</label>
-                    <select value={idioma} onChange={(e) => setIdioma(e.target.value)}>
-                        {idiomas.map(i => <option key={i} value={i}>{i}</option>)}
-                    </select>
-                </div>
-
-                <div className="filter-group">
-                    <label>Formato:</label>
-                    <select value={formato} onChange={(e) => setFormato(e.target.value)}>
-                        {formatos.map(f => <option key={f} value={f}>{f}</option>)}
+                        {generos.map(g => <option key={g} value={g}>{g || 'Sin género'}</option>)}
                     </select>
                 </div>
 
                 <div className="filter-group">
                     <label>Clasificación:</label>
                     <select value={clasificacion} onChange={(e) => setClasificacion(e.target.value)}>
-                        {clasificaciones.map(c => <option key={c} value={c}>{c}</option>)}
+                        {clasificaciones.map(c => <option key={c} value={c}>{c || 'Sin clasificación'}</option>)}
                     </select>
                 </div>
             </aside>
 
             <main style={{ flex: 1, minWidth: '0' }}>
                 <div className="movie-grid">
-                    {peliculas.map((p) => (
-                        <MovieCard key={p.id} pelicula={p} />
-                    ))}
+                    {peliculasFiltradas.length > 0 ? (
+                        peliculasFiltradas.map((p) => (
+                            <MovieCard key={p.id} pelicula={p} />
+                        ))
+                    ) : (
+                        <p style={{ textAlign: 'center', width: '100%' }}>No hay películas disponibles.</p>
+                    )}
                 </div>
             </main>
         </div>
