@@ -1,50 +1,96 @@
 .movies {
-    display: flex;
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    gap: 2rem;
+  display: flex;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 2rem;
+  flex-wrap: wrap;
 }
 
+/* 🎛️ Panel de filtros */
 .filters {
-    width: 250px;
-    background: #f5f5f5;
-    padding: 1rem;
-    border-radius: 4px;
-    height: fit-content;
+  width: 260px;
+  background: #1a1a1a;
+  color: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  height: fit-content;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  position: sticky;
+  top: 90px;
 }
 
 .filters h3 {
-    margin-top: 0;
-    color: #e60000;
+  margin-top: 0;
+  color: #e60000;
+  text-align: center;
+  font-size: 1.3rem;
+  border-bottom: 2px solid #e60000;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .filter-group {
-    margin: 1rem 0;
+  margin: 1rem 0;
 }
 
 .filter-group label {
-    display: block;
-    margin-bottom: 0.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  font-size: 0.95rem;
 }
 
+/* 🎚️ Selectores */
 .filter-group select {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+  width: 100%;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #333;
+  color: white;
+  font-size: 0.9rem;
+  transition: all 0.2s;
 }
 
+.filter-group select:focus {
+  outline: none;
+  border: 1px solid #e60000;
+}
+
+/* 🔘 Radios */
 .filter-group input[type="radio"] {
-    margin-right: 0.5rem;
+  margin-right: 0.4rem;
 }
 
-.main {
-    flex: 1;
+.filter-group input[type="radio"]:checked + label {
+  color: #e60000;
 }
 
+/* 🎞️ Grilla de películas */
 .movie-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* 📱 Responsividad */
+@media (max-width: 900px) {
+  .movies {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .filters {
+    width: 100%;
+    position: relative;
+    top: 0;
+    box-shadow: none;
+  }
+
+  .movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+  }
 }
