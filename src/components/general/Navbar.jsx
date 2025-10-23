@@ -66,6 +66,11 @@ function Navbar() {
               </button>
               {isUserOpen && (
                 <ul className="dropdown-menu">
+                  {user.rol === 'admin' && (
+                    <li>
+                      <Link to="/admin">🎬 Panel Admin</Link>
+                    </li>
+                  )}
                   <li>
                     <Link to="/mis-compras">Mis Compras</Link>
                   </li>

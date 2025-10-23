@@ -1,20 +1,30 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { usuarios } from '../../data/mockData';
+import { updatePerfil } from '../../services/api';
 import './css/MisDatos.css';
 
 function MisDatos() {
-    const { user, login } = useAuth();
+    const { user, setUser } = useAuth();
 
-    const [nombre, setNombre] = useState(user.nombre);
-    const [email, setEmail] = useState(user.email);
-    const [telefono, setTelefono] = useState(user.telefono);
+    const [nombre, setNombre] = useState(user?.nombre || '');
+    const [email, setEmail] = useState(user?.email || '');
+    const [telefono, setTelefono] = useState(user?.telefono || '');
+    const [loading, setLoading] = useState(false);
 
-    const handleGuardar = (e) => {
+    const handleGuardar = async (e) => {
         e.preventDefault();
-        // Simular actualización en el backend
-        alert('Datos actualizados correctamente.');
-        // En una app real, aquí harías una petición PUT a tu API
+        setLoading(true);
+        
+        try {
+            const datosActualizados = await updatePerfil({ nombre, email, telefono });
+            setUser(datosActualizados);
+            alert('Datos actualizados correctamente.');
+        } catch (error) {
+            console.error('Error al actualizar datos:', error);
+            alert('Error al actualizar los datos: ' + (error.response?.data?.error || error.message));
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -48,10 +58,11 @@ function MisDatos() {
                         type="tel"
                         value={telefono}
                         onChange={(e) => setTelefono(e.target.value)}
-                        required
                     />
                 </div>
-                <button type="submit" className="guardar-btn">Guardar Cambios</button>
+                <button type="submit" className="guardar-btn" disabled={loading}>
+                    {loading ? 'Guardando...' : 'Guardar Cambios'}
+                </button>
             </form>
         </div>
     );

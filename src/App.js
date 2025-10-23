@@ -27,6 +27,9 @@ import Confirmation from './pages/purchase/Confirmation';
 import MisCompras from './pages/usr/MisCompras';
 import MisDatos from './pages/usr/MisDatos';
 
+// Panel de Administrador
+import AdminPanel from './pages/admin/AdminPanel';
+
 import './App.css';
 
 
@@ -44,13 +47,14 @@ function App() {
               <Route path="/cinemas" element={<Cinemas />} />
               <Route path="/candyshop" element={<CandyShop />} />
               <Route path="/corporate" element={<CorporateSales />} />
-              <Route path="/seat-selection/:movieId" element={<SeatSelection />} />
-              <Route path="/ticket-type/:movieId" element={<TicketType />} />
+              <Route path="/seat-selection" element={<SeatSelection />} />
+              <Route path="/ticket-type" element={<TicketType />} />
               <Route path="/combos" element={<Combos />} />
               <Route path="/payment" element={<Payment />} />
               <Route path="/confirmation" element={<Confirmation />} />
               <Route path="/mis-compras" element={<MisCompras />} />
               <Route path="/mis-datos" element={<MisDatos />} />
+              <Route path="/admin" element={<AdminPanel />} />
             </Routes>
           </main>
           <Footer />

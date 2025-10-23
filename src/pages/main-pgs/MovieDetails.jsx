@@ -1,64 +1,79 @@
-// src/pages/MovieDetails.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { peliculas, sedes } from '../../data/mockData';
+import { getPeliculaById, getFuncionesByPelicula } from '../../services/api';
 import './css/MovieDetails.css';
-
 
 function MovieDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { isLoggedIn } = useAuth();
 
-    const pelicula = peliculas.find(p => p.id === id);
+    const [pelicula, setPelicula] = useState(null);
+    const [funciones, setFunciones] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [fechaSeleccionada, setFechaSeleccionada] = useState('');
+    const [fechasDisponibles, setFechasDisponibles] = useState([]);
 
-    const [diaSeleccionado, setDiaSeleccionado] = useState('hoy');
+    useEffect(() => {
+        const cargarDatos = async () => {
+            try {
+                setLoading(true);
+                const peliculaData = await getPeliculaById(id);
+                setPelicula(peliculaData);
 
-    if (!pelicula) {
-        return <h2>Película no encontrada</h2>;
-    }
+                // Solo cargar funciones si es película en cartelera
+                if (peliculaData.tipo === 'cartelera') {
+                    const funcionesData = await getFuncionesByPelicula(id);
+                    setFunciones(funcionesData);
 
-    // Simulación de horarios diferentes por día (opcional, si quieres mantenerlo dinámico)
-    const horariosPorDia = {
-        hoy: {
-            "CineStar Plaza Norte": ["15:30", "18:00", "20:45"],
-            "CineStar San Borja": ["14:00", "16:30", "19:00"],
-            "CineStar Miraflores": ["17:00", "19:30"]
-        },
-        mañana: {
-            "CineStar Plaza Norte": ["16:00", "19:00"],
-            "CineStar San Borja": ["15:30", "18:30"],
-            "CineStar Miraflores": ["14:00", "16:30", "19:00"]
-        }
-    };
+                    // Extraer fechas únicas
+                    const fechas = [...new Set(funcionesData.map(f => f.fecha))].sort();
+                    setFechasDisponibles(fechas);
+                    if (fechas.length > 0) {
+                        setFechaSeleccionada(fechas[0]);
+                    }
+                }
+            } catch (error) {
+                console.error('Error al cargar película:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    const handleHorarioClick = (sedeNombre, horario) => {
+        cargarDatos();
+    }, [id]);
+
+    const handleFuncionClick = (funcion) => {
         if (!isLoggedIn) {
             alert('Debes iniciar sesión para comprar entradas.');
-            // Aquí puedes redirigir al login o abrir un modal
             return;
         }
-
-        // Aquí puedes pasar sede y horario como estado o parámetros
-        // Por simplicidad, pasamos solo la película y luego se puede pasar sede/horario como estado
-        navigate(`/seat-selection/${id}`, { state: { sede: sedeNombre, horario } });
+        navigate('/seat-selection', { state: { funcion, pelicula } });
     };
 
-    // Si la película no está disponible, no mostramos horarios
-    if (!pelicula.disponible) {
+    if (loading) {
+        return <p style={{ textAlign: 'center', marginTop: '50px' }}>Cargando película...</p>;
+    }
+
+    if (!pelicula) {
+        return <h2 style={{ textAlign: 'center', marginTop: '50px' }}>Película no encontrada</h2>;
+    }
+
+    // Si es próximo estreno
+    if (pelicula.tipo !== 'cartelera') {
         return (
             <div className="movie-details">
                 <div className="movie-header">
-                    <img src={pelicula.imagen} alt={pelicula.titulo} />
+                    <img src={pelicula.imagen_url} alt={pelicula.titulo} />
                     <div className="movie-info-container">
                         <h1>{pelicula.titulo}</h1>
                         <div className="movie-details-list">
-                            <p><strong>Duración:</strong> {pelicula.duracion}</p>
+                            <p><strong>Duración:</strong> {pelicula.duracion} min</p>
                             <p><strong>Género:</strong> {pelicula.genero}</p>
-                            <p><strong>Clasificación:</strong> {pelicula.clasificacion || 'No disponible'}</p>
-                            <p><strong>Formato:</strong> {pelicula.formato || '2D'}</p>
-                            <p><strong>Idioma:</strong> {pelicula.idioma || 'Español Latino'}</p>
+                            <p><strong>Clasificación:</strong> {pelicula.clasificacion}</p>
+                            <p><strong>Fecha de estreno:</strong> {new Date(pelicula.fecha_estreno).toLocaleDateString('es-PE')}</p>
+                            <p><strong>Sinopsis:</strong></p>
                             <p>{pelicula.sinopsis}</p>
                         </div>
                     </div>
@@ -67,34 +82,46 @@ function MovieDetails() {
                 <div className="showtimes">
                     <h2>Horarios Disponibles</h2>
                     <div className="proximo-estreno">
-                        <p>¡Próximamente en cartelera!</p>
+                        <p>🎬 ¡Próximamente en cartelera!</p>
+                        <p>Estreno: {new Date(pelicula.fecha_estreno).toLocaleDateString('es-PE', { 
+                            day: 'numeric', 
+                            month: 'long', 
+                            year: 'numeric' 
+                        })}</p>
                     </div>
                 </div>
             </div>
         );
     }
 
-    // Si está disponible, mostramos horarios
-    const horariosSede = pelicula.sedes.map(nombreSede => {
-        const sede = sedes.find(s => s.nombre === nombreSede);
-        return {
-            ...sede,
-            horarios: horariosPorDia[diaSeleccionado][nombreSede] || []
-        };
-    });
+    // Agrupar funciones por sede
+    const funcionesPorSede = funciones
+        .filter(f => f.fecha === fechaSeleccionada)
+        .reduce((acc, funcion) => {
+            const sedeId = funcion.sala?.sede?.id;
+            if (!sedeId) return acc;
+            
+            if (!acc[sedeId]) {
+                acc[sedeId] = {
+                    sede: funcion.sala.sede,
+                    funciones: []
+                };
+            }
+            acc[sedeId].funciones.push(funcion);
+            return acc;
+        }, {});
 
     return (
         <div className="movie-details">
             <div className="movie-header">
-                <img src={pelicula.imagen} alt={pelicula.titulo} />
+                <img src={pelicula.imagen_url} alt={pelicula.titulo} />
                 <div className="movie-info-container">
                     <h1>{pelicula.titulo}</h1>
                     <div className="movie-details-list">
-                        <p><strong>Duración:</strong> {pelicula.duracion}</p>
+                        <p><strong>Duración:</strong> {pelicula.duracion} min</p>
                         <p><strong>Género:</strong> {pelicula.genero}</p>
-                        <p><strong>Clasificación:</strong> {pelicula.clasificacion || 'No disponible'}</p>
-                        <p><strong>Formato:</strong> {pelicula.formato || '2D'}</p>
-                        <p><strong>Idioma:</strong> {pelicula.idioma || 'Español Latino'}</p>
+                        <p><strong>Clasificación:</strong> {pelicula.clasificacion}</p>
+                        <p><strong>Sinopsis:</strong></p>
                         <p>{pelicula.sinopsis}</p>
                     </div>
                 </div>
@@ -102,44 +129,53 @@ function MovieDetails() {
 
             <div className="showtimes">
                 <h2>Horarios Disponibles</h2>
-                <div className="day-selector">
-                    <button
-                        className={diaSeleccionado === 'hoy' ? 'active' : ''}
-                        onClick={() => setDiaSeleccionado('hoy')}
-                    >
-                        Hoy
-                    </button>
-                    <button
-                        className={diaSeleccionado === 'mañana' ? 'active' : ''}
-                        onClick={() => setDiaSeleccionado('mañana')}
-                    >
-                        Mañana
-                    </button>
-                </div>
-
-                <div className="theaters">
-                    {horariosSede.map((sede) => (
-                        <div key={sede.id} className="theater">
-                            <h3>{sede.nombre}</h3>
-                            <p>{sede.direccion}</p>
-                            <div className="times">
-                                {sede.horarios.length > 0 ? (
-                                    sede.horarios.map((hora, index) => (
-                                        <button
-                                            key={index}
-                                            className="time-btn"
-                                            onClick={() => handleHorarioClick(sede.nombre, hora)}
-                                        >
-                                            {hora}
-                                        </button>
-                                    ))
-                                ) : (
-                                    <p>No hay funciones disponibles.</p>
-                                )}
-                            </div>
+                
+                {fechasDisponibles.length > 0 ? (
+                    <>
+                        <div className="day-selector">
+                            {fechasDisponibles.map((fecha) => (
+                                <button
+                                    key={fecha}
+                                    className={fechaSeleccionada === fecha ? 'active' : ''}
+                                    onClick={() => setFechaSeleccionada(fecha)}
+                                >
+                                    {new Date(fecha + 'T00:00:00').toLocaleDateString('es-PE', { 
+                                        weekday: 'short', 
+                                        day: 'numeric', 
+                                        month: 'short' 
+                                    })}
+                                </button>
+                            ))}
                         </div>
-                    ))}
-                </div>
+
+                        <div className="theaters">
+                            {Object.values(funcionesPorSede).map((item) => (
+                                <div key={item.sede.id} className="theater">
+                                    <h3>{item.sede.nombre}</h3>
+                                    <p>{item.sede.direccion}</p>
+                                    <div className="times">
+                                        {item.funciones
+                                            .sort((a, b) => a.hora.localeCompare(b.hora))
+                                            .map((funcion) => (
+                                                <button
+                                                    key={funcion.id}
+                                                    className="time-btn"
+                                                    onClick={() => handleFuncionClick(funcion)}
+                                                >
+                                                    {funcion.hora.substring(0, 5)}
+                                                    <span className="sala-info">{funcion.sala.nombre}</span>
+                                                </button>
+                                            ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
+                ) : (
+                    <div className="proximo-estreno">
+                        <p>No hay funciones disponibles en este momento.</p>
+                    </div>
+                )}
             </div>
         </div>
     );

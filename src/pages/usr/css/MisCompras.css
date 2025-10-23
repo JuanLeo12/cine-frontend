@@ -39,3 +39,18 @@
 .compra-card li {
     margin-bottom: 0.3rem;
 }
+
+.estado-completado {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.estado-pendiente {
+    color: #ff9800;
+    font-weight: bold;
+}
+
+.estado-cancelado {
+    color: #d32f2f;
+    font-weight: bold;
+}

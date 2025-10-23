@@ -4,6 +4,19 @@
     margin: 0 auto;
 }
 
+.corporate-sales h1 {
+    color: #e60000;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.corporate-intro {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 2rem;
+}
+
 .corporate-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -33,6 +46,18 @@
     padding: 0 0.5rem;
     margin: 0.5rem 0;
     color: #666;
+}
+
+.corporate-card ul {
+    list-style: none;
+    padding: 0 1rem;
+    text-align: left;
+    color: #444;
+    font-size: 0.9rem;
+}
+
+.corporate-card ul li {
+    padding: 0.3rem 0;
 }
 
 .corporate-card button {
@@ -95,4 +120,22 @@
 .modal-content button[type="button"] {
     background: #ccc;
     color: black;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.btn-enviar {
+    background: #e60000 !important;
+    color: white !important;
+    padding: 0.75rem 1.5rem !important;
+}
+
+.btn-cancelar {
+    background: #666 !important;
+    color: white !important;
+    padding: 0.75rem 1.5rem !important;
 }

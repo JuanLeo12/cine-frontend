@@ -1,7 +1,9 @@
-import React, { createContext, useContext, useState } from 'react';
-import { usuarios } from '../data/mockData';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 const AuthContext = createContext();
+
+const API_URL = 'http://localhost:4000';
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
@@ -14,24 +16,94 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [user, setUser] = useState(null);
+    const [token, setToken] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const login = (email, password) => {
-        const foundUser = usuarios.find(u => u.email === email && u.password === password);
-        if (foundUser) {
+    // Cargar usuario y token del localStorage al iniciar
+    useEffect(() => {
+        const storedToken = localStorage.getItem('token');
+        const storedUser = localStorage.getItem('user');
+        
+        if (storedToken && storedUser) {
+            setToken(storedToken);
+            setUser(JSON.parse(storedUser));
             setIsLoggedIn(true);
-            setUser(foundUser);
-            return true;
         }
-        return false;
+        setLoading(false);
+    }, []);
+
+    const login = async (email, password) => {
+        try {
+            const response = await axios.post(`${API_URL}/usuarios/login`, {
+                email,
+                password
+            });
+
+            if (response.data.token) {
+                const { token, usuario } = response.data;
+                
+                // Guardar en localStorage
+                localStorage.setItem('token', token);
+                localStorage.setItem('user', JSON.stringify(usuario));
+                
+                // Actualizar estado
+                setToken(token);
+                setUser(usuario);
+                setIsLoggedIn(true);
+                
+                return { success: true, usuario };
+            }
+            return { success: false, error: 'No se recibió token' };
+        } catch (error) {
+            console.error('Error en login:', error);
+            return { 
+                success: false, 
+                error: error.response?.data?.error || 'Error al iniciar sesión' 
+            };
+        }
+    };
+
+    const register = async (datos) => {
+        try {
+            const response = await axios.post(`${API_URL}/usuarios`, datos);
+            return { success: true, data: response.data };
+        } catch (error) {
+            console.error('Error en registro:', error);
+            return { 
+                success: false, 
+                error: error.response?.data?.error || 'Error al registrar usuario' 
+            };
+        }
     };
 
     const logout = () => {
-        setIsLoggedIn(false);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setToken(null);
         setUser(null);
+        setIsLoggedIn(false);
+    };
+
+    const isAdmin = () => {
+        return user?.rol === 'admin';
+    };
+
+    const isCorporativo = () => {
+        return user?.rol === 'corporativo';
     };
 
     return (
-        <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>
+        <AuthContext.Provider value={{ 
+            isLoggedIn, 
+            user, 
+            token,
+            loading,
+            login, 
+            logout,
+            register,
+            isAdmin,
+            isCorporativo
+        }}>
             {children}
         </AuthContext.Provider>
     );

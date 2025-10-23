@@ -10,23 +10,49 @@ function LoginModal({ onClose }) {
     const [nombre, setNombre] = useState('');
     const [telefono, setTelefono] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const { login } = useAuth();
+    const { login, register } = useAuth();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        setLoading(true);
 
-        if (isLogin) {
-            const success = login(email, password);
-            if (success) {
-                onClose();
+        try {
+            if (isLogin) {
+                // Iniciar sesión
+                const result = await login(email, password);
+                if (result.success) {
+                    onClose();
+                } else {
+                    setError(result.error || 'Credenciales incorrectas');
+                }
             } else {
-                setError('Credenciales incorrectas');
+                // Registrar usuario
+                const result = await register({
+                    nombre: nombre.trim(),
+                    email: email.trim(),
+                    password,
+                    telefono: telefono.trim() || null,
+                    rol: 'cliente' // Por defecto los usuarios son clientes
+                });
+
+                if (result.success) {
+                    alert('Usuario registrado con éxito. Por favor inicia sesión.');
+                    setIsLogin(true);
+                    setNombre('');
+                    setTelefono('');
+                    setPassword('');
+                } else {
+                    setError(result.error || 'Error al registrar usuario');
+                }
             }
-        } else {
-            // Simular registro (en una app real, esto iría a una API)
-            alert(`Usuario ${nombre} registrado con éxito.`);
-            setIsLogin(true);
+        } catch (err) {
+            setError('Error de conexión. Intenta nuevamente.');
+            console.error('Error en autenticación:', err);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -40,17 +66,18 @@ function LoginModal({ onClose }) {
                         <>
                             <input
                                 type="text"
-                                placeholder="Nombre"
+                                placeholder="Nombre completo"
                                 value={nombre}
                                 onChange={(e) => setNombre(e.target.value)}
                                 required
+                                disabled={loading}
                             />
                             <input
                                 type="tel"
-                                placeholder="Teléfono"
+                                placeholder="Teléfono (opcional)"
                                 value={telefono}
                                 onChange={(e) => setTelefono(e.target.value)}
-                                required
+                                disabled={loading}
                             />
                         </>
                     )}
@@ -60,6 +87,7 @@ function LoginModal({ onClose }) {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
+                        disabled={loading}
                     />
                     <input
                         type="password"
@@ -67,16 +95,29 @@ function LoginModal({ onClose }) {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        disabled={loading}
+                        minLength={6}
                     />
-                    <button type="submit">{isLogin ? 'Iniciar Sesión' : 'Registrarse'}</button>
+                    <button type="submit" disabled={loading}>
+                        {loading ? 'Procesando...' : (isLogin ? 'Iniciar Sesión' : 'Registrarse')}
+                    </button>
                 </form>
                 <p>
                     {isLogin ? "¿No tienes cuenta?" : "¿Ya tienes cuenta?"}{' '}
-                    <button className="switch-mode" onClick={() => setIsLogin(!isLogin)}>
+                    <button 
+                        className="switch-mode" 
+                        onClick={() => {
+                            setIsLogin(!isLogin);
+                            setError('');
+                        }}
+                        disabled={loading}
+                    >
                         {isLogin ? 'Regístrate aquí' : 'Inicia sesión aquí'}
                     </button>
                 </p>
-                <button className="close-btn" onClick={onClose}>Cerrar</button>
+                <button className="close-btn" onClick={onClose} disabled={loading}>
+                    Cerrar
+                </button>
             </div>
         </div>
     );

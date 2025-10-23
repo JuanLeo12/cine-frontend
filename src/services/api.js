@@ -1,172 +1,435 @@
 // src/services/api.js
+import axios from 'axios';
+
 const BASE_URL = "http://localhost:4000";
 
-/**
- * Helper genérico para peticiones.
- * options:
- *  - method: 'GET' | 'POST' | 'PATCH' | 'DELETE'
- *  - body: objeto JS (se serializa a JSON) o FormData (en cuyo caso no se añade Content-Type)
- *  - auth: boolean -> si true intenta leer token de localStorage ('token') y lo envía como Bearer
- *  - credentials: 'include' si usas cookies (opcional)
- */
-const fetchData = async (
-  endpoint,
-  {
-    method = "GET",
-    body = null,
-    auth = false,
-    credentials = undefined,
-    customHeaders = {},
-  } = {}
-) => {
-  try {
-    const url = `${BASE_URL}${endpoint}`;
-    const headers = { ...customHeaders };
+// Crear instancia de axios con configuración base
+const api = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-    const init = { method };
-
-    if (body && !(body instanceof FormData)) {
-      headers["Content-Type"] = "application/json";
-      init.body = JSON.stringify(body);
-    } else if (body instanceof FormData) {
-      // si body es FormData, no tocar Content-Type (fetch lo gestiona)
-      init.body = body;
+// Interceptor para agregar token automáticamente
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-
-    if (auth) {
-      const token = localStorage.getItem("token");
-      if (token) headers["Authorization"] = `Bearer ${token}`;
-    }
-
-    if (Object.keys(headers).length) init.headers = headers;
-    if (credentials) init.credentials = credentials;
-
-    const res = await fetch(url, init);
-
-    // si no OK, intentar parsear JSON de error si existe
-    if (!res.ok) {
-      let errorBody = "";
-      try {
-        errorBody = await res.json();
-      } catch (_) {
-        errorBody = await res.text();
-      }
-      throw new Error(`HTTP ${res.status} - ${JSON.stringify(errorBody)}`);
-    }
-
-    // No content
-    if (res.status === 204) return null;
-
-    const contentType = res.headers.get("content-type") || "";
-    if (contentType.includes("application/json")) {
-      return await res.json();
-    }
-
-    // si no es JSON (p. ej. descarga de archivo)
-    return await res.text();
-  } catch (error) {
-    console.error(`API error [${method}] ${endpoint}:`, error);
-    throw error; // propagar para que el caller lo maneje si lo desea
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-};
+);
 
-/* ----------------- Funciones específicas / wrappers ----------------- */
+// Interceptor para manejar errores de respuesta
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token inválido o expirado
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/';
+    }
+    return Promise.reject(error);
+  }
+);
 
-// Obtener todas las películas
+/* ----------------- PELÍCULAS ----------------- */
+
 export const getPeliculas = async () => {
   try {
-    return await fetchData("/peliculas");
-  } catch (e) {
-    return []; // compatibilidad con código anterior
-  }
-};
-
-// Obtener películas por tipo (cartelera o proxEstreno)
-export const getPeliculasPorTipo = async (tipo) => {
-  try {
-    return await fetchData(`/peliculas?tipo=${encodeURIComponent(tipo)}`);
-  } catch (e) {
+    const response = await api.get('/peliculas');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo películas:', error);
     return [];
   }
 };
 
-// Nombre compatible con tu Movies.jsx: filtrarPeliculas
+export const getPeliculasPorTipo = async (tipo) => {
+  try {
+    const response = await api.get(`/peliculas?tipo=${tipo}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo películas por tipo:', error);
+    return [];
+  }
+};
+
+export const getPeliculaById = async (id) => {
+  try {
+    const response = await api.get(`/peliculas/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo película:', error);
+    return null;
+  }
+};
+
 export const filtrarPeliculas = async (filtros = {}) => {
   try {
     const params = new URLSearchParams(filtros).toString();
     const endpoint = params ? `/peliculas?${params}` : `/peliculas`;
-    return await fetchData(endpoint);
-  } catch (e) {
+    const response = await api.get(endpoint);
+    return response.data;
+  } catch (error) {
+    console.error('Error filtrando películas:', error);
     return [];
   }
 };
 
-// Alias (por si usas la otra denominación)
-export const getPeliculasFiltradas = filtrarPeliculas;
-
-/* ---------- CRUD de películas (requieren auth para POST/PATCH/DELETE en tu backend) ---------- */
-
-// Crear película (devuelve la nueva película o lanza error). by default intenta usar token en localStorage
-export const createPelicula = async (peliculaObj, { auth = true } = {}) => {
+export const createPelicula = async (peliculaData) => {
   try {
-    return await fetchData("/peliculas", {
-      method: "POST",
-      body: peliculaObj,
-      auth,
-    });
-  } catch (e) {
-    // puedes devolver null o relanzar según prefieras; aquí devolvemos null para compatibilidad
-    console.error("Error creando película:", e);
+    const response = await api.post('/peliculas', peliculaData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creando película:', error);
+    throw error;
+  }
+};
+
+export const updatePelicula = async (id, peliculaData) => {
+  try {
+    const response = await api.put(`/peliculas/${id}`, peliculaData);
+    return response.data;
+  } catch (error) {
+    console.error('Error actualizando película:', error);
+    throw error;
+  }
+};
+
+export const deletePelicula = async (id) => {
+  try {
+    const response = await api.delete(`/peliculas/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error eliminando película:', error);
+    throw error;
+  }
+};
+
+/* ----------------- SEDES ----------------- */
+
+export const getSedes = async () => {
+  try {
+    const response = await api.get('/sedes');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo sedes:', error);
+    return [];
+  }
+};
+
+export const getSedeById = async (id) => {
+  try {
+    const response = await api.get(`/sedes/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo sede:', error);
     return null;
   }
 };
 
-// Actualizar película
-export const updatePelicula = async (id, peliculaObj, { auth = true } = {}) => {
+/* ----------------- SALAS ----------------- */
+
+export const getSalas = async () => {
   try {
-    return await fetchData(`/peliculas/${id}`, {
-      method: "PATCH",
-      body: peliculaObj,
-      auth,
-    });
-  } catch (e) {
-    console.error("Error actualizando película:", e);
+    const response = await api.get('/salas');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo salas:', error);
+    return [];
+  }
+};
+
+export const getSalaById = async (id) => {
+  try {
+    const response = await api.get(`/salas/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo sala:', error);
     return null;
   }
 };
 
-// Eliminar (soft delete)
-export const deletePelicula = async (id, { auth = true } = {}) => {
+/* ----------------- FUNCIONES ----------------- */
+
+export const getFunciones = async () => {
   try {
-    return await fetchData(`/peliculas/${id}`, { method: "DELETE", auth });
-  } catch (e) {
-    console.error("Error eliminando película:", e);
+    const response = await api.get('/funciones');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo funciones:', error);
+    return [];
+  }
+};
+
+export const getFuncionById = async (id) => {
+  try {
+    const response = await api.get(`/funciones/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo función:', error);
     return null;
   }
 };
 
-/* ----------------- Helpers de autenticación (ejemplos) ----------------- */
+export const getFuncionesByPelicula = async (peliculaId) => {
+  try {
+    const response = await api.get(`/funciones/pelicula/${peliculaId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo funciones por película:', error);
+    return [];
+  }
+};
 
-// Iniciar sesión (ajusta la ruta si tu backend usa otra)
+/* ----------------- COMBOS ----------------- */
+
+export const getCombos = async () => {
+  try {
+    const response = await api.get('/combos');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo combos:', error);
+    return [];
+  }
+};
+
+export const getComboById = async (id) => {
+  try {
+    const response = await api.get(`/combos/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo combo:', error);
+    return null;
+  }
+};
+
+export const createCombo = async (comboData) => {
+  try {
+    const response = await api.post('/combos', comboData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creando combo:', error);
+    throw error;
+  }
+};
+
+export const updateCombo = async (id, comboData) => {
+  try {
+    const response = await api.put(`/combos/${id}`, comboData);
+    return response.data;
+  } catch (error) {
+    console.error('Error actualizando combo:', error);
+    throw error;
+  }
+};
+
+export const deleteCombo = async (id) => {
+  try {
+    const response = await api.delete(`/combos/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error eliminando combo:', error);
+    throw error;
+  }
+};
+
+/* ----------------- ASIENTOS ----------------- */
+
+export const getAsientosByFuncion = async (funcionId) => {
+  try {
+    const response = await api.get(`/asientos?id_funcion=${funcionId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo asientos:', error);
+    return [];
+  }
+};
+
+export const bloquearAsiento = async (asientoData) => {
+  try {
+    const response = await api.post('/asientos/bloquear', asientoData);
+    return response.data;
+  } catch (error) {
+    console.error('Error bloqueando asiento:', error);
+    throw error;
+  }
+};
+
+export const liberarAsiento = async (asientoData) => {
+  try {
+    const response = await api.post('/asientos/liberar', asientoData);
+    return response.data;
+  } catch (error) {
+    console.error('Error liberando asiento:', error);
+    throw error;
+  }
+};
+
+export const getAsientosPorFuncion = async (id_funcion) => {
+  try {
+    const response = await api.get(`/asientos/funcion/${id_funcion}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo asientos de la función:', error);
+    return [];
+  }
+};
+
+/* ----------------- TIPOS DE TICKET ----------------- */
+
+export const getTiposTicket = async () => {
+  try {
+    const response = await api.get('/tipos_ticket');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo tipos de ticket:', error);
+    return [];
+  }
+};
+
+/* ----------------- MÉTODOS DE PAGO ----------------- */
+
+export const getMetodosPago = async () => {
+  try {
+    const response = await api.get('/metodos_pago');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo métodos de pago:', error);
+    return [];
+  }
+};
+
+/* ----------------- ÓRDENES DE COMPRA ----------------- */
+
+export const createOrdenCompra = async (ordenData) => {
+  try {
+    const response = await api.post('/ordenes', ordenData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creando orden de compra:', error);
+    throw error;
+  }
+};
+
+export const confirmarOrdenCompra = async (ordenId, data) => {
+  try {
+    const response = await api.post(`/ordenes/${ordenId}/confirmar`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error confirmando orden de compra:', error);
+    throw error;
+  }
+};
+
+export const getOrdenesUsuario = async () => {
+  try {
+    const response = await api.get('/ordenes');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo órdenes:', error);
+    return [];
+  }
+};
+
+export const getOrdenById = async (id) => {
+  try {
+    const response = await api.get(`/ordenes/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo orden:', error);
+    return null;
+  }
+};
+
+export const cancelarOrden = async (ordenId) => {
+  try {
+    const response = await api.delete(`/ordenes/${ordenId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error cancelando orden:', error);
+    throw error;
+  }
+};
+
+/* ----------------- PAGOS ----------------- */
+
+export const createPago = async (pagoData) => {
+  try {
+    const response = await api.post('/pagos', pagoData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creando pago:', error);
+    throw error;
+  }
+};
+
+export const confirmarPago = async (pagoId) => {
+  try {
+    const response = await api.patch(`/pagos/${pagoId}/confirmar`);
+    return response.data;
+  } catch (error) {
+    console.error('Error confirmando pago:', error);
+    throw error;
+  }
+};
+
+/* ----------------- AUTENTICACIÓN ----------------- */
+
 export const login = async (credentials) => {
-  // credentials: { email, password } o { usuario, password } según tu API
   try {
-    const data = await fetchData("/usuarios/login", {
-      method: "POST",
-      body: credentials,
-    });
-    // ejemplo: guardar token si backend devuelve { token: '...' }
-    if (data && data.token) {
-      localStorage.setItem("token", data.token);
+    const response = await api.post('/usuarios/login', credentials);
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.usuario));
     }
-    return data;
-  } catch (e) {
-    console.error("Error en login:", e);
-    throw e;
+    return response.data;
+  } catch (error) {
+    console.error('Error en login:', error);
+    throw error;
   }
 };
 
-// Cerrar sesión (simple)
-export const logout = () => {
-  localStorage.removeItem("token");
+export const register = async (userData) => {
+  try {
+    const response = await api.post('/usuarios', userData);
+    return response.data;
+  } catch (error) {
+    console.error('Error en registro:', error);
+    throw error;
+  }
 };
+
+export const logout = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+};
+
+export const getPerfil = async () => {
+  try {
+    const response = await api.get('/usuarios/perfil');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo perfil:', error);
+    return null;
+  }
+};
+
+export const updatePerfil = async (userData) => {
+  try {
+    const response = await api.patch('/usuarios/perfil', userData);
+    return response.data;
+  } catch (error) {
+    console.error('Error actualizando perfil:', error);
+    throw error;
+  }
+};
+
+export default api;
