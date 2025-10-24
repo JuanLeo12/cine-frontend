@@ -111,6 +111,13 @@ function MovieDetails() {
             return acc;
         }, {});
 
+    // Verificar si una función ya pasó
+    const isFuncionPasada = (funcion) => {
+        const ahora = new Date();
+        const fechaHoraFuncion = new Date(`${funcion.fecha}T${funcion.hora}`);
+        return fechaHoraFuncion < ahora;
+    };
+
     return (
         <div className="movie-details">
             <div className="movie-header">
@@ -156,16 +163,22 @@ function MovieDetails() {
                                     <div className="times">
                                         {item.funciones
                                             .sort((a, b) => a.hora.localeCompare(b.hora))
-                                            .map((funcion) => (
-                                                <button
-                                                    key={funcion.id}
-                                                    className="time-btn"
-                                                    onClick={() => handleFuncionClick(funcion)}
-                                                >
-                                                    {funcion.hora.substring(0, 5)}
-                                                    <span className="sala-info">{funcion.sala.nombre}</span>
-                                                </button>
-                                            ))}
+                                            .map((funcion) => {
+                                                const pasada = isFuncionPasada(funcion);
+                                                return (
+                                                    <button
+                                                        key={funcion.id}
+                                                        className={`time-btn ${pasada ? 'disabled' : ''}`}
+                                                        onClick={() => !pasada && handleFuncionClick(funcion)}
+                                                        disabled={pasada}
+                                                        title={pasada ? 'Función ya iniciada' : ''}
+                                                    >
+                                                        {funcion.hora.substring(0, 5)}
+                                                        <span className="sala-info">{funcion.sala.nombre}</span>
+                                                        {pasada && <span className="badge-pasada">Pasada</span>}
+                                                    </button>
+                                                );
+                                            })}
                                     </div>
                                 </div>
                             ))}

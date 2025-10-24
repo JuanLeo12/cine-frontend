@@ -35,8 +35,22 @@ function Payment() {
             return;
         }
         cargarMetodosPago();
+        
+        // Advertencia al salir de la página
+        const handleBeforeUnload = (e) => {
+            if (!procesando) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        };
+        
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [procesando]);
 
     const cargarMetodosPago = async () => {
         try {
@@ -133,7 +147,12 @@ function Payment() {
     };
 
     const handleBack = () => {
-        navigate(-1);
+        const confirmBack = window.confirm(
+            '⚠️ Si retrocedes, tendrás que volver a seleccionar el tipo de tickets. ¿Deseas continuar?'
+        );
+        if (confirmBack) {
+            navigate(-1);
+        }
     };
 
     if (loading) {

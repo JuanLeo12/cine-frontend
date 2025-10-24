@@ -1,12 +1,14 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-// Contexto para el login
+// Contextos
 import { AuthProvider } from './context/AuthContext';
+import { PurchaseProvider } from './context/PurchaseContext';
 
 // Componentes 
 import Navbar from './components/general/Navbar';
 import Footer from './components/general/Footer';
+import NavigationGuard from './components/NavigationGuard';
 
 // Páginas de Contenido
 import Home from './pages/main-pgs/Home';
@@ -35,32 +37,35 @@ import './App.css';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <div className="App">
-          <Navbar />
-          <main>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/movies" element={<Movies />} />
-              <Route path="/movie/:id" element={<MovieDetails />} />
-              <Route path="/cinemas" element={<Cinemas />} />
-              <Route path="/candyshop" element={<CandyShop />} />
-              <Route path="/corporate" element={<CorporateSales />} />
-              <Route path="/seat-selection" element={<SeatSelection />} />
-              <Route path="/ticket-type" element={<TicketType />} />
-              <Route path="/combos" element={<Combos />} />
-              <Route path="/payment" element={<Payment />} />
-              <Route path="/confirmation" element={<Confirmation />} />
-              <Route path="/mis-compras" element={<MisCompras />} />
-              <Route path="/mis-datos" element={<MisDatos />} />
-              <Route path="/admin" element={<AdminPanel />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
-      </Router>
-    </AuthProvider>
+    <Router>
+      <AuthProvider>
+        <PurchaseProvider>
+          <div className="App">
+            <NavigationGuard />
+            <Navbar />
+            <main>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/movies" element={<Movies />} />
+                <Route path="/movie/:id" element={<MovieDetails />} />
+                <Route path="/cinemas" element={<Cinemas />} />
+                <Route path="/candyshop" element={<CandyShop />} />
+                <Route path="/corporate" element={<CorporateSales />} />
+                <Route path="/seat-selection" element={<SeatSelection />} />
+                <Route path="/ticket-type" element={<TicketType />} />
+                <Route path="/combos" element={<Combos />} />
+                <Route path="/payment" element={<Payment />} />
+                <Route path="/confirmation" element={<Confirmation />} />
+                <Route path="/mis-compras" element={<MisCompras />} />
+                <Route path="/mis-datos" element={<MisDatos />} />
+                <Route path="/admin" element={<AdminPanel />} />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </PurchaseProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

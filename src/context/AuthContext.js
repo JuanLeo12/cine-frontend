@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { checkServerStatus } from '../utils/serverCheck';
 
 const AuthContext = createContext();
 
@@ -21,16 +22,46 @@ export const AuthProvider = ({ children }) => {
 
     // Cargar usuario y token del localStorage al iniciar
     useEffect(() => {
-        const storedToken = localStorage.getItem('token');
-        const storedUser = localStorage.getItem('user');
+        const initAuth = async () => {
+            // Verificar si el servidor se reinició
+            const serverOk = await checkServerStatus();
+            
+            if (!serverOk) {
+                // Servidor reiniciado, limpiar sesión
+                console.log('🔄 Servidor reiniciado - Sesión invalidada');
+                setLoading(false);
+                return;
+            }
+            
+            const storedToken = localStorage.getItem('token');
+            const storedUser = localStorage.getItem('user');
+            
+            if (storedToken && storedUser) {
+                setToken(storedToken);
+                setUser(JSON.parse(storedUser));
+                setIsLoggedIn(true);
+            }
+            setLoading(false);
+        };
         
-        if (storedToken && storedUser) {
-            setToken(storedToken);
-            setUser(JSON.parse(storedUser));
-            setIsLoggedIn(true);
-        }
-        setLoading(false);
+        initAuth();
     }, []);
+
+    // Verificar expiración de sesión cada 5 minutos
+    useEffect(() => {
+        if (!isLoggedIn) return;
+
+        const checkSession = setInterval(() => {
+            const storedToken = localStorage.getItem('token');
+            if (!storedToken) {
+                // Token fue eliminado (por ejemplo, por el interceptor)
+                logout();
+                alert('⏰ Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+            }
+        }, 5 * 60 * 1000); // 5 minutos
+
+        return () => clearInterval(checkSession);
+    }, [isLoggedIn]);
 
     const login = async (email, password) => {
         try {

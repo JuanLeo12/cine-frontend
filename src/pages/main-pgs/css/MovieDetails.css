@@ -105,16 +105,35 @@
     flex-direction: column;
     align-items: center;
     transition: background 0.3s;
+    position: relative;
 }
 
 .time-btn:hover {
     background: #c00000;
 }
 
+.time-btn.disabled {
+    background: #7f8c8d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.time-btn.disabled:hover {
+    background: #7f8c8d;
+}
+
 .time-btn .sala-info {
     font-size: 0.75rem;
     opacity: 0.9;
     margin-top: 2px;
+}
+
+.time-btn .badge-pasada {
+    font-size: 0.65rem;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-top: 4px;
 }
 
 .proximo-estreno {

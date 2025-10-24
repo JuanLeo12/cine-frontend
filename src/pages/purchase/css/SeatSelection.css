@@ -78,16 +78,26 @@
 }
 
 .seat {
-    width: 35px;
-    height: 35px;
+    width: 42px;
+    height: 42px;
     border: 2px solid #555;
     background: #2a2a2a;
     color: #fff;
     border-radius: 6px 6px 0 0;
     cursor: pointer;
     transition: all 0.3s;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+}
+
+.seat-label {
+    font-size: 0.65rem;
+    line-height: 1;
+    text-align: center;
 }
 
 .seat:hover:not(:disabled) {
@@ -104,10 +114,18 @@
     background: #27ae60;
 }
 
-.seat.selected {
-    background: #e60000;
-    border-color: #ff0000;
+.seat.selected,
+.seat.mi-seleccion {
+    background: #e60000 !important;
+    border-color: #ff0000 !important;
     animation: bounceIn 0.3s;
+    cursor: pointer !important;
+    opacity: 1 !important;
+}
+
+.seat.mi-seleccion:hover {
+    background: #cc0000 !important;
+    border-color: #dd0000 !important;
 }
 
 .seat.bloqueado {

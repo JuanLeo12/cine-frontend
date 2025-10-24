@@ -31,8 +31,18 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Token inválido o expirado
+      const errorMsg = error.response?.data?.error || '';
+      
+      // Limpiar datos de sesión
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      
+      // Mostrar mensaje apropiado
+      if (errorMsg.includes('expirado') || errorMsg.includes('inválido')) {
+        alert('⏰ Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+      }
+      
+      // Redirigir al home
       window.location.href = '/';
     }
     return Promise.reject(error);
@@ -132,6 +142,36 @@ export const getSedeById = async (id) => {
   } catch (error) {
     console.error('Error obteniendo sede:', error);
     return null;
+  }
+};
+
+export const createSede = async (sedeData) => {
+  try {
+    const response = await api.post('/sedes', sedeData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creando sede:', error);
+    throw error;
+  }
+};
+
+export const updateSede = async (id, sedeData) => {
+  try {
+    const response = await api.put(`/sedes/${id}`, sedeData);
+    return response.data;
+  } catch (error) {
+    console.error('Error actualizando sede:', error);
+    throw error;
+  }
+};
+
+export const deleteSede = async (id) => {
+  try {
+    const response = await api.delete(`/sedes/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error eliminando sede:', error);
+    throw error;
   }
 };
 
