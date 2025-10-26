@@ -1,12 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { usePurchase } from '../../context/PurchaseContext';
 import './css/Confirmation.css';
 
 function Confirmation() {
     const navigate = useNavigate();
     const location = useLocation();
+    const { stopTimer, clearPurchase, setHasActiveSelection } = usePurchase();
     
     const { orden, pago, pelicula, funcion, selectedSeats, tickets } = location.state || {};
+
+    // Detener timer cuando se complete la compra
+    useEffect(() => {
+        stopTimer();
+        clearPurchase();
+        setHasActiveSelection(false);
+    }, [stopTimer, clearPurchase, setHasActiveSelection]);
 
     if (!orden || !pago) {
         return (
@@ -28,8 +37,10 @@ function Confirmation() {
         navigate('/mis-compras');
     };
 
-    // Generar código QR simulado (solo visual)
-    const qrCode = `QR-${orden.id}-${Date.now()}`;
+    // Generar URL del código QR único para la orden
+    const generarQR = (ordenId) => {
+        return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=ORDEN-${ordenId}`;
+    };
 
     return (
         <div className="confirmation">
@@ -40,47 +51,20 @@ function Confirmation() {
             </div>
 
             <div className="confirmation-container">
-                {/* Tickets Virtuales */}
-                <div className="tickets-section">
-                    <h3>🎫 Tus Entradas</h3>
-                    
-                    {selectedSeats.map((seat, index) => (
-                        <div key={index} className="virtual-ticket">
-                            <div className="ticket-header-section">
-                                <span className="ticket-cinema">CINESTAR</span>
-                                <span className="ticket-number">#{orden.id}-{index + 1}</span>
-                            </div>
-                            
-                            <div className="ticket-content">
-                                <div className="ticket-movie-info">
-                                    <h4>{pelicula?.titulo}</h4>
-                                    <p className="ticket-classification">{pelicula?.clasificacion}</p>
-                                </div>
-                                
-                                <div className="ticket-details">
-                                    <div className="ticket-detail">
-                                        <span className="label">📅 Fecha</span>
-                                        <span className="value">{funcion?.fecha}</span>
-                                    </div>
-                                    <div className="ticket-detail">
-                                        <span className="label">🕒 Hora</span>
-                                        <span className="value">{funcion?.hora}</span>
-                                    </div>
-                                    <div className="ticket-detail">
-                                        <span className="label">💺 Asiento</span>
-                                        <span className="value">{seat.id}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="ticket-qr">
-                                <div className="qr-placeholder">
-                                    <div className="qr-code">QR</div>
-                                    <p>{qrCode}</p>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                {/* Código QR ÚNICO para toda la orden */}
+                <div className="qr-section-confirmation">
+                    <h3>📱 Código QR de tu Compra</h3>
+                    <div className="qr-container-confirmation">
+                        <img 
+                            src={generarQR(orden.id)} 
+                            alt={`QR Orden ${orden.id}`}
+                            className="qr-code-confirmation"
+                        />
+                        <p className="qr-text">
+                            <strong>Presenta este código al ingresar</strong><br/>
+                            Orden #{orden.id}
+                        </p>
+                    </div>
                 </div>
 
                 {/* Resumen de Orden */}

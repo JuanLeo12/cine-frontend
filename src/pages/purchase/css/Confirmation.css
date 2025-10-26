@@ -50,9 +50,54 @@
 
 .confirmation-container {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr;
     gap: 30px;
     margin-top: 30px;
+}
+
+/* Sección QR única */
+.qr-section-confirmation {
+    background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    border: 3px dashed #e60000;
+}
+
+.qr-section-confirmation h3 {
+    color: #e60000;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.qr-container-confirmation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.qr-code-confirmation {
+    max-width: 220px;
+    width: 100%;
+    border: 4px solid #e60000;
+    border-radius: 12px;
+    padding: 1rem;
+    background: white;
+    box-shadow: 0 4px 12px rgba(230, 0, 0, 0.2);
+}
+
+.qr-text {
+    margin: 0;
+    color: #333;
+    font-size: 1rem;
+}
+
+.qr-text strong {
+    color: #e60000;
+    font-size: 1.2em;
+    display: block;
+    margin-bottom: 0.5rem;
 }
 
 /* Tickets Virtuales */

@@ -13,6 +13,21 @@
     text-align: center;
 }
 
+/* Header para impresión - oculto en pantalla */
+.print-header {
+    display: none;
+}
+
+/* Info de función para impresión - oculta en pantalla */
+.print-funcion-info {
+    display: none;
+}
+
+/* Info de cliente para impresión - oculta en pantalla */
+.print-cliente-info {
+    display: none;
+}
+
 .compras-list {
     display: flex;
     flex-direction: column;
@@ -21,36 +36,533 @@
 
 .compra-card {
     background: #f9f9f9;
-    padding: 1.5rem;
     border-radius: 8px;
     border: 1px solid #ddd;
+    overflow: hidden;
 }
 
-.compra-card h3 {
-    margin-top: 0;
+.compra-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.compra-header:hover {
+    background-color: #f0f0f0;
+}
+
+.compra-resumen h3 {
+    margin: 0 0 0.5rem 0;
     color: #333;
 }
 
-.compra-card ul {
-    padding-left: 1.2rem;
-    margin: 0.5rem 0;
+.compra-resumen p {
+    margin: 0.3rem 0;
+    color: #666;
 }
 
-.compra-card li {
-    margin-bottom: 0.3rem;
+.btn-expand {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #e60000;
+    transition: transform 0.3s;
+}
+
+.compra-details {
+    padding: 1.5rem;
+    background: #fafafa;
+    border-top: 1px solid #ddd;
+}
+
+.seccion-detalle {
+    margin-bottom: 1.5rem;
+    padding: 1.2rem;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.seccion-detalle h4 {
+    color: #e60000;
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.8rem;
+    border-bottom: 2px solid #ffe6e6;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.15em;
+    font-weight: 600;
+}
+
+.info-funcion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.info-funcion p {
+    margin: 0;
+    color: #444;
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 0.5rem;
+    line-height: 1.6;
+}
+
+.info-funcion p strong {
+    color: #666;
+    font-weight: 600;
+}
+
+/* Tickets y asientos */
+.orden-ticket-item {
+    background: #f9f9f9;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border-left: 3px solid #e60000;
+}
+
+.orden-ticket-item:last-child {
+    margin-bottom: 0;
+}
+
+.ticket-info p {
+    margin: 0.5rem 0;
+    color: #444;
+}
+
+/* Asientos compactos - sin grid */
+.asientos-compactos {
+    margin-top: 0.8rem;
+}
+
+.asientos-badges-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.asiento-badge-small {
+    background: #2196f3;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.95em;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(33, 150, 243, 0.3);
+}
+
+/* Sección QR única */
+.seccion-qr-compra {
+    background: linear-gradient(135deg, #fff5f5, #ffe6e6) !important;
+    padding: 2rem !important;
+    border-radius: 12px !important;
+    border: 3px dashed #e60000 !important;
+    margin: 1.5rem 0 !important;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(230, 0, 0, 0.15) !important;
+}
+
+.seccion-qr-compra h4 {
+    color: #e60000 !important;
+    text-align: center;
+    margin: 0 0 1.5rem 0 !important;
+    padding-bottom: 0.8rem !important;
+    font-size: 1.3em;
+    font-weight: 700;
+    border-bottom: 2px solid #ffcccc !important;
+}
+
+.qr-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem 0;
+}
+
+.qr-code-imagen {
+    max-width: 220px;
+    width: 100%;
+    height: auto;
+    border: 5px solid #e60000;
+    border-radius: 15px;
+    padding: 1rem;
+    background: white;
+    box-shadow: 0 6px 20px rgba(230, 0, 0, 0.3);
+}
+
+.qr-info-texto {
+    text-align: center;
+}
+
+.qr-titulo {
+    font-weight: 700;
+    color: #e60000;
+    font-size: 1.2em;
+    margin: 0 0 0.5rem 0;
+}
+
+.qr-orden {
+    color: #666;
+    font-size: 1em;
+    margin: 0;
+    font-weight: 600;
+}
+
+/* Resumen de pago mejorado */
+.resumen-pago {
+    background: linear-gradient(135deg, #fffbfb, #fff5f5) !important;
+    padding: 1.5rem !important;
+    border-radius: 10px !important;
+    border: 2px solid #e60000 !important;
+    margin: 1.5rem 0 !important;
+    box-shadow: 0 4px 8px rgba(230, 0, 0, 0.1) !important;
+}
+
+.resumen-pago h4 {
+    color: #e60000 !important;
+    margin: 0 0 1.2rem 0 !important;
+    padding-bottom: 0.8rem !important;
+    border-bottom: 2px solid #ffe6e6 !important;
+}
+
+.linea-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 0;
+    border-bottom: 2px solid #ffe6e6;
+    margin-bottom: 1.2rem;
+}
+
+.label-total {
+    font-size: 1.3em;
+    font-weight: 700;
+    color: #333;
+}
+
+.valor-total {
+    font-size: 1.8em;
+    font-weight: 700;
+    color: #e60000;
+}
+
+.info-pago {
+    margin-top: 1rem;
+}
+
+.info-pago p {
+    margin: 0.8rem 0;
+    color: #444;
+    font-size: 1em;
+}
+
+.info-pago p strong {
+    color: #666;
+    font-weight: 600;
+}
+
+.info-pago > div {
+    margin-top: 1.2rem;
+    text-align: left;
+}
+
+.metodo-pago {
+    margin: 0.5rem 0;
+    color: #444;
+    font-size: 1em;
+}
+
+.estado-pago {
+    display: inline-block;
+    padding: 0.6rem 1.5rem;
+    border-radius: 25px;
+    font-size: 1em;
+    font-weight: 700;
+    margin-top: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .estado-completado {
-    color: #4caf50;
-    font-weight: bold;
+    background: #4caf50;
+    color: white !important;
+    box-shadow: 0 3px 8px rgba(76, 175, 80, 0.4);
 }
 
 .estado-pendiente {
-    color: #ff9800;
-    font-weight: bold;
+    background: #ff9800;
+    color: white !important;
+    box-shadow: 0 3px 8px rgba(255, 152, 0, 0.4);
 }
 
 .estado-cancelado {
-    color: #d32f2f;
+    background: #d32f2f;
+    color: white !important;
+    box-shadow: 0 3px 8px rgba(211, 47, 47, 0.4);
+}
+
+.estado-confirmado {
+    background: #2196f3;
+    color: white !important;
+    box-shadow: 0 3px 8px rgba(33, 150, 243, 0.4);
+}
+
+
+/* Combos */
+.combos-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.combos-list li {
+    padding: 0.8rem 1rem;
+    background: #f9f9f9;
+    margin-bottom: 0.8rem;
+    border-radius: 8px;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 1rem;
+    align-items: center;
+    border-left: 3px solid #e60000;
+}
+
+.combos-list li:last-child {
+    margin-bottom: 0;
+}
+
+.combos-list li span:first-child {
+    font-weight: 600;
+    color: #333;
+}
+
+.combos-list li span:nth-child(2) {
+    color: #666;
+    font-size: 0.95em;
+}
+
+.combos-list li span:last-child {
     font-weight: bold;
+    color: #e60000;
+    font-size: 1.05em;
+}
+
+.total-orden {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #e60000;
+    text-align: right;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid #ddd;
+}
+
+.btn-comprobante {
+    background: #e60000;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    transition: background-color 0.3s;
+}
+
+.btn-comprobante:hover {
+    background: #cc0000;
+}
+
+/* Estilos para impresión */
+@media print {
+    /* Ocultar elementos de navegación */
+    nav,
+    .navbar,
+    header:not(.print-header),
+    footer {
+        display: none !important;
+    }
+    
+    /* Mostrar y estilizar header de impresión */
+    .print-header {
+        display: block !important;
+        text-align: center;
+        padding: 1rem 0 2rem 0;
+        border-bottom: 3px solid #e60000;
+        margin-bottom: 2rem;
+    }
+    
+    .print-logo {
+        width: 80px;
+        height: auto;
+        margin-bottom: 0.5rem;
+    }
+    
+    .print-title {
+        color: #e60000;
+        font-size: 2.5em;
+        font-weight: bold;
+        margin: 0.5rem 0;
+        letter-spacing: 2px;
+    }
+    
+    .print-subtitle {
+        color: #666;
+        font-size: 1.1em;
+        margin: 0.5rem 0 0 0;
+        font-weight: 500;
+    }
+    
+    /* Mostrar información del cliente en impresión */
+    .print-cliente-info {
+        display: block !important;
+        background: #f0f8ff;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        border: 2px solid #2196f3;
+        margin: 1.5rem 0;
+        text-align: left;
+    }
+    
+    .print-cliente-info p {
+        margin: 0.5rem 0;
+        color: #333;
+        font-size: 1em;
+    }
+    
+    .print-cliente-info p strong {
+        color: #2196f3;
+        font-weight: 600;
+        min-width: 70px;
+        display: inline-block;
+    }
+    
+    /* Ocultar título "Mis Compras" en impresión */
+    .mis-compras > h2 {
+        display: none;
+    }
+    
+    .compra-header {
+        cursor: default;
+    }
+    
+    .btn-expand,
+    .btn-comprobante {
+        display: none;
+    }
+    
+    .compra-details {
+        display: block !important;
+    }
+    
+    /* Configuración de página */
+    @page {
+        margin: 1.5cm;
+        size: A4 portrait;
+    }
+    
+    body {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .mis-compras {
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+        box-shadow: none;
+    }
+    
+    /* Evitar cortes de página dentro de secciones */
+    .seccion-detalle {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+    
+    .orden-ticket-item {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+    
+    .combos-list li {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+    
+    /* Control de saltos de página */
+    /* Página 1: Header + Info Orden + Info Función (completa) */
+    .print-header,
+    .compra-header {
+        page-break-after: avoid;
+        break-after: avoid;
+    }
+    
+    .seccion-funcion {
+        page-break-after: always;
+        break-after: always;
+    }
+    
+    /* Página 2: Tickets + Combos + Resumen de Pago juntos */
+    .seccion-detalle:has(h4:contains("Tickets")) {
+        page-break-before: always;
+        break-before: always;
+    }
+    
+    .resumen-pago {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        page-break-after: always;
+        break-after: always;
+    }
+    
+    /* Página 3: QR solo */
+    .seccion-qr-compra {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        page-break-before: always;
+        break-before: always;
+    }
+    
+    /* Colores más visibles en impresión */
+    .asiento-badge-small {
+        background: #2196f3 !important;
+        color: white !important;
+        border: 2px solid #1976d2 !important;
+        font-weight: bold !important;
+    }
+    
+    .estado-pago {
+        padding: 0.7rem 1.8rem !important;
+        font-size: 1.1em !important;
+        font-weight: 800 !important;
+        border: 3px solid rgba(0,0,0,0.2) !important;
+    }
+    
+    /* Asegurar que el footer esté en la última página */
+    .acciones-compra {
+        page-break-before: avoid;
+        break-before: avoid;
+    }
+    
+    /* Limpiar fondos para impresión */
+    .compra-card,
+    .compra-details {
+        background: white !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
 }

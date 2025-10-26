@@ -293,14 +293,36 @@ export const getAsientosByFuncion = async (funcionId) => {
   }
 };
 
+// Sistema anti-duplicación para bloquear asientos
+const bloqueosPendientes = new Map(); // Key: "id_funcion-fila-numero", Value: Promise
+
 export const bloquearAsiento = async (asientoData) => {
-  try {
-    const response = await api.post('/asientos/bloquear', asientoData);
-    return response.data;
-  } catch (error) {
-    console.error('Error bloqueando asiento:', error);
-    throw error;
+  const key = `${asientoData.id_funcion}-${asientoData.fila}-${asientoData.numero}`;
+  
+  // Si ya hay una petición en curso para este asiento, retornar la misma promesa
+  if (bloqueosPendientes.has(key)) {
+    console.log(`⚠️ Petición duplicada detectada para ${asientoData.fila}${asientoData.numero} - reutilizando promesa existente`);
+    return bloqueosPendientes.get(key);
   }
+
+  // Crear nueva promesa y guardarla
+  const promesa = (async () => {
+    try {
+      const response = await api.post('/asientos/bloquear', asientoData);
+      return response.data;
+    } catch (error) {
+      console.error('Error bloqueando asiento:', error);
+      throw error;
+    } finally {
+      // Limpiar el cache después de 1 segundo
+      setTimeout(() => {
+        bloqueosPendientes.delete(key);
+      }, 1000);
+    }
+  })();
+
+  bloqueosPendientes.set(key, promesa);
+  return promesa;
 };
 
 export const liberarAsiento = async (asientoData) => {

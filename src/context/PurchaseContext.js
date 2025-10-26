@@ -15,6 +15,7 @@ export const PurchaseProvider = ({ children }) => {
     const [timerActive, setTimerActive] = useState(false);
     const [purchaseData, setPurchaseData] = useState(null);
     const [hasActiveSelection, setHasActiveSelection] = useState(false); // Para bloquear navegación
+    const [onTimerExpire, setOnTimerExpire] = useState(null); // Callback cuando expire
     const intervaloRef = useRef(null);
 
     // Temporizador global de compra
@@ -29,6 +30,10 @@ export const PurchaseProvider = ({ children }) => {
             setTimeRemaining((prev) => {
                 if (prev <= 1) {
                     stopTimer();
+                    // Llamar callback si existe
+                    if (onTimerExpire) {
+                        onTimerExpire();
+                    }
                     return 0;
                 }
                 return prev - 1;
@@ -40,7 +45,7 @@ export const PurchaseProvider = ({ children }) => {
                 clearInterval(intervaloRef.current);
             }
         };
-    }, [timerActive]);
+    }, [timerActive, onTimerExpire]);
 
     const startTimer = () => {
         setTimeRemaining(300);
@@ -56,6 +61,17 @@ export const PurchaseProvider = ({ children }) => {
 
     const resetTimer = () => {
         setTimeRemaining(300);
+    };
+
+    const extendTimer = () => {
+        setTimeRemaining(300); // Reiniciar a 5 minutos
+        if (!timerActive) {
+            setTimerActive(true);
+        }
+    };
+
+    const setTimerExpireCallback = (callback) => {
+        setOnTimerExpire(() => callback);
     };
 
     const formatTime = (seconds) => {
@@ -81,6 +97,8 @@ export const PurchaseProvider = ({ children }) => {
         startTimer,
         stopTimer,
         resetTimer,
+        extendTimer,
+        setTimerExpireCallback,
         formatTime,
         setPurchase,
         clearPurchase,

@@ -2,12 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getTiposTicket } from '../../services/api';
 import { usePurchase } from '../../context/PurchaseContext';
+import TimerExpiredModal from '../../components/general/TimerExpiredModal';
 import './css/TicketType.css';
 
 function TicketType() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { timeRemaining, formatTime } = usePurchase();
+    const { 
+        timeRemaining, 
+        formatTime, 
+        extendTimer, 
+        setTimerExpireCallback 
+    } = usePurchase();
     
     const { selectedSeats, funcion, pelicula, misAsientos } = location.state || {};
 
@@ -16,6 +22,7 @@ function TicketType() {
     const [loading, setLoading] = useState(true);
     const [subtotal, setSubtotal] = useState(0);
     const [isNavigating, setIsNavigating] = useState(false);
+    const [showTimerModal, setShowTimerModal] = useState(false);
 
     useEffect(() => {
         if (!selectedSeats || !funcion || !pelicula) {
@@ -25,6 +32,11 @@ function TicketType() {
         }
         
         console.log('TicketType - Estado recibido:', { selectedSeats, funcion, pelicula, misAsientos });
+        
+        // Configurar callback cuando expire el timer
+        setTimerExpireCallback(() => {
+            setShowTimerModal(true);
+        });
         
         cargarTiposTicket();
 
@@ -148,6 +160,34 @@ function TicketType() {
         });
     };
 
+    // Handlers del modal de tiempo expirado
+    const handleExtendTime = () => {
+        setShowTimerModal(false);
+        extendTimer();
+        alert('✅ Tiempo extendido por 5 minutos más');
+    };
+
+    const handleExitFromTimer = () => {
+        setShowTimerModal(false);
+        setIsNavigating(true);
+        alert('⏰ Tu tiempo de compra ha expirado. Los asientos han sido liberados.');
+        
+        // Verificar que pelicula existe antes de navegar
+        if (pelicula && pelicula.id) {
+            navigate(`/movie/${pelicula.id}`, { 
+                state: { pelicula },
+                replace: true 
+            });
+        } else if (funcion && funcion.id_pelicula) {
+            // Si no hay pelicula completa pero hay id en función
+            navigate(`/movie/${funcion.id_pelicula}`, { replace: true });
+        } else {
+            // Fallback: ir a películas
+            console.warn('⚠️ No hay información de película, redirigiendo a /movies');
+            navigate('/movies', { replace: true });
+        }
+    };
+
     if (loading) {
         return <div className="ticket-type"><p>Cargando tipos de ticket...</p></div>;
     }
@@ -230,6 +270,14 @@ function TicketType() {
                     Continuar al pago →
                 </button>
             </div>
+
+            {/* Modal cuando el timer expire */}
+            {showTimerModal && (
+                <TimerExpiredModal 
+                    onExtend={handleExtendTime}
+                    onExit={handleExitFromTimer}
+                />
+            )}
         </div>
     );
 }

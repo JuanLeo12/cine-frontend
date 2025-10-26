@@ -109,25 +109,36 @@ function Payment() {
         setProcesando(true);
 
         try {
+            console.log('🔄 Iniciando proceso de pago...');
+            console.log('📦 Datos de entrada:', { selectedSeats, funcion, pelicula, tickets, metodoSeleccionado });
+
             // 1. Crear orden pendiente
             const ordenResponse = await createOrdenCompra({
                 id_funcion: funcion.id
             });
 
+            console.log('✅ Orden creada:', ordenResponse);
             const ordenId = ordenResponse.orden.id;
 
             // 2. Simular procesamiento de pago (2 segundos)
             await new Promise(resolve => setTimeout(resolve, 2000));
 
-            // 3. Confirmar orden (marcar asientos como ocupados)
-            const confirmResponse = await confirmarOrdenCompra(ordenId, {
+            // 3. Preparar datos para confirmar
+            const confirmData = {
                 tickets,
                 combos: [], // Sin combos por ahora
                 metodo_pago: metodoSeleccionado,
                 asientos: selectedSeats.map(s => ({ fila: s.fila, numero: s.numero }))
-            });
+            };
 
-            // 4. Navegar a confirmación
+            console.log('📤 Confirmando orden con:', confirmData);
+
+            // 4. Confirmar orden (marcar asientos como ocupados)
+            const confirmResponse = await confirmarOrdenCompra(ordenId, confirmData);
+
+            console.log('✅ Orden confirmada:', confirmResponse);
+
+            // 5. Navegar a confirmación
             navigate('/confirmation', {
                 state: {
                     orden: confirmResponse.orden,
@@ -140,7 +151,8 @@ function Payment() {
             });
 
         } catch (error) {
-            console.error('Error procesando pago:', error);
+            console.error('❌ Error procesando pago:', error);
+            console.error('Detalles del error:', error.response?.data);
             alert(error.response?.data?.error || 'Error al procesar el pago. Intenta nuevamente.');
             setProcesando(false);
         }
