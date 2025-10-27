@@ -229,7 +229,47 @@ export const getFuncionesByPelicula = async (peliculaId) => {
   }
 };
 
-/* ----------------- COMBOS ----------------- */
+export const createFuncion = async (funcionData) => {
+  try {
+    const response = await api.post('/funciones', funcionData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creando función:', error);
+    throw error;
+  }
+};
+
+export const getTodasFunciones = async () => {
+  try {
+    const response = await api.get('/funciones/admin/todas');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo todas las funciones:', error);
+    return [];
+  }
+};
+
+export const desactivarFuncionesPasadas = async () => {
+  try {
+    const response = await api.post('/funciones/admin/desactivar-pasadas');
+    return response.data;
+  } catch (error) {
+    console.error('Error desactivando funciones pasadas:', error);
+    throw error;
+  }
+};
+
+export const desactivarFuncion = async (id) => {
+  try {
+    const response = await api.patch(`/funciones/${id}/desactivar`);
+    return response.data;
+  } catch (error) {
+    console.error('Error desactivando función:', error);
+    throw error;
+  }
+};
+
+/* ----------------- COMBOS -----------------*/
 
 export const getCombos = async () => {
   try {
@@ -490,6 +530,71 @@ export const updatePerfil = async (userData) => {
     return response.data;
   } catch (error) {
     console.error('Error actualizando perfil:', error);
+    throw error;
+  }
+};
+
+/* ----------------- VALES CORPORATIVOS ----------------- */
+
+export const getValesCorporativos = async () => {
+  try {
+    const response = await api.get('/vales');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo vales corporativos:', error);
+    return [];
+  }
+};
+
+export const crearValeCorporativo = async (valeData) => {
+  try {
+    const response = await api.post('/vales', valeData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creando vale corporativo:', error);
+    throw error;
+  }
+};
+
+export const getValeCorporativo = async (id) => {
+  try {
+    const response = await api.get(`/vales/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo vale corporativo:', error);
+    return null;
+  }
+};
+
+export const usarValeCorporativo = async (id) => {
+  try {
+    const response = await api.put(`/vales/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error usando vale corporativo:', error);
+    throw error;
+  }
+};
+
+export const validarValeCorporativo = async (codigo) => {
+  try {
+    // Llamar al endpoint de validación por código (autenticado)
+    const response = await api.get(`/vales/validar/${encodeURIComponent(codigo)}`);
+    // El backend devuelve { valido: true, vale: {...}, mensaje }
+    return response.data;
+  } catch (error) {
+    console.error('Error validando vale corporativo:', error);
+    throw error;
+  }
+};
+
+export const marcarValeUsado = async (valeId) => {
+  try {
+    // El endpoint para actualizar vale es PUT /vales/:id
+    const response = await api.put(`/vales/${valeId}`, { usado: true });
+    return response.data;
+  } catch (error) {
+    console.error('Error marcando vale como usado:', error);
     throw error;
   }
 };

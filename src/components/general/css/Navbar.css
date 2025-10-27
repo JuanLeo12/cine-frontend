@@ -63,6 +63,39 @@
 }
 
 /* ======== BOTÓN DE USUARIO ======== */
+.user-btn {
+  background-color: #1a1a1a !important;
+  color: white !important;
+  border: 2px solid #e60000 !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 50px !important;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.user-btn:hover {
+  background-color: #e60000 !important;
+  border-color: #ff1a1a !important;
+  transform: translateY(-2px);
+}
+
+.user-avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  background-color: #e60000;
+}
+
+.user-name {
+  font-size: 0.95rem;
+}
+
 .nav-user button {
   background-color: #e60000;
   color: white;
@@ -157,5 +190,13 @@
 
   .hamburger {
     display: flex;
+  }
+
+  .user-name {
+    display: none;
+  }
+
+  .user-btn {
+    padding: 0.5rem !important;
   }
 }

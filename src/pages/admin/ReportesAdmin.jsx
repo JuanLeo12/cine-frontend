@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { getOrdenesUsuario } from '../../services/api';
 import './css/ReportesAdmin.css';
 
 function ReportesAdmin() {
@@ -22,7 +22,6 @@ function ReportesAdmin() {
     const cargarReportes = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('token');
             
             // Calcular fechas según el período
             const fechaFin = new Date();
@@ -36,37 +35,56 @@ function ReportesAdmin() {
                 fechaInicio.setFullYear(fechaInicio.getFullYear() - 1);
             }
 
-            // Obtener todas las órdenes
-            const response = await axios.get('http://localhost:4000/ordenes', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            // Obtener todas las órdenes (admin puede ver todas)
+            const todasOrdenes = await getOrdenesUsuario();
+            
+            console.log('📊 Órdenes recibidas:', todasOrdenes);
 
-            const ordenes = response.data.filter(orden => {
+            const ordenes = todasOrdenes.filter(orden => {
                 const fechaOrden = new Date(orden.fecha_compra);
                 return fechaOrden >= fechaInicio && fechaOrden <= fechaFin;
             });
 
+            console.log('📊 Órdenes filtradas por período:', ordenes);
+
             // Calcular estadísticas
-            const ventasTotal = ordenes.reduce((sum, orden) => sum + parseFloat(orden.total), 0);
+            let ventasTotal = 0;
+            let ticketsVendidos = 0;
+            let combosVendidos = 0;
             
-            const ticketsVendidos = ordenes.reduce((sum, orden) => 
-                sum + (orden.OrdenTickets?.length || 0), 0
-            );
-            
-            const combosVendidos = ordenes.reduce((sum, orden) => 
-                sum + (orden.OrdenCombos?.reduce((s, oc) => s + oc.cantidad, 0) || 0), 0
-            );
+            ordenes.forEach(orden => {
+                // Sumar total del pago
+                if (orden.pago && orden.pago.monto_total) {
+                    ventasTotal += parseFloat(orden.pago.monto_total);
+                }
+                
+                // Contar tickets
+                if (orden.ordenTickets && Array.isArray(orden.ordenTickets)) {
+                    orden.ordenTickets.forEach(ot => {
+                        ticketsVendidos += parseInt(ot.cantidad) || 0;
+                    });
+                }
+                
+                // Contar combos
+                if (orden.ordenCombos && Array.isArray(orden.ordenCombos)) {
+                    orden.ordenCombos.forEach(oc => {
+                        combosVendidos += parseInt(oc.cantidad) || 0;
+                    });
+                }
+            });
 
             // Ventas por película
             const ventasPorPelicula = {};
             ordenes.forEach(orden => {
-                orden.OrdenTickets?.forEach(ot => {
-                    const titulo = ot.Ticket?.Funcion?.Pelicula?.titulo || 'Sin título';
+                if (orden.funcion && orden.funcion.pelicula) {
+                    const titulo = orden.funcion.pelicula.titulo || 'Sin título';
+                    const montoOrden = orden.pago ? parseFloat(orden.pago.monto_total) : 0;
+                    
                     if (!ventasPorPelicula[titulo]) {
                         ventasPorPelicula[titulo] = 0;
                     }
-                    ventasPorPelicula[titulo] += parseFloat(ot.precio_unitario);
-                });
+                    ventasPorPelicula[titulo] += montoOrden;
+                }
             });
 
             const peliculasPopulares = Object.entries(ventasPorPelicula)
@@ -77,12 +95,22 @@ function ReportesAdmin() {
             // Método de pago más usado
             const metodosPago = {};
             ordenes.forEach(orden => {
-                const metodo = orden.Pago?.MetodoPago?.nombre || 'Sin definir';
-                metodosPago[metodo] = (metodosPago[metodo] || 0) + 1;
+                if (orden.pago && orden.pago.metodoPago) {
+                    const metodo = orden.pago.metodoPago.nombre || 'Sin definir';
+                    metodosPago[metodo] = (metodosPago[metodo] || 0) + 1;
+                }
             });
 
             const metodoPagoMasUsado = Object.entries(metodosPago)
                 .sort((a, b) => b[1] - a[1])[0];
+
+            console.log('📊 Estadísticas calculadas:', {
+                ventasTotal,
+                ticketsVendidos,
+                combosVendidos,
+                peliculasPopulares,
+                metodoPagoMasUsado
+            });
 
             setReportes({
                 ventasTotal,
@@ -97,6 +125,7 @@ function ReportesAdmin() {
 
         } catch (error) {
             console.error('Error al cargar reportes:', error);
+            alert('Error al cargar reportes. Verifica la consola.');
         } finally {
             setLoading(false);
         }

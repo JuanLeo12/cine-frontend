@@ -62,7 +62,16 @@ function Navbar() {
           {isLoggedIn && user ? (
             <div className="dropdown">
               <button onClick={toggleUserMenu} className="user-btn">
-                {user.nombre}
+                <img 
+                  src={user.foto_perfil || '/images/default-avatar.svg'} 
+                  alt={user.nombre}
+                  className="user-avatar"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '/images/default-avatar.svg';
+                  }}
+                />
+                <span className="user-name">{user.nombre}</span>
               </button>
               {isUserOpen && (
                 <ul className="dropdown-menu">

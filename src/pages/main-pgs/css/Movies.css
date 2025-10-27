@@ -67,6 +67,27 @@
   color: #e60000;
 }
 
+/* Botón limpiar filtros */
+.btn-clear-filters {
+  width: 100%;
+  background: linear-gradient(135deg, #666 0%, #444 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-top: 1.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-clear-filters:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #777 0%, #555 100%);
+}
+
 /* 🎞️ Grilla de películas */
 .movie-grid {
   display: grid;

@@ -24,8 +24,13 @@ function SeatSelection() {
     
     const [sala, setSala] = useState(null);
     const [asientos, setAsientos] = useState([]);
-    const [selectedSeats, setSelectedSeats] = useState(prevSelectedSeats || []);
-    const [misAsientos, setMisAsientos] = useState(prevMisAsientos || []); // IDs de asientos que yo bloqueé
+    // Solo usar estado previo si viene de TicketType (retroceso), no si viene de MovieDetails (nueva compra)
+    const [selectedSeats, setSelectedSeats] = useState(
+        prevSelectedSeats && prevMisAsientos ? prevSelectedSeats : []
+    );
+    const [misAsientos, setMisAsientos] = useState(
+        prevMisAsientos && prevSelectedSeats ? prevMisAsientos : []
+    ); // IDs de asientos que yo bloqueé
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isNavigating, setIsNavigating] = useState(false);

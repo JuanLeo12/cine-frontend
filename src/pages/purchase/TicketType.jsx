@@ -131,10 +131,10 @@ function TicketType() {
                 precio_unitario: parseFloat(tipo.precio_base)
             }));
 
-        console.log('Navegando a payment con:', { selectedSeats, funcion, pelicula, tickets, misAsientos });
+        console.log('Navegando a combos con:', { selectedSeats, funcion, pelicula, tickets, misAsientos });
         
         setIsNavigating(true);
-        navigate('/payment', {
+        navigate('/combos', {
             state: {
                 selectedSeats,
                 funcion,

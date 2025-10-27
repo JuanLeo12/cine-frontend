@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { getOrdenesUsuario } from '../../services/api';
 import './css/MisCompras.css';
 
 function MisCompras() {
+    const navigate = useNavigate();
+    const { user } = useAuth();
     const [ordenes, setOrdenes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [ordenExpandida, setOrdenExpandida] = useState(null);
@@ -14,6 +18,9 @@ function MisCompras() {
     const cargarOrdenes = async () => {
         try {
             const data = await getOrdenesUsuario();
+            console.log('🛒 Órdenes recibidas:', data);
+            console.log('🛒 Total de órdenes:', data.length);
+            console.log('🛒 IDs únicos:', [...new Set(data.map(o => o.id))]);
             setOrdenes(data);
         } catch (error) {
             console.error('Error al cargar órdenes:', error);
@@ -52,13 +59,133 @@ function MisCompras() {
         setOrdenExpandida(ordenExpandida === ordenId ? null : ordenId);
     };
 
-    const generarQR = (ticketId) => {
-        // Generar código QR usando una API pública
-        return `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TICKET-${ticketId}`;
+    const generarQR = (orden) => {
+        // Construir información completa para el QR en formato JSON
+        const pelicula = orden.funcion?.pelicula?.titulo || 'N/A';
+        const fecha = orden.funcion?.fecha || 'N/A';
+        const hora = orden.funcion?.hora || 'N/A';
+        const sala = orden.funcion?.sala?.nombre || 'N/A';
+        const sede = orden.funcion?.sala?.sede?.nombre || 'N/A';
+        
+        // Obtener asientos
+        const asientos = [];
+        if (orden.ordenTickets) {
+            orden.ordenTickets.forEach(ot => {
+                if (ot.tickets) {
+                    ot.tickets.forEach(ticket => {
+                        if (ticket.asientoFuncion) {
+                            asientos.push(`${ticket.asientoFuncion.fila}${ticket.asientoFuncion.numero}`);
+                        }
+                    });
+                }
+            });
+        }
+        
+        const total = calcularTotal(orden);
+        
+        // Crear objeto JSON con toda la información
+        // Incluir combos y formatear fecha de compra a zona Perú
+        const combos = (orden.ordenCombos || []).map(oc => ({ nombre: oc.combo?.nombre || 'N/A', cantidad: oc.cantidad }));
+        const fechaCompraFormateada = orden.fecha_compra ? new Date(orden.fecha_compra).toLocaleString('es-PE', { timeZone: 'America/Lima' }) : 'N/A';
+
+        const qrData = {
+            tipo: "CINESTAR_TICKET",
+            orden_id: orden.id,
+            pelicula: pelicula,
+            funcion: {
+                fecha: fecha,
+                hora: hora
+            },
+            ubicacion: {
+                sede: sede,
+                sala: sala
+            },
+            asientos: asientos,
+            combos: combos,
+            pago: {
+                total: parseFloat(total.toFixed(2)),
+                estado: orden.pago?.estado_pago || 'pendiente',
+                metodo: orden.pago?.metodoPago?.nombre || 'N/A'
+            },
+            fecha_compra: fechaCompraFormateada,
+            cliente: orden.usuario?.nombre || 'N/A'
+        };
+        
+        // Convertir a JSON con formato legible (indentación de 2 espacios)
+        const jsonData = JSON.stringify(qrData, null, 2);
+        return `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(jsonData)}`;
     };
+
+        const printOrden = (orden) => {
+                const urlQR = generarQR(orden);
+                const html = `
+                <html>
+                    <head>
+                        <title>Comprobante Orden ${orden.id}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; padding: 20px; }
+                            .header { text-align: center; }
+                            .section { margin-top: 20px; }
+                            .line { display:flex; justify-content:space-between; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>CineStar - Comprobante</h1>
+                            <p>Orden #${orden.id}</p>
+                        </div>
+                        <div class="section">
+                            <img src="${urlQR}" alt="QR Orden ${orden.id}" />
+                        </div>
+                        <div class="section">
+                            <h3>Cliente</h3>
+                            <p>${orden.usuario?.nombre || 'N/A'} - ${orden.usuario?.email || ''}</p>
+                        </div>
+                        <div class="section">
+                            <h3>Detalles</h3>
+                            <div class="line"><span>Fecha:</span><span>${new Date(orden.fecha_compra).toLocaleString('es-PE', { timeZone: 'America/Lima' })}</span></div>
+                            <div class="line"><span>Total:</span><span>S/ ${calcularTotal(orden).toFixed(2)}</span></div>
+                        </div>
+                    </body>
+                </html>`;
+
+                const w = window.open('', '_blank');
+                if (!w) return alert('Pop-up bloqueado. Permite ventanas emergentes para imprimir.');
+                w.document.open();
+                w.document.write(html);
+                w.document.close();
+                w.focus();
+                setTimeout(() => { w.print(); w.close(); }, 500);
+        };
 
     if (loading) {
         return <div style={{ textAlign: 'center', marginTop: '50px' }}>Cargando compras...</div>;
+    }
+
+    // Si es admin, mostrar mensaje
+    if (user?.rol === 'admin') {
+        return (
+            <div className="mis-compras">
+                <div className="admin-message-container">
+                    <div className="admin-message-card">
+                        <div className="admin-icon">🎬</div>
+                        <h2>Panel de Administración</h2>
+                        <p className="admin-message-text">
+                            Los administradores no pueden realizar compras personales.
+                        </p>
+                        <p className="admin-message-subtext">
+                            Para gestionar las órdenes de todos los clientes, dirígete al Panel Admin.
+                        </p>
+                        <button 
+                            className="btn-panel-admin" 
+                            onClick={() => navigate('/admin')}
+                        >
+                            Ir al Panel Admin →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -215,7 +342,7 @@ function MisCompras() {
                                             <h4>📱 Código QR de la Compra</h4>
                                             <div className="qr-wrapper">
                                                 <img 
-                                                    src={generarQR(orden.id)} 
+                                                    src={generarQR(orden)} 
                                                     alt={`QR Orden ${orden.id}`}
                                                     title="Escanea este código al ingresar al cine"
                                                     className="qr-code-imagen"
@@ -231,7 +358,7 @@ function MisCompras() {
                                         <div className="acciones-compra">
                                             <button 
                                                 className="btn-comprobante"
-                                                onClick={() => window.print()}
+                                                onClick={() => printOrden(orden)}
                                             >
                                                 🖨️ Imprimir Comprobante
                                             </button>

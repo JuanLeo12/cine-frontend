@@ -2,140 +2,328 @@
     padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
+    min-height: 80vh;
 }
 
-.corporate-sales h1 {
+.corporate-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.corporate-header h1 {
     color: #e60000;
-    text-align: center;
-    margin-bottom: 1rem;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
 }
 
-.corporate-intro {
-    text-align: center;
-    font-size: 1.1rem;
+.corporate-subtitle {
     color: #666;
-    margin-bottom: 2rem;
-}
-
-.corporate-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-}
-
-.corporate-card {
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-.corporate-card img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-}
-
-.corporate-card h3 {
-    padding: 0.5rem;
+    font-size: 1.1rem;
     margin: 0;
 }
 
-.corporate-card p {
-    padding: 0 0.5rem;
+/* Validador de Vale */
+.vale-validator-section {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.vale-validator-section h2 {
+    color: white;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.vale-form {
+    display: flex;
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.vale-input {
+    flex: 1;
+    padding: 0.875rem 1.25rem;
+    border: 2px solid #0f3460;
+    border-radius: 8px;
+    font-size: 1rem;
+    text-transform: uppercase;
+    background: white;
+}
+
+.vale-input:focus {
+    outline: none;
+    border-color: #e60000;
+    box-shadow: 0 0 0 3px rgba(230, 0, 0, 0.1);
+}
+
+.btn-validar {
+    background: linear-gradient(135deg, #e60000 0%, #c50000 100%);
+    color: white;
+    border: none;
+    padding: 0.875rem 1.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-validar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(230, 0, 0, 0.3);
+}
+
+.error-message {
+    background: #ffe6e6;
+    color: #cc0000;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    text-align: center;
+    border-left: 4px solid #cc0000;
+}
+
+.vale-validado-card {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    border: 2px solid #4caf50;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.vale-check {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2e7d32;
+    margin-bottom: 1rem;
+}
+
+.vale-info {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.vale-info p {
     margin: 0.5rem 0;
+    color: #333;
+}
+
+.btn-usar-vale {
+    width: 100%;
+    background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-usar-vale:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+/* Sección de vales disponibles */
+.vales-disponibles-section {
+    margin: 3rem 0;
+}
+
+.vales-disponibles-section h2 {
+    color: #333;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.no-vales {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: #f5f5f5;
+    border-radius: 12px;
+}
+
+.no-vales p {
+    font-size: 1.2rem;
+    color: #666;
+    margin: 0.5rem 0;
+}
+
+.no-vales-subtitle {
+    font-size: 1rem !important;
+    color: #999 !important;
+}
+
+.vales-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.vale-card {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.vale-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-color: #e60000;
+}
+
+.vale-tipo-badge {
+    position: absolute;
+    top: -10px;
+    right: 15px;
+    background: linear-gradient(135deg, #e60000 0%, #c50000 100%);
+    color: white;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(230, 0, 0, 0.3);
+}
+
+.vale-codigo {
+    margin-top: 1rem;
+    font-size: 0.95rem;
     color: #666;
 }
 
-.corporate-card ul {
-    list-style: none;
-    padding: 0 1rem;
-    text-align: left;
-    color: #444;
+.vale-valor {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #e60000;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.vale-expiracion {
     font-size: 0.9rem;
+    color: #999;
+    margin: 1rem 0;
+    text-align: center;
 }
 
-.corporate-card ul li {
-    padding: 0.3rem 0;
-}
-
-.corporate-card button {
-    background: #e60000;
-    /* Rojo */
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    margin: 1rem;
-}
-
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
+.btn-seleccionar-vale {
     width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 500px;
-}
-
-.modal-content form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.modal-content input,
-.modal-content textarea {
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.modal-content button {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.modal-content button[type="submit"] {
-    background: #e60000;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.2s;
 }
 
-.modal-content button[type="button"] {
-    background: #ccc;
-    color: black;
+.btn-seleccionar-vale:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #e60000 0%, #c50000 100%);
 }
 
-.modal-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: flex-end;
+/* Información corporativa */
+.info-corporativa {
+    margin: 3rem 0;
 }
 
-.btn-enviar {
-    background: #e60000 !important;
-    color: white !important;
-    padding: 0.75rem 1.5rem !important;
+.info-corporativa h2 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 2rem;
 }
 
-.btn-cancelar {
-    background: #666 !important;
-    color: white !important;
-    padding: 0.75rem 1.5rem !important;
+.info-card {
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.info-card h3 {
+    color: #e60000;
+    margin-bottom: 1rem;
+}
+
+.info-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.info-card ul li {
+    padding: 0.75rem 0;
+    color: #333;
+    font-size: 1.05rem;
+}
+
+.info-contacto {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #ccc;
+    text-align: center;
+    color: #666;
+}
+
+.btn-login {
+    background: linear-gradient(135deg, #e60000 0%, #c50000 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    transition: transform 0.2s;
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(230, 0, 0, 0.3);
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 4rem 2rem;
+    font-size: 1.2rem;
+    color: #666;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .corporate-sales {
+        padding: 1rem;
+    }
+    
+    .vale-form {
+        flex-direction: column;
+    }
+    
+    .vales-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .corporate-header h1 {
+        font-size: 2rem;
+    }
 }

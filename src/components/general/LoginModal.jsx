@@ -1,9 +1,11 @@
 // src/components/LoginModal.jsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './css/LoginModal.css';
 
 function LoginModal({ onClose }) {
+    const navigate = useNavigate();
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -25,6 +27,8 @@ function LoginModal({ onClose }) {
                 const result = await login(email, password);
                 if (result.success) {
                     onClose();
+                    // Redirigir a home después de login exitoso
+                    navigate('/');
                 } else {
                     setError(result.error || 'Credenciales incorrectas');
                 }

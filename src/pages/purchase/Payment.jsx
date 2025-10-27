@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getMetodosPago, createOrdenCompra, confirmarOrdenCompra } from '../../services/api';
+import { getMetodosPago, createOrdenCompra, confirmarOrdenCompra, validarValeCorporativo, marcarValeUsado } from '../../services/api';
 import './css/Payment.css';
 
 function Payment() {
     const navigate = useNavigate();
     const location = useLocation();
     
-    const { selectedSeats, funcion, pelicula, tickets, subtotalTickets } = location.state || {};
+    const { selectedSeats, funcion, pelicula, tickets, subtotalTickets, cart, soloCompra } = location.state || {};
 
     const [metodosPago, setMetodosPago] = useState([]);
     const [metodoSeleccionado, setMetodoSeleccionado] = useState(null);
@@ -28,12 +28,30 @@ function Payment() {
         codigo: ''
     });
 
+    // Vale Corporativo
+    const [codigoVale, setCodigoVale] = useState('');
+    const [valeAplicado, setValeAplicado] = useState(null);
+    const [validandoVale, setValidandoVale] = useState(false);
+    const [errorVale, setErrorVale] = useState('');
+
     useEffect(() => {
-        if (!selectedSeats || !funcion || !tickets) {
-            alert('Datos incompletos. Regresando...');
-            navigate('/movies');
-            return;
+        // Validar según tipo de compra
+        if (soloCompra === 'combos') {
+            // Compra solo de combos (desde CandyShop)
+            if (!cart || cart.length === 0) {
+                alert('Carrito vacío. Regresando...');
+                navigate('/candyshop');
+                return;
+            }
+        } else {
+            // Compra normal (función + tickets + opcional combos)
+            if (!selectedSeats || !funcion || !tickets) {
+                alert('Datos incompletos. Regresando...');
+                navigate('/movies');
+                return;
+            }
         }
+        
         cargarMetodosPago();
         
         // Advertencia al salir de la página
@@ -45,6 +63,8 @@ function Payment() {
         };
         
         window.addEventListener('beforeunload', handleBeforeUnload);
+        
+        console.log('🛒 Combos recibidos:', cart);
         
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
@@ -110,12 +130,12 @@ function Payment() {
 
         try {
             console.log('🔄 Iniciando proceso de pago...');
-            console.log('📦 Datos de entrada:', { selectedSeats, funcion, pelicula, tickets, metodoSeleccionado });
+            console.log('📦 Datos de entrada:', { selectedSeats, funcion, pelicula, tickets, metodoSeleccionado, cart });
 
             // 1. Crear orden pendiente
-            const ordenResponse = await createOrdenCompra({
-                id_funcion: funcion.id
-            });
+            const payloadCrear = {};
+            if (funcion && funcion.id) payloadCrear.id_funcion = funcion.id;
+            const ordenResponse = await createOrdenCompra(payloadCrear);
 
             console.log('✅ Orden creada:', ordenResponse);
             const ordenId = ordenResponse.orden.id;
@@ -124,11 +144,19 @@ function Payment() {
             await new Promise(resolve => setTimeout(resolve, 2000));
 
             // 3. Preparar datos para confirmar
+            const combosData = (cart || []).map(item => ({
+                id_combo: item.id,
+                cantidad: item.quantity,
+                precio_unitario: item.precio
+            }));
+
             const confirmData = {
-                tickets,
-                combos: [], // Sin combos por ahora
+                tickets: tickets || [],
+                combos: combosData,
                 metodo_pago: metodoSeleccionado,
-                asientos: selectedSeats.map(s => ({ fila: s.fila, numero: s.numero }))
+                asientos: (selectedSeats || []).map(s => ({ fila: s.fila, numero: s.numero })),
+                // Enviar id del vale aplicado (si existe) para que el backend lo valide y aplique
+                vale_id: valeAplicado?.id || null
             };
 
             console.log('📤 Confirmando orden con:', confirmData);
@@ -138,7 +166,18 @@ function Payment() {
 
             console.log('✅ Orden confirmada:', confirmResponse);
 
-            // 5. Navegar a confirmación
+            // 5. Marcar vale como usado si se aplicó
+            if (valeAplicado) {
+                try {
+                    await marcarValeUsado(valeAplicado.id);
+                    console.log(`✅ Vale ${valeAplicado.codigo} marcado como usado`);
+                } catch (valeError) {
+                    console.error('⚠️ Error al marcar vale como usado:', valeError);
+                    // No bloqueamos el flujo si falla esto
+                }
+            }
+
+            // 6. Navegar a confirmación
             navigate('/confirmation', {
                 state: {
                     orden: confirmResponse.orden,
@@ -146,7 +185,8 @@ function Payment() {
                     pelicula,
                     funcion,
                     selectedSeats,
-                    tickets
+                    tickets,
+                    cart
                 }
             });
 
@@ -167,11 +207,64 @@ function Payment() {
         }
     };
 
+    const handleValidarVale = async () => {
+        if (!codigoVale.trim()) {
+            setErrorVale('Ingresa un código de vale');
+            return;
+        }
+
+        setValidandoVale(true);
+        setErrorVale('');
+
+        try {
+            const resultado = await validarValeCorporativo(codigoVale.trim());
+            
+            if (resultado.valido) {
+                setValeAplicado(resultado.vale);
+                setErrorVale('');
+                alert(`✅ ${resultado.mensaje}`);
+            } else {
+                setErrorVale(resultado.error || 'Vale inválido');
+                setValeAplicado(null);
+            }
+        } catch (error) {
+            const mensaje = error.response?.data?.error || 'Error al validar vale';
+            setErrorVale(mensaje);
+            setValeAplicado(null);
+        } finally {
+            setValidandoVale(false);
+        }
+    };
+
+    const handleQuitarVale = () => {
+        setValeAplicado(null);
+        setCodigoVale('');
+        setErrorVale('');
+    };
+
     if (loading) {
         return <div className="payment-page"><p>Cargando métodos de pago...</p></div>;
     }
 
     const metodoActual = metodosPago.find(m => m.id === metodoSeleccionado);
+
+    // Calcular total con combos
+    const totalCombos = (cart || []).reduce((sum, item) => sum + (item.precio * item.quantity), 0);
+    const subtotal = subtotalTickets + totalCombos;
+    
+    // Calcular descuento si hay vale aplicado
+    let descuento = 0;
+    if (valeAplicado) {
+        if (valeAplicado.tipo === 'entrada') {
+            // Descuento solo aplica a tickets
+            descuento = Math.min(valeAplicado.valor, subtotalTickets);
+        } else if (valeAplicado.tipo === 'combo') {
+            // Descuento solo aplica a combos
+            descuento = Math.min(valeAplicado.valor, totalCombos);
+        }
+    }
+    
+    const totalGeneral = subtotal - descuento;
 
     return (
         <div className="payment-page">
@@ -187,18 +280,18 @@ function Payment() {
                     
                     <div className="summary-section">
                         <h4>Película</h4>
-                        <p><strong>{pelicula?.titulo}</strong></p>
-                        <p>{funcion?.fecha} - {funcion?.hora}</p>
+                        <p><strong>{pelicula?.titulo || '—'}</strong></p>
+                        <p>{funcion?.fecha || '—'} - {funcion?.hora || '—'}</p>
                     </div>
 
                     <div className="summary-section">
                         <h4>Asientos</h4>
-                        <p>{selectedSeats.map(s => s.id).join(', ')}</p>
+                        <p>{(selectedSeats || []).map(s => s.id).join(', ') || '—'}</p>
                     </div>
 
                     <div className="summary-section">
                         <h4>Tickets</h4>
-                        {tickets.map((ticket, index) => {
+                        {(tickets || []).map((ticket, index) => {
                             const tipoNombre = metodosPago.length > 0 ? 
                                 `Ticket ${index + 1}` : ticket.id_tipo_ticket;
                             return (
@@ -210,9 +303,75 @@ function Payment() {
                         })}
                     </div>
 
+                    {/* Combos */}
+                    {cart && cart.length > 0 && (
+                        <div className="summary-section">
+                            <h4>Combos</h4>
+                            {cart.map((item, index) => (
+                                <div key={index} className="summary-item">
+                                    <span>{item.quantity}x {item.nombre}</span>
+                                    <span>S/ {(item.precio * item.quantity).toFixed(2)}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Vale Corporativo */}
+                    <div className="summary-section vale-section">
+                        <h4>🎟️ Vale Corporativo</h4>
+                        {!valeAplicado ? (
+                            <div className="vale-input-group">
+                                <input
+                                    type="text"
+                                    placeholder="Ingresa tu código de vale"
+                                    value={codigoVale}
+                                    onChange={(e) => setCodigoVale(e.target.value.toUpperCase())}
+                                    className="vale-input"
+                                    disabled={validandoVale}
+                                />
+                                <button 
+                                    onClick={handleValidarVale}
+                                    disabled={validandoVale || !codigoVale.trim()}
+                                    className="btn-validar-vale"
+                                >
+                                    {validandoVale ? '⏳' : '✓'} Aplicar
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="vale-aplicado">
+                                <div className="vale-info">
+                                    <span className="vale-codigo">✅ {valeAplicado.codigo}</span>
+                                    <span className="vale-descuento">
+                                        -S/ {valeAplicado.valor} en {valeAplicado.tipo === 'entrada' ? 'entradas' : 'combos'}
+                                    </span>
+                                </div>
+                                <button onClick={handleQuitarVale} className="btn-quitar-vale">
+                                    ✕ Quitar
+                                </button>
+                            </div>
+                        )}
+                        {errorVale && (
+                            <p className="error-vale">❌ {errorVale}</p>
+                        )}
+                    </div>
+
+                    {/* Subtotal y Total */}
+                    {valeAplicado && (
+                        <div className="summary-subtotal">
+                            <span>Subtotal</span>
+                            <span>S/ {subtotal.toFixed(2)}</span>
+                        </div>
+                    )}
+                    {valeAplicado && descuento > 0 && (
+                        <div className="summary-discount">
+                            <span>Descuento ({valeAplicado.codigo})</span>
+                            <span className="discount-amount">- S/ {descuento.toFixed(2)}</span>
+                        </div>
+                    )}
+
                     <div className="summary-total">
                         <span>TOTAL</span>
-                        <strong>S/ {subtotalTickets.toFixed(2)}</strong>
+                        <strong>S/ {totalGeneral.toFixed(2)}</strong>
                     </div>
                 </div>
 
@@ -295,7 +454,7 @@ function Payment() {
                                 maxLength="6"
                             />
                             <p className="payment-help">
-                                💡 En la app de Yape, envía S/ {subtotalTickets.toFixed(2)} al número 987654321 
+                                💡 En la app de Yape, envía S/ {totalGeneral.toFixed(2)} al número 987654321 
                                 y usa el código de confirmación que aparece.
                             </p>
                         </div>
@@ -323,7 +482,7 @@ function Payment() {
                                 !metodoActual.nombre.includes('Tarjeta') && 
                                 metodoActual.nombre !== 'Yape')}
                         >
-                            {procesando ? '⏳ Procesando...' : `💳 Pagar S/ ${subtotalTickets.toFixed(2)}`}
+                            {procesando ? '⏳ Procesando...' : `💳 Pagar S/ ${totalGeneral.toFixed(2)}`}
                         </button>
                     </div>
                 </div>

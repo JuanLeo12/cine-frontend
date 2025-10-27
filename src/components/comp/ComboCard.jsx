@@ -8,7 +8,6 @@ function ComboCard({ combo }) {
             <h3>{combo.nombre}</h3>
             <p>{combo.descripcion}</p>
             <p className="precio">S/ {parseFloat(combo.precio).toFixed(2)}</p>
-            <button>Agregar al Carrito</button>
         </div>
     );
 }

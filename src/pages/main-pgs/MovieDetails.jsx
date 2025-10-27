@@ -7,7 +7,7 @@ import './css/MovieDetails.css';
 function MovieDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { isLoggedIn } = useAuth();
+    const { isLoggedIn, user } = useAuth();
 
     const [pelicula, setPelicula] = useState(null);
     const [funciones, setFunciones] = useState([]);
@@ -49,7 +49,22 @@ function MovieDetails() {
             alert('Debes iniciar sesión para comprar entradas.');
             return;
         }
-        navigate('/seat-selection', { state: { funcion, pelicula } });
+
+        // Bloquear admins de hacer compras
+        if (user?.rol === 'admin') {
+            alert('⚠️ Los administradores no pueden realizar compras. Esta función es solo para clientes.');
+            return;
+        }
+        
+        // Usar replace para que no se acumule historial y limpiar estado previo
+        navigate('/seat-selection', { 
+            state: { 
+                funcion, 
+                pelicula,
+                // No pasamos selectedSeats ni misAsientos - inicio limpio
+            },
+            replace: false // Mantener en historial pero con estado limpio
+        });
     };
 
     if (loading) {

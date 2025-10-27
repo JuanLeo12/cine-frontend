@@ -8,7 +8,7 @@ function Confirmation() {
     const location = useLocation();
     const { stopTimer, clearPurchase, setHasActiveSelection } = usePurchase();
     
-    const { orden, pago, pelicula, funcion, selectedSeats, tickets } = location.state || {};
+    const { orden, pago, pelicula, funcion, selectedSeats, tickets, cart } = location.state || {};
 
     // Detener timer cuando se complete la compra
     useEffect(() => {
@@ -37,9 +37,19 @@ function Confirmation() {
         navigate('/mis-compras');
     };
 
-    // Generar URL del código QR único para la orden
+    // Generar URL del código QR único para la orden (con combos y tickets detallados)
     const generarQR = (ordenId) => {
-        return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=ORDEN-${ordenId}`;
+        const datosQR = {
+            orden: ordenId,
+            pelicula: pelicula?.titulo || null,
+            funcion: funcion?.id || null,
+            asientos: (selectedSeats || []).map(s => s.id).join(',') || null,
+            tickets: (tickets || []).map(t => `${t.tipo_nombre || 'Ticket'}:${t.cantidad}`).join(',') || null,
+            combos: (cart || []).length > 0 ? (cart || []).map(c => `${c.nombre}:${c.quantity}`).join(',') : null,
+            fecha: new Date().toLocaleString('es-PE', { timeZone: 'America/Lima' })
+        };
+        const qrData = encodeURIComponent(JSON.stringify(datosQR));
+        return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${qrData}`;
     };
 
     return (
@@ -94,8 +104,8 @@ function Confirmation() {
 
                     <div className="detail-card">
                         <h4>💺 Asientos</h4>
-                        <div className="seats-grid">
-                            {selectedSeats.map((seat, idx) => (
+                            <div className="seats-grid">
+                            {(selectedSeats || []).map((seat, idx) => (
                                 <span key={idx} className="seat-badge">{seat.id}</span>
                             ))}
                         </div>
@@ -103,13 +113,29 @@ function Confirmation() {
 
                     <div className="detail-card">
                         <h4>🎫 Tickets</h4>
-                        {tickets.map((ticket, index) => (
+                        {(tickets || []).map((ticket, index) => (
                             <div key={index} className="detail-row">
-                                <span>{ticket.cantidad}x Ticket</span>
+                                <span>{ticket.cantidad}x {ticket.tipo_nombre || 'Ticket'}</span>
                                 <span>S/ {(ticket.cantidad * ticket.precio_unitario).toFixed(2)}</span>
                             </div>
                         ))}
                     </div>
+
+                    {cart && cart.length > 0 && (
+                        <div className="detail-card">
+                            <h4>🍿 Combos</h4>
+                            {cart.map((combo, index) => (
+                                <div key={index} className="detail-row">
+                                    <span>{combo.quantity}x {combo.nombre}</span>
+                                    <span>S/ {(combo.quantity * combo.precio).toFixed(2)}</span>
+                                </div>
+                            ))}
+                            <div className="detail-row subtotal">
+                                <span>Subtotal Combos</span>
+                                <strong>S/ {cart.reduce((sum, c) => sum + (c.quantity * c.precio), 0).toFixed(2)}</strong>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="detail-card payment-info">
                         <div className="detail-row total">

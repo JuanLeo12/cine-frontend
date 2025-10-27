@@ -11,7 +11,8 @@ function SedesAdmin() {
         nombre: '',
         direccion: '',
         ciudad: '',
-        telefono: ''
+        telefono: '',
+        imagen_url: ''
     });
 
     useEffect(() => {
@@ -35,7 +36,7 @@ function SedesAdmin() {
     };
 
     const resetForm = () => {
-        setFormData({ nombre: '', direccion: '', ciudad: '', telefono: '' });
+        setFormData({ nombre: '', direccion: '', ciudad: '', telefono: '', imagen_url: '' });
         setEditingId(null);
         setShowForm(false);
     };
@@ -64,7 +65,8 @@ function SedesAdmin() {
             nombre: sede.nombre,
             direccion: sede.direccion,
             ciudad: sede.ciudad,
-            telefono: sede.telefono || ''
+            telefono: sede.telefono || '',
+            imagen_url: sede.imagen_url || ''
         });
         setEditingId(sede.id);
         setShowForm(true);
@@ -142,6 +144,25 @@ function SedesAdmin() {
                                     value={formData.telefono}
                                     onChange={handleInputChange}
                                 />
+                            </div>
+                            <div className="form-group full-width">
+                                <label>URL de Imagen</label>
+                                <input
+                                    type="text"
+                                    name="imagen_url"
+                                    value={formData.imagen_url}
+                                    onChange={handleInputChange}
+                                    placeholder="https://ejemplo.com/imagen-sede.jpg"
+                                />
+                                {formData.imagen_url && (
+                                    <div className="image-preview">
+                                        <img 
+                                            src={formData.imagen_url} 
+                                            alt="Vista previa" 
+                                            onError={(e) => e.target.style.display = 'none'}
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <div className="form-actions">

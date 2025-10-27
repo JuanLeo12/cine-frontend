@@ -278,6 +278,15 @@
     border-bottom: none;
 }
 
+.detail-row.subtotal {
+    font-weight: 600;
+    color: #fff;
+    background: rgba(230, 0, 0, 0.1);
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+
 .detail-row.total {
     font-size: 1.3rem;
     padding-top: 15px;
