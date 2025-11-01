@@ -43,13 +43,30 @@ function Carousel({ peliculas }) {
       </button>
 
       <div className="carousel-content">
-        <img
-          src={peliculas[currentIndex]?.imagen_url}
-          alt={peliculas[currentIndex]?.titulo}
-        />
+        <div className="carousel-image-container">
+          <img
+            src={peliculas[currentIndex]?.imagen_url}
+            alt={peliculas[currentIndex]?.titulo}
+          />
+          <div className="carousel-overlay"></div>
+        </div>
+        
         <div className="carousel-info">
-          <h3>{peliculas[currentIndex]?.titulo}</h3>
-          <p>{peliculas[currentIndex]?.sinopsis}</p>
+          <span className="carousel-badge">
+            {peliculas[currentIndex]?.genero}
+          </span>
+          <h2>{peliculas[currentIndex]?.titulo}</h2>
+          <p className="carousel-sinopsis">
+            {peliculas[currentIndex]?.sinopsis?.substring(0, 150)}
+            {peliculas[currentIndex]?.sinopsis?.length > 150 ? '...' : ''}
+          </p>
+          <div className="carousel-details">
+            <span>⏱️ {peliculas[currentIndex]?.duracion} min</span>
+            <span>🎬 {peliculas[currentIndex]?.clasificacion}</span>
+          </div>
+          <button className="carousel-more-btn">
+            Ver más detalles
+          </button>
         </div>
       </div>
 

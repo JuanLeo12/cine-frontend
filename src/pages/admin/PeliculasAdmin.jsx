@@ -203,13 +203,33 @@ function PeliculasAdmin() {
 
                             <div className="form-group">
                                 <label>Género *</label>
-                                <input
-                                    type="text"
+                                <select
                                     required
                                     value={form.genero}
                                     onChange={(e) => setForm({ ...form, genero: e.target.value })}
-                                    placeholder="Ej: Acción, Comedia, Drama"
-                                />
+                                >
+                                    <option value="">Selecciona un género</option>
+                                    <option value="Acción">Acción</option>
+                                    <option value="Aventura">Aventura</option>
+                                    <option value="Ciencia Ficción">Ciencia Ficción</option>
+                                    <option value="Comedia">Comedia</option>
+                                    <option value="Crimen">Crimen</option>
+                                    <option value="Documental">Documental</option>
+                                    <option value="Drama">Drama</option>
+                                    <option value="Fantasía">Fantasía</option>
+                                    <option value="Musical">Musical</option>
+                                    <option value="Suspenso">Suspenso</option>
+                                    <option value="Terror">Terror</option>
+                                    <option value="Western">Western</option>
+                                    <option value="Animación">Animación</option>
+                                    <option value="Bélica">Bélica</option>
+                                    <option value="Biográfica">Biográfica</option>
+                                    <option value="Romance">Romance</option>
+                                    <option value="Thriller">Thriller</option>
+                                    <option value="Misterio">Misterio</option>
+                                    <option value="Familiar">Familiar</option>
+                                    <option value="Deportes">Deportes</option>
+                                </select>
                             </div>
 
                             <div className="form-group">
