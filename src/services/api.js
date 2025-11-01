@@ -534,6 +534,16 @@ export const updatePerfil = async (userData) => {
   }
 };
 
+export const updateUsuario = async (id, userData) => {
+  try {
+    const response = await api.put(`/usuarios/${id}`, userData);
+    return response.data;
+  } catch (error) {
+    console.error('Error actualizando usuario:', error);
+    throw error;
+  }
+};
+
 /* ----------------- VALES CORPORATIVOS ----------------- */
 
 export const getValesCorporativos = async () => {
@@ -584,7 +594,26 @@ export const validarValeCorporativo = async (codigo) => {
     return response.data;
   } catch (error) {
     console.error('Error validando vale corporativo:', error);
-    throw error;
+    
+    // Mejorar mensajes de error según el código de estado
+    if (error.response) {
+      const status = error.response.status;
+      const errorMsg = error.response.data?.error;
+      
+      if (status === 404) {
+        throw new Error('❌ Vale no encontrado. Verifica el código ingresado.');
+      } else if (status === 400 && errorMsg?.includes('vencido')) {
+        throw new Error('⏰ Este vale ha expirado.');
+      } else if (status === 400 && errorMsg?.includes('usado')) {
+        throw new Error('⚠️ Este vale ya fue utilizado.');
+      } else if (status === 400) {
+        throw new Error('❌ ' + (errorMsg || 'Vale inválido.'));
+      } else {
+        throw new Error('❌ ' + (errorMsg || 'Error al validar el vale.'));
+      }
+    }
+    
+    throw new Error('❌ No se pudo conectar con el servidor. Intenta nuevamente.');
   }
 };
 

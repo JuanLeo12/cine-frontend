@@ -17,6 +17,12 @@ function MisDatos() {
     const [fotoPerfil, setFotoPerfil] = useState(user?.foto_perfil || '');
     const [previewFoto, setPreviewFoto] = useState(user?.foto_perfil || '');
     const [loading, setLoading] = useState(false);
+    
+    // Estados para cambiar contraseña
+    const [cambiarPassword, setCambiarPassword] = useState(false);
+    const [passwordActual, setPasswordActual] = useState('');
+    const [passwordNueva, setPasswordNueva] = useState('');
+    const [passwordConfirm, setPasswordConfirm] = useState('');
 
     const handleGuardar = async (e) => {
         e.preventDefault();
@@ -34,6 +40,28 @@ function MisDatos() {
                 genero,
                 foto_perfil: fotoPerfil
             };
+            
+            // Si quiere cambiar contraseña, validar y agregar
+            if (cambiarPassword) {
+                if (!passwordActual || !passwordNueva || !passwordConfirm) {
+                    alert('⚠️ Completa todos los campos de contraseña');
+                    setLoading(false);
+                    return;
+                }
+                if (passwordNueva !== passwordConfirm) {
+                    alert('⚠️ Las contraseñas nuevas no coinciden');
+                    setLoading(false);
+                    return;
+                }
+                if (passwordNueva.length < 8 || passwordNueva.length > 16) {
+                    alert('⚠️ La contraseña debe tener entre 8 y 16 caracteres');
+                    setLoading(false);
+                    return;
+                }
+                
+                payload.passwordActual = passwordActual;
+                payload.password = passwordNueva;
+            }
 
             const datosActualizados = await updatePerfil(payload);
 
@@ -43,6 +71,14 @@ function MisDatos() {
             localStorage.setItem('user', JSON.stringify(updatedUser));
 
             alert('✅ Datos actualizados correctamente.');
+            
+            // Limpiar campos de contraseña
+            if (cambiarPassword) {
+                setPasswordActual('');
+                setPasswordNueva('');
+                setPasswordConfirm('');
+                setCambiarPassword(false);
+            }
         } catch (error) {
             console.error('Error al actualizar datos:', error);
             alert('❌ Error al actualizar los datos: ' + (error.response?.data?.error || error.message));
@@ -155,16 +191,6 @@ function MisDatos() {
 
                 <div className="form-group">
                     <label htmlFor="genero">Género</label>
-
-                <div className="form-group">
-                    <label>Foto de Perfil</label>
-                    <input type="file" accept="image/*" onChange={handleFotoChange} />
-                    {previewFoto && (
-                        <div className="preview-foto">
-                            <img src={previewFoto} alt="Preview" />
-                        </div>
-                    )}
-                </div>
                     <select
                         id="genero"
                         value={genero}
@@ -177,6 +203,66 @@ function MisDatos() {
                         <option value="prefiero_no_decir">Prefiero no decir</option>
                     </select>
                 </div>
+
+                <div className="form-group">
+                    <label>Foto de Perfil</label>
+                    <input type="file" accept="image/*" onChange={handleFotoChange} />
+                    {previewFoto && (
+                        <div className="preview-foto">
+                            <img src={previewFoto} alt="Preview" />
+                        </div>
+                    )}
+                </div>
+                
+                {/* Sección cambiar contraseña */}
+                <div className="form-group full-width">
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={cambiarPassword}
+                            onChange={(e) => setCambiarPassword(e.target.checked)}
+                        />
+                        {' '}Cambiar contraseña
+                    </label>
+                </div>
+                
+                {cambiarPassword && (
+                    <>
+                        <div className="form-group">
+                            <label htmlFor="passwordActual">Contraseña Actual <span className="required">*</span></label>
+                            <input
+                                id="passwordActual"
+                                type="password"
+                                value={passwordActual}
+                                onChange={(e) => setPasswordActual(e.target.value)}
+                                placeholder="Ingresa tu contraseña actual"
+                                autoComplete="current-password"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="passwordNueva">Nueva Contraseña <span className="required">*</span></label>
+                            <input
+                                id="passwordNueva"
+                                type="password"
+                                value={passwordNueva}
+                                onChange={(e) => setPasswordNueva(e.target.value)}
+                                placeholder="8-16 caracteres"
+                                autoComplete="new-password"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="passwordConfirm">Confirmar Nueva Contraseña <span className="required">*</span></label>
+                            <input
+                                id="passwordConfirm"
+                                type="password"
+                                value={passwordConfirm}
+                                onChange={(e) => setPasswordConfirm(e.target.value)}
+                                placeholder="Repite la nueva contraseña"
+                                autoComplete="new-password"
+                            />
+                        </div>
+                    </>
+                )}
 
                 <div className="form-actions">
                     <button type="submit" className="guardar-btn" disabled={loading}>

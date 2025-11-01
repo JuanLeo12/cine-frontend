@@ -15,10 +15,14 @@ function FuncionesAdmin() {
     // Formulario crear función
     const [nuevaFuncion, setNuevaFuncion] = useState({
         id_pelicula: '',
+        id_sede: '',
         id_sala: '',
         fecha: '',
         hora: ''
     });
+    
+    // Salas filtradas por sede seleccionada
+    const [salasFiltradas, setSalasFiltradas] = useState([]);
 
     // Estado verificación
     const [analisis, setAnalisis] = useState(null);
@@ -106,7 +110,8 @@ function FuncionesAdmin() {
         try {
             await createFuncion(nuevaFuncion);
             alert('✅ Función creada exitosamente');
-            setNuevaFuncion({ id_pelicula: '', id_sala: '', fecha: '', hora: '' });
+            setNuevaFuncion({ id_pelicula: '', id_sede: '', id_sala: '', fecha: '', hora: '' });
+            setSalasFiltradas([]);
             setMostrarCrear(false);
             cargarDatos();
         } catch (error) {
@@ -193,16 +198,45 @@ function FuncionesAdmin() {
                             </div>
 
                             <div className="form-group">
+                                <label>Sede:</label>
+                                <select
+                                    value={nuevaFuncion.id_sede}
+                                    onChange={(e) => {
+                                        const sedeId = e.target.value;
+                                        setNuevaFuncion({...nuevaFuncion, id_sede: sedeId, id_sala: ''});
+                                        // Filtrar salas por sede seleccionada
+                                        if (sedeId) {
+                                            const salasDeSede = salas.filter(sala => sala.id_sede === parseInt(sedeId));
+                                            setSalasFiltradas(salasDeSede);
+                                        } else {
+                                            setSalasFiltradas([]);
+                                        }
+                                    }}
+                                    required
+                                >
+                                    <option value="">Selecciona una sede</option>
+                                    {sedes.map(sede => (
+                                        <option key={sede.id} value={sede.id}>
+                                            {sede.nombre}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="form-group">
                                 <label>Sala:</label>
                                 <select
                                     value={nuevaFuncion.id_sala}
                                     onChange={(e) => setNuevaFuncion({...nuevaFuncion, id_sala: e.target.value})}
                                     required
+                                    disabled={!nuevaFuncion.id_sede}
                                 >
-                                    <option value="">Selecciona una sala</option>
-                                    {salas.map(sala => (
+                                    <option value="">
+                                        {!nuevaFuncion.id_sede ? 'Primero selecciona una sede' : 'Selecciona una sala'}
+                                    </option>
+                                    {salasFiltradas.map(sala => (
                                         <option key={sala.id} value={sala.id}>
-                                            {sala.nombre} - {sala.sede?.nombre || 'Sin sede'}
+                                            {sala.nombre} {sala.tipo_sala ? `(${sala.tipo_sala})` : ''}
                                         </option>
                                     ))}
                                 </select>

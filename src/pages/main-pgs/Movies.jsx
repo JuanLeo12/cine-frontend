@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MovieCard from "../../components/comp/MovieCard";
-import { filtrarPeliculas, getSedes, getFunciones } from "../../services/api";
+import { filtrarPeliculas, getSedes, getFunciones, getPeliculas } from "../../services/api";
 import "./css/Movies.css";
 
 function Movies() {
@@ -31,6 +31,20 @@ function Movies() {
       }
     };
     cargarDatosIniciales();
+  }, []);
+
+  // 🔹 Cargar catálogo de películas (solo para extraer géneros y clasificaciones disponibles)
+  const [peliculasCatalogo, setPeliculasCatalogo] = useState([]);
+  useEffect(() => {
+    const cargarCatalogo = async () => {
+      try {
+        const all = await getPeliculas();
+        setPeliculasCatalogo(all || []);
+      } catch (error) {
+        console.error("Error cargando catálogo de películas:", error);
+      }
+    };
+    cargarCatalogo();
   }, []);
 
   // 🔹 Cargar películas según los filtros
@@ -73,11 +87,12 @@ function Movies() {
     cargarPeliculas();
   }, [tipo, genero, clasificacion, sedeId, fecha, funciones]);
 
-  // 🔹 Extraer opciones únicas
-  const generos = ["Todos", ...new Set(peliculas.map((p) => p.genero || ""))];
+  // 🔹 Extraer opciones únicas a partir del catálogo completo para evitar que
+  // cambiar la selección reduzca las opciones disponibles
+  const generos = ["Todos", ...new Set(peliculasCatalogo.map((p) => p.genero || ""))];
   const clasificaciones = [
     "Todos",
-    ...new Set(peliculas.map((p) => p.clasificacion || "")),
+    ...new Set(peliculasCatalogo.map((p) => p.clasificacion || "")),
   ];
 
   // Fechas disponibles (próximos 7 días)

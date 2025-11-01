@@ -12,7 +12,9 @@ function SedesAdmin() {
         direccion: '',
         ciudad: '',
         telefono: '',
-        imagen_url: ''
+        imagen_url: '',
+        cantidadSalas: 0,
+        salas: []
     });
 
     useEffect(() => {
@@ -32,11 +34,43 @@ function SedesAdmin() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        
+        if (name === 'cantidadSalas') {
+            const cantidad = parseInt(value) || 0;
+            const nuevasSalas = Array.from({ length: cantidad }, (_, i) => ({
+                nombre: `Sala ${i + 1}`,
+                tipo_sala: '2D',
+                filas: 10,
+                columnas: 12
+            }));
+            setFormData(prev => ({ 
+                ...prev, 
+                cantidadSalas: cantidad,
+                salas: nuevasSalas
+            }));
+        } else {
+            setFormData(prev => ({ ...prev, [name]: value }));
+        }
+    };
+
+    const handleSalaChange = (index, field, value) => {
+        setFormData(prev => {
+            const nuevasSalas = [...prev.salas];
+            nuevasSalas[index] = { ...nuevasSalas[index], [field]: value };
+            return { ...prev, salas: nuevasSalas };
+        });
     };
 
     const resetForm = () => {
-        setFormData({ nombre: '', direccion: '', ciudad: '', telefono: '', imagen_url: '' });
+        setFormData({ 
+            nombre: '', 
+            direccion: '', 
+            ciudad: '', 
+            telefono: '', 
+            imagen_url: '',
+            cantidadSalas: 0,
+            salas: []
+        });
         setEditingId(null);
         setShowForm(false);
     };
@@ -66,7 +100,14 @@ function SedesAdmin() {
             direccion: sede.direccion,
             ciudad: sede.ciudad,
             telefono: sede.telefono || '',
-            imagen_url: sede.imagen_url || ''
+            imagen_url: sede.imagen_url || '',
+            cantidadSalas: sede.salas?.length || 0,
+            salas: sede.salas?.map(s => ({
+                nombre: s.nombre,
+                tipo_sala: s.tipo_sala || '2D',
+                filas: s.filas || 10,
+                columnas: s.columnas || 12
+            })) || []
         });
         setEditingId(sede.id);
         setShowForm(true);
@@ -139,10 +180,20 @@ function SedesAdmin() {
                             <div className="form-group">
                                 <label>Teléfono</label>
                                 <input
-                                    type="text"
+                                    type="tel"
                                     name="telefono"
                                     value={formData.telefono}
-                                    onChange={handleInputChange}
+                                    onChange={(e) => {
+                                        const valor = e.target.value;
+                                        // Solo permitir números y máximo 9 dígitos
+                                        if (/^\d{0,9}$/.test(valor)) {
+                                            handleInputChange(e);
+                                        }
+                                    }}
+                                    placeholder="987654321"
+                                    maxLength="9"
+                                    pattern="\d{9}"
+                                    title="Ingrese exactamente 9 dígitos"
                                 />
                             </div>
                             <div className="form-group full-width">
@@ -164,6 +215,44 @@ function SedesAdmin() {
                                     </div>
                                 )}
                             </div>
+                            
+                            {/* 🔹 Sección de Salas (solo al crear nueva sede) */}
+                            {!editingId && (
+                                <div className="form-group full-width">
+                                    <label>Cantidad de Salas</label>
+                                    <input
+                                        type="number"
+                                        name="cantidadSalas"
+                                        value={formData.cantidadSalas}
+                                        onChange={handleInputChange}
+                                        min="0"
+                                        max="20"
+                                    />
+                                </div>
+                            )}
+                            
+                            {/* 🔹 Configuración de cada sala */}
+                            {!editingId && formData.cantidadSalas > 0 && (
+                                <div className="form-group full-width">
+                                    <label>Configuración de Salas</label>
+                                    <div className="salas-config">
+                                        {formData.salas.map((sala, index) => (
+                                            <div key={index} className="sala-item">
+                                                <span className="sala-nombre">{sala.nombre}</span>
+                                                <select
+                                                    value={sala.tipo_sala}
+                                                    onChange={(e) => handleSalaChange(index, 'tipo_sala', e.target.value)}
+                                                >
+                                                    <option value="2D">2D</option>
+                                                    <option value="3D">3D</option>
+                                                    <option value="4DX">4DX</option>
+                                                    <option value="Xtreme">Xtreme</option>
+                                                </select>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         <div className="form-actions">
                             <button type="button" onClick={resetForm} className="btn-secondary">
@@ -183,6 +272,7 @@ function SedesAdmin() {
                 <table className="data-table">
                     <thead>
                         <tr>
+                            <th>Imagen</th>
                             <th>Nombre</th>
                             <th>Dirección</th>
                             <th>Ciudad</th>
@@ -194,6 +284,22 @@ function SedesAdmin() {
                     <tbody>
                         {sedes.map((sede) => (
                             <tr key={sede.id}>
+                                <td>
+                                    {sede.imagen_url ? (
+                                        <img 
+                                            src={sede.imagen_url} 
+                                            alt={sede.nombre}
+                                            className="sede-thumbnail"
+                                            onError={(e) => {
+                                                e.target.style.display = 'none';
+                                                e.target.nextSibling.style.display = 'block';
+                                            }}
+                                        />
+                                    ) : null}
+                                    <span className="no-image" style={{ display: sede.imagen_url ? 'none' : 'block' }}>
+                                        Sin imagen
+                                    </span>
+                                </td>
                                 <td>{sede.nombre}</td>
                                 <td>{sede.direccion}</td>
                                 <td>{sede.ciudad}</td>

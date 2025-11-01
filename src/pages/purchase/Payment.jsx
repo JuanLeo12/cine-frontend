@@ -228,9 +228,11 @@ function Payment() {
                 setValeAplicado(null);
             }
         } catch (error) {
-            const mensaje = error.response?.data?.error || 'Error al validar vale';
+            // Mostrar el mensaje mejorado del error
+            const mensaje = error.message || error.response?.data?.error || 'Error al validar vale';
             setErrorVale(mensaje);
             setValeAplicado(null);
+            alert(mensaje);
         } finally {
             setValidandoVale(false);
         }

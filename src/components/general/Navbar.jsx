@@ -77,14 +77,14 @@ function Navbar() {
                 <ul className="dropdown-menu">
                   {user.rol === 'admin' && (
                     <li>
-                      <Link to="/admin">🎬 Panel Admin</Link>
+                      <Link to="/admin" onClick={() => setIsUserOpen(false)}>🎬 Panel Admin</Link>
                     </li>
                   )}
                   <li>
-                    <Link to="/mis-compras">Mis Compras</Link>
+                    <Link to="/mis-compras" onClick={() => setIsUserOpen(false)}>Mis Compras</Link>
                   </li>
                   <li>
-                    <Link to="/mis-datos">Mis Datos</Link>
+                    <Link to="/mis-datos" onClick={() => setIsUserOpen(false)}>Mis Datos</Link>
                   </li>
                   <li>
                     <button onClick={handleLogout}>Cerrar Sesión</button>
