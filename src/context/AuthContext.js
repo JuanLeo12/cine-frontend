@@ -96,7 +96,7 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (datos) => {
         try {
-            const response = await axios.post(`${API_URL}/usuarios`, datos);
+            const response = await axios.post(`${API_URL}/usuarios/registro`, datos);
             return { success: true, data: response.data };
         } catch (error) {
             console.error('Error en registro:', error);
@@ -127,6 +127,7 @@ export const AuthProvider = ({ children }) => {
         <AuthContext.Provider value={{ 
             isLoggedIn, 
             user, 
+            setUser,
             token,
             loading,
             login, 

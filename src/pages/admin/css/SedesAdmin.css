@@ -124,3 +124,98 @@
     text-align: center;
     font-style: italic;
 }
+
+/* Responsive - Tablet */
+@media (max-width: 768px) {
+    .form-container {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-container h3 {
+        font-size: 1.3rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+    }
+
+    .image-preview {
+        max-width: 100%;
+    }
+
+    .salas-config {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 0.8rem;
+    }
+
+    .sala-item {
+        padding: 0.8rem;
+    }
+
+    .sede-thumbnail {
+        width: 70px;
+        height: 50px;
+    }
+
+    .actions-cell {
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .btn-edit,
+    .btn-delete {
+        width: 100%;
+        padding: 0.4rem 0.6rem;
+        font-size: 1.1rem;
+    }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 480px) {
+    .form-container {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 6px;
+    }
+
+    .form-container h3 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-grid {
+        gap: 1rem;
+    }
+
+    .salas-config {
+        grid-template-columns: 1fr;
+        gap: 0.6rem;
+    }
+
+    .sala-item {
+        padding: 0.7rem;
+    }
+
+    .sala-nombre {
+        font-size: 0.85rem;
+    }
+
+    .sala-item select {
+        padding: 0.45rem;
+        font-size: 0.9rem;
+    }
+
+    .sede-thumbnail {
+        width: 60px;
+        height: 45px;
+    }
+
+    .btn-edit,
+    .btn-delete {
+        padding: 0.35rem 0.5rem;
+        font-size: 1rem;
+    }
+}

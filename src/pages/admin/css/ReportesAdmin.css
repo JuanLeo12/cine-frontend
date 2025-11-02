@@ -145,22 +145,169 @@
 }
 
 @media (max-width: 768px) {
+    .reportes-admin {
+        padding: 1.5rem 1rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .periodo-selector {
+        width: 100%;
+        padding: 0.65rem 1.2rem;
+        font-size: 0.95rem;
+    }
+
     .stats-grid {
         grid-template-columns: 1fr;
+        gap: 1.2rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        padding: 1.2rem;
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        min-width: 50px;
+    }
+
+    .stat-info h3 {
+        font-size: 0.85rem;
+    }
+
+    .stat-value {
+        font-size: 1.7rem;
+    }
+
+    .chart-section {
+        padding: 1.5rem;
+    }
+
+    .chart-section h3 {
+        font-size: 1.3rem;
+        margin-bottom: 1.2rem;
     }
 
     .movie-bar {
         grid-template-columns: 30px 1fr;
         grid-template-rows: auto auto;
         gap: 0.5rem;
+        padding: 0.8rem;
+    }
+
+    .movie-rank {
+        font-size: 1.3rem;
+    }
+
+    .movie-title {
+        font-size: 0.95rem;
     }
 
     .movie-bar-container {
         grid-column: 1 / -1;
+        height: 20px;
     }
 
     .movie-revenue {
         grid-column: 1 / -1;
         text-align: left;
+        font-size: 0.95rem;
+    }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 480px) {
+    .reportes-admin {
+        padding: 1rem 0.5rem;
+    }
+
+    .section-header {
+        gap: 0.8rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .periodo-selector {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .stats-grid {
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+        min-width: auto;
+    }
+
+    .stat-info h3 {
+        font-size: 0.8rem;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+    }
+
+    .stat-detail {
+        font-size: 0.8rem;
+    }
+
+    .chart-section {
+        padding: 1.2rem;
+        border-radius: 8px;
+    }
+
+    .chart-section h3 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+
+    .movie-bar {
+        grid-template-columns: 25px 1fr;
+        gap: 0.4rem;
+        padding: 0.7rem;
+    }
+
+    .movie-rank {
+        font-size: 1.1rem;
+    }
+
+    .movie-title {
+        font-size: 0.85rem;
+    }
+
+    .movie-bar-container {
+        height: 18px;
+    }
+
+    .movie-revenue {
+        font-size: 0.85rem;
+        padding-left: 25px;
+    }
+
+    .no-data {
+        padding: 2rem 1rem;
+        font-size: 1rem;
     }
 }

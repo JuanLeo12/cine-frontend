@@ -14,6 +14,11 @@ function Navbar() {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleUserMenu = () => setIsUserOpen(!isUserOpen);
+  
+  // Cerrar menú hamburguesa al hacer clic en un link
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
 
   const handleLogout = () => {
     logout();
@@ -32,27 +37,27 @@ function Navbar() {
 
         <ul className={`nav-menu ${isMenuOpen ? "active" : ""}`}>
           <li className="nav-item">
-            <Link to="/" className="nav-link">
+            <Link to="/" className="nav-link" onClick={closeMenu}>
               Inicio
             </Link>
           </li>
           <li className="nav-item">
-            <Link to="/movies" className="nav-link">
+            <Link to="/movies" className="nav-link" onClick={closeMenu}>
               Películas
             </Link>
           </li>
           <li className="nav-item">
-            <Link to="/cinemas" className="nav-link">
+            <Link to="/cinemas" className="nav-link" onClick={closeMenu}>
               Cines
             </Link>
           </li>
           <li className="nav-item">
-            <Link to="/candyshop" className="nav-link">
+            <Link to="/candyshop" className="nav-link" onClick={closeMenu}>
               Dulcería
             </Link>
           </li>
           <li className="nav-item">
-            <Link to="/corporate" className="nav-link">
+            <Link to="/corporate" className="nav-link" onClick={closeMenu}>
               Ventas Corporativas
             </Link>
           </li>
@@ -94,7 +99,10 @@ function Navbar() {
             </div>
           ) : (
             <>
-              <button onClick={() => setShowLoginModal(true)}>
+              <button onClick={() => {
+                setShowLoginModal(true);
+                closeMenu();
+              }}>
                 Iniciar Sesión
               </button>
               {showLoginModal && (

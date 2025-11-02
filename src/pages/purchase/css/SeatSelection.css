@@ -259,22 +259,156 @@
     font-size: 1.2rem;
 }
 
+/* ======== RESPONSIVE ======== */
 @media (max-width: 768px) {
+    .seat-selection {
+        margin: 20px auto;
+        padding: 15px;
+    }
+
+    .seat-header h2 {
+        font-size: 1.6rem;
+    }
+
+    .movie-info {
+        font-size: 1rem;
+    }
+
+    .timer {
+        padding: 8px 16px;
+        font-size: 1rem;
+    }
+
+    .screen {
+        max-width: 85%;
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+
     .seat {
-        width: 30px;
-        height: 30px;
-        font-size: 0.7rem;
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
     }
     
     .seat-row {
-        gap: 4px;
+        gap: 5px;
+    }
+
+    .row-label {
+        min-width: 22px;
+        font-size: 0.85rem;
     }
     
     .legend {
         gap: 15px;
+        flex-wrap: wrap;
     }
-    
+
+    .legend-item {
+        font-size: 0.9rem;
+    }
+
+    .seat.mini {
+        width: 26px;
+        height: 26px;
+        font-size: 0.65rem;
+    }
+
+    .selected-info p {
+        font-size: 1rem;
+    }
+
     .action-buttons {
         flex-direction: column;
+        gap: 15px;
+    }
+
+    .continue-btn,
+    .cancel-btn {
+        padding: 12px 30px;
+        font-size: 1rem;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .seat-selection {
+        margin: 10px auto;
+        padding: 12px;
+    }
+
+    .seat-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .movie-info {
+        font-size: 0.9rem;
+    }
+
+    .timer {
+        padding: 7px 14px;
+        font-size: 0.9rem;
+    }
+
+    .screen {
+        max-width: 90%;
+        font-size: 0.85rem;
+        padding: 6px;
+        margin-bottom: 25px;
+    }
+
+    .seats-container {
+        gap: 6px;
+        margin: 20px 0;
+    }
+
+    .seat {
+        width: 28px;
+        height: 28px;
+        font-size: 0.7rem;
+    }
+
+    .seat-row {
+        gap: 4px;
+    }
+
+    .row-label {
+        min-width: 20px;
+        font-size: 0.8rem;
+    }
+
+    .legend {
+        gap: 10px;
+    }
+
+    .legend-item {
+        font-size: 0.85rem;
+        padding: 6px 10px;
+    }
+
+    .seat.mini {
+        width: 22px;
+        height: 22px;
+        font-size: 0.6rem;
+    }
+
+    .selected-info {
+        padding: 12px;
+    }
+
+    .selected-info p {
+        font-size: 0.9rem;
+        margin: 6px 0;
+    }
+
+    .continue-btn,
+    .cancel-btn {
+        padding: 10px 25px;
+        font-size: 0.95rem;
+    }
+
+    .error {
+        font-size: 1rem;
     }
 }

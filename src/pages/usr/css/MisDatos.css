@@ -9,9 +9,22 @@
 
 .mis-datos h2 {
     color: #e60000;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     text-align: center;
     font-size: 2rem;
+}
+
+.rol-badge {
+    background: linear-gradient(135deg, #e60000, #b30000);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1rem;
+    margin: 0 auto 2rem auto;
+    width: fit-content;
+    box-shadow: 0 2px 10px rgba(230, 0, 0, 0.3);
 }
 
 .datos-form {
@@ -71,6 +84,45 @@
     color: #666;
 }
 
+/* Grupo de input con botón (para contraseñas) */
+.password-input-group {
+    position: relative;
+    width: 100%;
+}
+
+.password-input-group input {
+    padding-right: 45px !important;
+    width: 100%;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 0;
+    bottom: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.4rem;
+    font-weight: 700;
+    padding: 0 8px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transition: transform 0.2s ease;
+    color: #000;
+    user-select: none;
+    filter: none;
+}
+
+.toggle-password:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.05);
+    color: #000;
+}
+
 .form-actions {
     margin-top: 1rem;
 }
@@ -118,4 +170,52 @@
     width: 100%;
     height: auto;
     display: block;
+}
+
+/* ======== RESPONSIVE ADICIONAL ======== */
+@media (max-width: 480px) {
+    .mis-datos-container {
+        padding: 1rem;
+    }
+
+    .mis-datos-container h1 {
+        font-size: 1.6rem;
+    }
+
+    .rol-badge {
+        padding: 0.4rem 1.2rem;
+        font-size: 0.85rem;
+    }
+
+    .form-group label {
+        font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 0.7rem;
+        font-size: 0.9rem;
+    }
+
+    .password-input-group input {
+        padding-right: 40px !important;
+    }
+
+    .toggle-password {
+        font-size: 1.2rem;
+        padding: 0 6px;
+    }
+
+    .guardar-btn {
+        padding: 0.9rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    .form-note {
+        font-size: 0.85rem;
+    }
+
+    .preview-foto {
+        max-width: 140px;
+    }
 }

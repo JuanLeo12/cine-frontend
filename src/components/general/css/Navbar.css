@@ -167,10 +167,23 @@
 
 /* ======== RESPONSIVE ======== */
 @media (max-width: 768px) {
+  .navbar {
+    padding: 0.8rem 1rem;
+  }
+
+  .logo-img {
+    width: 35px;
+    height: 35px;
+  }
+
+  .logo-text {
+    font-size: 1.4rem;
+  }
+
   .nav-menu {
     position: fixed;
     left: -100%;
-    top: 70px;
+    top: 60px;
     flex-direction: column;
     background-color: #000;
     width: 100%;
@@ -178,6 +191,8 @@
     transition: 0.3s;
     box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
     padding: 1rem 0;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
   }
 
   .nav-menu.active {
@@ -185,7 +200,13 @@
   }
 
   .nav-item {
-    margin: 1rem 0;
+    margin: 0.5rem 0;
+  }
+
+  .nav-link {
+    font-size: 1.1rem;
+    padding: 0.8rem 0;
+    display: block;
   }
 
   .hamburger {
@@ -198,5 +219,36 @@
 
   .user-btn {
     padding: 0.5rem !important;
+    min-width: 45px;
+  }
+
+  .user-avatar {
+    width: 30px;
+    height: 30px;
+  }
+
+  .dropdown-menu {
+    right: -10px;
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0.6rem 0.8rem;
+  }
+
+  .logo-img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .logo-text {
+    font-size: 1.2rem;
+  }
+
+  .nav-user button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
   }
 }

@@ -53,4 +53,49 @@
     text-align: center;
     text-decoration: none;
     font-weight: bold;
+    transition: background 0.3s;
+}
+
+.movie-card a:hover {
+    background: #cc0000;
+}
+
+/* ======== RESPONSIVE ======== */
+@media (max-width: 768px) {
+    .movie-card img {
+        height: 250px;
+    }
+
+    .movie-card h3 {
+        font-size: 1rem;
+    }
+
+    .movie-card p {
+        font-size: 0.9rem;
+    }
+
+    .movie-card a {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .movie-card img {
+        height: 220px;
+    }
+
+    .movie-card h3 {
+        font-size: 0.95rem;
+    }
+
+    .movie-card p {
+        font-size: 0.85rem;
+        padding: 0 0.4rem;
+    }
+
+    .movie-card a {
+        padding: 0.45rem;
+        font-size: 0.85rem;
+    }
 }

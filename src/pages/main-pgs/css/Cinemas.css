@@ -2,6 +2,14 @@
     padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.cinemas h1 {
+    color: #e60000;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .filters {
@@ -10,10 +18,56 @@
 
 .filters h3 {
     color: #e60000;
+    font-size: 1.5rem;
 }
 
 .cinema-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
+}
+
+/* ======== RESPONSIVE ======== */
+@media (max-width: 768px) {
+    .cinemas {
+        padding: 1.5rem 1rem;
+    }
+
+    .cinemas h1 {
+        font-size: 1.6rem;
+    }
+
+    .filters h3 {
+        font-size: 1.3rem;
+    }
+
+    .cinema-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .cinemas {
+        padding: 1rem 0.5rem;
+        width: 100%;
+        max-width: 100vw;
+    }
+
+    .cinemas h1 {
+        font-size: 1.4rem;
+    }
+
+    .filters {
+        margin-bottom: 1.5rem;
+    }
+
+    .filters h3 {
+        font-size: 1.2rem;
+    }
+
+    .cinema-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
 }

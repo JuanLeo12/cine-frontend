@@ -11,10 +11,52 @@
 .section h2 {
   color: #e60000;
   margin-bottom: 1rem;
+  font-size: 1.8rem;
 }
 
 .movie-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1.5rem;
+}
+
+/* ======== RESPONSIVE ======== */
+@media (max-width: 768px) {
+  .home {
+    padding: 1.5rem 1rem;
+  }
+
+  .section {
+    margin: 1.5rem 0;
+  }
+
+  .section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .home {
+    padding: 1rem 0.8rem;
+  }
+
+  .section {
+    margin: 1rem 0;
+  }
+
+  .section h2 {
+    font-size: 1.3rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .movie-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+  }
 }

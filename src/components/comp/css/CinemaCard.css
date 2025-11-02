@@ -4,6 +4,11 @@
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
+    transition: transform 0.3s;
+}
+
+.cinema-card:hover {
+    transform: translateY(-5px);
 }
 
 .cinema-card img {
@@ -15,6 +20,7 @@
 .cinema-card h3 {
     padding: 0.5rem;
     margin: 0;
+    font-size: 1.1rem;
 }
 
 .cinema-card p {
@@ -31,4 +37,51 @@
     border-radius: 4px;
     cursor: pointer;
     margin: 1rem;
+    transition: background 0.3s;
+}
+
+.cinema-card button:hover {
+    background: #cc0000;
+}
+
+/* ======== RESPONSIVE ======== */
+@media (max-width: 768px) {
+    .cinema-card img {
+        height: 180px;
+    }
+
+    .cinema-card h3 {
+        font-size: 1rem;
+    }
+
+    .cinema-card p {
+        font-size: 0.9rem;
+    }
+
+    .cinema-card button {
+        padding: 0.45rem 0.9rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .cinema-card img {
+        height: 150px;
+    }
+
+    .cinema-card h3 {
+        font-size: 0.95rem;
+        padding: 0.4rem;
+    }
+
+    .cinema-card p {
+        font-size: 0.85rem;
+        padding: 0 0.4rem;
+    }
+
+    .cinema-card button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        margin: 0.8rem;
+    }
 }

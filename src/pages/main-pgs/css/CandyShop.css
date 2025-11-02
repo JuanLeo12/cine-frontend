@@ -171,11 +171,31 @@
 /* Responsive */
 @media (max-width: 768px) {
     .candyshop {
-        padding: 1rem;
+        padding: 1.5rem 1rem;
+    }
+
+    .candyshop h1 {
+        font-size: 1.6rem;
+    }
+
+    .category-tabs {
+        gap: 0.8rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .category-tabs button {
+        padding: 0.45rem 0.9rem;
+        font-size: 0.9rem;
     }
 
     .combo-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.2rem;
+    }
+
+    .btn-agregar-combo {
+        padding: 0.65rem;
+        font-size: 0.95rem;
     }
 
     .cart-floating {
@@ -183,6 +203,107 @@
         bottom: 1rem;
         left: 1rem;
         width: auto;
+        max-height: 55vh;
+        padding: 1.2rem;
+    }
+
+    .cart-floating h3 {
+        font-size: 1.2rem;
+    }
+
+    .cart-item {
+        padding: 0.6rem 0;
+        font-size: 0.9rem;
+    }
+
+    .cart-item-controls button {
+        width: 26px;
+        height: 26px;
+        font-size: 0.9rem;
+    }
+
+    .cart-total {
+        font-size: 1.1rem;
+    }
+
+    .btn-comprar-cart {
+        padding: 0.9rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .candyshop {
+        padding: 1rem 0.8rem;
+    }
+
+    .candyshop h1 {
+        font-size: 1.4rem;
+    }
+
+    .category-tabs {
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .category-tabs button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    .combo-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .btn-agregar-combo {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+
+    .cart-floating {
+        right: 0.5rem;
+        bottom: 0.5rem;
+        left: 0.5rem;
         max-height: 50vh;
+        padding: 1rem;
+    }
+
+    .cart-floating h3 {
+        font-size: 1.1rem;
+    }
+
+    .cart-item {
+        padding: 0.5rem 0;
+        font-size: 0.85rem;
+        flex-wrap: wrap;
+    }
+
+    .cart-item-controls {
+        gap: 0.4rem;
+    }
+
+    .cart-item-controls button {
+        width: 24px;
+        height: 24px;
+        font-size: 0.85rem;
+    }
+
+    .cart-item-controls span {
+        min-width: 25px;
+    }
+
+    .cart-item-price {
+        font-size: 0.9rem;
+        min-width: 70px;
+    }
+
+    .cart-total {
+        font-size: 1rem;
+    }
+
+    .btn-comprar-cart {
+        padding: 0.8rem;
+        font-size: 0.95rem;
     }
 }

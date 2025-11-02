@@ -149,3 +149,143 @@
     color: #e60000;
     margin: 0.5rem 0;
 }
+
+/* ======== RESPONSIVE ======== */
+@media (max-width: 768px) {
+    .movie-details {
+        padding: 1.5rem 1rem;
+    }
+
+    .movie-header {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .movie-header img {
+        width: 250px;
+        height: 375px;
+    }
+
+    .movie-info-container {
+        width: 100%;
+        padding: 0.8rem;
+    }
+
+    .movie-info-container h1 {
+        font-size: 1.6rem;
+    }
+
+    .movie-details-list {
+        font-size: 0.95rem;
+    }
+
+    .day-selector {
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .day-selector button {
+        padding: 0.45rem 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .theater {
+        padding: 0.8rem;
+    }
+
+    .theater h3 {
+        font-size: 1.1rem;
+    }
+
+    .times {
+        gap: 0.8rem;
+    }
+
+    .time-btn {
+        padding: 0.45rem 0.9rem;
+        font-size: 0.9rem;
+    }
+
+    .proximo-estreno {
+        padding: 1.5rem;
+    }
+
+    .proximo-estreno p {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .movie-details {
+        padding: 1rem 0.8rem;
+    }
+
+    .movie-header {
+        gap: 1rem;
+    }
+
+    .movie-header img {
+        width: 200px;
+        height: 300px;
+    }
+
+    .movie-info-container {
+        padding: 0.6rem;
+    }
+
+    .movie-info-container h1 {
+        font-size: 1.4rem;
+    }
+
+    .movie-details-list {
+        font-size: 0.85rem;
+        gap: 0.4rem;
+    }
+
+    .showtimes h2 {
+        font-size: 1.3rem;
+    }
+
+    .day-selector {
+        gap: 0.4rem;
+    }
+
+    .day-selector button {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.85rem;
+    }
+
+    .theater {
+        padding: 0.6rem;
+    }
+
+    .theater h3 {
+        font-size: 1rem;
+    }
+
+    .theater p {
+        font-size: 0.85rem;
+    }
+
+    .times {
+        gap: 0.6rem;
+    }
+
+    .time-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    .time-btn .sala-info {
+        font-size: 0.7rem;
+    }
+
+    .proximo-estreno {
+        padding: 1.2rem;
+    }
+
+    .proximo-estreno p {
+        font-size: 1rem;
+    }
+}

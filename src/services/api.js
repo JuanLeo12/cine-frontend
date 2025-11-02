@@ -631,4 +631,109 @@ export const marcarValeUsado = async (valeId) => {
   }
 };
 
+/* ----------------- SERVICIOS CORPORATIVOS ----------------- */
+
+// ALQUILER DE SALAS
+export const getAlquileresSalas = async () => {
+  try {
+    const response = await api.get('/alquileres');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo alquileres:', error);
+    throw error;
+  }
+};
+
+export const createAlquilerSala = async (alquilerData) => {
+  try {
+    const response = await api.post('/alquileres', alquilerData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creando alquiler:', error);
+    throw error;
+  }
+};
+
+export const getAlquilerSalaById = async (id) => {
+  try {
+    const response = await api.get(`/alquileres/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo alquiler:', error);
+    throw error;
+  }
+};
+
+export const deleteAlquilerSala = async (id) => {
+  try {
+    const response = await api.delete(`/alquileres/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error eliminando alquiler:', error);
+    throw error;
+  }
+};
+
+// PUBLICIDAD
+export const getPublicidad = async () => {
+  try {
+    const response = await api.get('/publicidad');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo campañas:', error);
+    throw error;
+  }
+};
+
+export const getPublicidadActiva = async () => {
+  try {
+    const response = await api.get('/publicidad/activas');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo campañas activas:', error);
+    return [];
+  }
+};
+
+export const createPublicidad = async (publicidadData) => {
+  try {
+    const response = await api.post('/publicidad', publicidadData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creando campaña:', error);
+    throw error;
+  }
+};
+
+export const getPublicidadById = async (id) => {
+  try {
+    const response = await api.get(`/publicidad/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo campaña:', error);
+    throw error;
+  }
+};
+
+export const deletePublicidad = async (id) => {
+  try {
+    const response = await api.delete(`/publicidad/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error eliminando campaña:', error);
+    throw error;
+  }
+};
+
+// TARIFAS CORPORATIVAS
+export const getTarifasCorporativas = async () => {
+  try {
+    const response = await api.get('/tarifas_corporativas');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo tarifas:', error);
+    return [];
+  }
+};
+
 export default api;

@@ -449,6 +449,344 @@
     background: #cc0000;
 }
 
+/* Responsive - Tablet */
+@media (max-width: 768px) {
+    .mis-compras {
+        padding: 1.5rem 1rem;
+        margin: 1.5rem auto;
+    }
+
+    .mis-compras > h2 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .filtros-compras {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .filtros-compras select,
+    .filtros-compras button {
+        width: 100%;
+        font-size: 0.95rem;
+        padding: 0.8rem 1rem;
+    }
+
+    .compra-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1.2rem;
+    }
+
+    .compra-info {
+        width: 100%;
+    }
+
+    .compra-id {
+        font-size: 1.1rem;
+    }
+
+    .compra-fecha {
+        font-size: 0.9rem;
+    }
+
+    .compra-monto {
+        font-size: 1.3rem;
+    }
+
+    .compra-actions {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .estado-pago {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.95rem;
+    }
+
+    .btn-expand {
+        padding: 0.6rem;
+        font-size: 1.2rem;
+    }
+
+    .compra-details {
+        padding: 1.2rem;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .seccion-detalle {
+        padding: 1.2rem;
+    }
+
+    .seccion-detalle h4 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+
+    .info-funcion {
+        gap: 1rem;
+    }
+
+    .poster-funcion {
+        width: 100px;
+        height: 150px;
+    }
+
+    .datos-funcion h5 {
+        font-size: 1.3rem;
+    }
+
+    .dato-funcion {
+        font-size: 0.95rem;
+        gap: 0.4rem;
+    }
+
+    .orden-ticket-item {
+        padding: 1rem;
+    }
+
+    .ticket-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .asientos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        gap: 0.6rem;
+    }
+
+    .asiento-badge-small {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.85rem;
+    }
+
+    .combos-list li {
+        font-size: 0.95rem;
+        padding: 0.8rem;
+    }
+
+    .resumen-pago {
+        padding: 1.2rem;
+    }
+
+    .resumen-item {
+        font-size: 0.95rem;
+    }
+
+    .resumen-total {
+        font-size: 1.2rem;
+    }
+
+    .seccion-qr-compra {
+        padding: 1.5rem;
+    }
+
+    .qr-code-container canvas {
+        width: 180px !important;
+        height: 180px !important;
+    }
+
+    .codigo-qr-text {
+        font-size: 0.9rem;
+    }
+
+    .total-orden {
+        font-size: 1.2rem;
+    }
+
+    .btn-comprobante {
+        padding: 0.65rem 1.2rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 480px) {
+    .mis-compras {
+        padding: 1rem 0.5rem;
+        margin: 1rem auto;
+        border-radius: 8px;
+    }
+
+    .mis-compras > h2 {
+        font-size: 1.6rem;
+        margin-bottom: 1rem;
+    }
+
+    .filtros-compras {
+        gap: 0.8rem;
+    }
+
+    .filtros-compras select,
+    .filtros-compras button {
+        font-size: 0.9rem;
+        padding: 0.7rem 0.8rem;
+    }
+
+    .compra-card {
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .compra-header {
+        padding: 1rem;
+        gap: 0.8rem;
+    }
+
+    .compra-id {
+        font-size: 1rem;
+    }
+
+    .compra-fecha {
+        font-size: 0.85rem;
+    }
+
+    .compra-monto {
+        font-size: 1.2rem;
+    }
+
+    .compra-actions {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .estado-pago {
+        width: 100%;
+        text-align: center;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .btn-expand {
+        width: 100%;
+        padding: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .compra-details {
+        padding: 1rem;
+        gap: 1.2rem;
+    }
+
+    .seccion-detalle {
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    .seccion-detalle h4 {
+        font-size: 1rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .info-funcion {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .poster-funcion {
+        width: 120px;
+        height: 180px;
+        margin: 0 auto;
+    }
+
+    .datos-funcion {
+        text-align: center;
+    }
+
+    .datos-funcion h5 {
+        font-size: 1.1rem;
+    }
+
+    .dato-funcion {
+        font-size: 0.9rem;
+        gap: 0.3rem;
+        justify-content: center;
+    }
+
+    .orden-ticket-item {
+        padding: 0.8rem;
+    }
+
+    .ticket-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
+    }
+
+    .asientos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
+        gap: 0.5rem;
+    }
+
+    .asiento-badge-small {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .combos-list li {
+        font-size: 0.9rem;
+        padding: 0.7rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+    }
+
+    .combos-list li span {
+        width: 100%;
+    }
+
+    .resumen-pago {
+        padding: 1rem;
+    }
+
+    .resumen-item {
+        font-size: 0.9rem;
+        gap: 0.5rem;
+    }
+
+    .resumen-total {
+        font-size: 1.1rem;
+    }
+
+    .seccion-qr-compra {
+        padding: 1.2rem;
+    }
+
+    .qr-code-container canvas {
+        width: 160px !important;
+        height: 160px !important;
+    }
+
+    .codigo-qr-text {
+        font-size: 0.85rem;
+    }
+
+    .total-orden {
+        font-size: 1.1rem;
+        text-align: center;
+    }
+
+    .btn-comprobante {
+        width: 100%;
+        justify-content: center;
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .no-compras {
+        padding: 2rem 1rem;
+    }
+
+    .no-compras p {
+        font-size: 1rem;
+    }
+}
+
 /* Estilos para impresión */
 @media print {
     /* Ocultar elementos de navegación */

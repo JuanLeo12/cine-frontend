@@ -236,8 +236,49 @@
 }
 
 @media (max-width: 768px) {
+    .ordenes-admin {
+        padding: 1.5rem 1rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .filtros-ordenes {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .filtros-ordenes select,
+    .filtros-ordenes input {
+        width: 100%;
+        padding: 0.65rem;
+        font-size: 0.95rem;
+    }
+
     .ordenes-stats {
         grid-template-columns: 1fr;
+        gap: 1.2rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        padding: 1.2rem;
+    }
+
+    .orden-card {
+        padding: 1.2rem;
+    }
+
+    .orden-header h3 {
+        font-size: 1.1rem;
     }
 
     .orden-info-secundaria {
@@ -250,9 +291,144 @@
         position: absolute;
         top: 1.5rem;
         right: 1.5rem;
+        font-size: 1.2rem;
     }
 
     .orden-detalles {
         grid-template-columns: 1fr;
+        gap: 1.2rem;
+        padding: 1.2rem;
+    }
+
+    .detalle-seccion h4 {
+        font-size: 1.1rem;
+    }
+
+    .data-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        font-size: 0.9rem;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 0.7rem;
+        white-space: nowrap;
+    }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 480px) {
+    .ordenes-admin {
+        padding: 1rem 0.5rem;
+    }
+
+    .section-header {
+        gap: 0.8rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .filtros-ordenes {
+        gap: 0.6rem;
+    }
+
+    .filtros-ordenes select,
+    .filtros-ordenes input {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+
+    .ordenes-stats {
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+    }
+
+    .orden-card {
+        padding: 1rem;
+        border-radius: 6px;
+    }
+
+    .orden-header {
+        padding-bottom: 0.8rem;
+    }
+
+    .orden-header h3 {
+        font-size: 1rem;
+    }
+
+    .orden-id {
+        font-size: 0.85rem;
+    }
+
+    .orden-info-secundaria {
+        gap: 0.8rem;
+        padding-top: 0.8rem;
+    }
+
+    .orden-estado,
+    .orden-fecha,
+    .orden-monto {
+        font-size: 0.9rem;
+    }
+
+    .expand-icon {
+        top: 1.2rem;
+        right: 1.2rem;
+        font-size: 1.1rem;
+    }
+
+    .orden-detalles {
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .detalle-seccion {
+        padding: 1rem;
+    }
+
+    .detalle-seccion h4 {
+        font-size: 1rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .info-item {
+        font-size: 0.85rem;
+        gap: 0.3rem;
+    }
+
+    .data-table {
+        font-size: 0.85rem;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 0.5rem;
+    }
+
+    .no-ordenes {
+        padding: 2rem 1rem;
+    }
+
+    .no-ordenes p {
+        font-size: 1rem;
     }
 }
