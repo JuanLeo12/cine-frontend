@@ -1,7 +1,10 @@
 // src/services/api.js
 import axios from 'axios';
 
-const BASE_URL = "http://localhost:4000";
+// Usar variable de entorno o fallback a localhost en desarrollo
+const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:4000";
+
+console.log('🌐 API URL configurada:', BASE_URL);
 
 // Crear instancia de axios con configuración base
 const api = axios.create({

@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import "./css/Carousel.css";
 
 function Carousel({ peliculas }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const intervalRef = useRef(null);
+  const navigate = useNavigate();
 
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev === peliculas.length - 1 ? 0 : prev + 1));
@@ -64,7 +66,10 @@ function Carousel({ peliculas }) {
             <span>⏱️ {peliculas[currentIndex]?.duracion} min</span>
             <span>🎬 {peliculas[currentIndex]?.clasificacion}</span>
           </div>
-          <button className="carousel-more-btn">
+          <button 
+            className="carousel-more-btn"
+            onClick={() => navigate(`/movie/${peliculas[currentIndex]?.id}`)}
+          >
             Ver más detalles
           </button>
         </div>
