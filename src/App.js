@@ -23,6 +23,7 @@ import SeatSelection from './pages/purchase/SeatSelection';
 import TicketType from './pages/purchase/TicketType';
 import Combos from './pages/purchase/Combos';
 import Payment from './pages/purchase/Payment';
+import PaymentCorporativo from './pages/purchase/PaymentCorporativo';
 import Confirmation from './pages/purchase/Confirmation';
 
 // Páginas del usuario
@@ -55,6 +56,7 @@ function App() {
                 <Route path="/ticket-type" element={<TicketType />} />
                 <Route path="/combos" element={<Combos />} />
                 <Route path="/payment" element={<Payment />} />
+                <Route path="/payment-corporativo" element={<PaymentCorporativo />} />
                 <Route path="/confirmation" element={<Confirmation />} />
                 <Route path="/mis-compras" element={<MisCompras />} />
                 <Route path="/mis-datos" element={<MisDatos />} />

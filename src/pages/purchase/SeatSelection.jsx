@@ -35,10 +35,18 @@ function SeatSelection() {
     const [error, setError] = useState(null);
     const [isNavigating, setIsNavigating] = useState(false);
     const [showTimerModal, setShowTimerModal] = useState(false);
+    const [processingSeats, setProcessingSeats] = useState(new Set()); // Prevenir doble click
     
     const intervaloActualizacionRef = useRef(null);
 
     useEffect(() => {
+        // 🚫 RESTRICCIÓN: Usuarios corporativos no pueden comprar tickets regulares
+        if (user && user.rol === 'corporativo') {
+            alert('⚠️ Los usuarios corporativos solo pueden realizar compras en el apartado "Ventas Corporativas".\n\nPara comprar tickets regulares, por favor utiliza una cuenta de cliente.');
+            navigate('/');
+            return;
+        }
+        
         if (!funcion || !pelicula) {
             alert('No se pudo cargar la información de la función');
             navigate('/movies');
@@ -299,6 +307,13 @@ function SeatSelection() {
         }
         
         const seatId = asiento.id;
+        
+        // Prevenir procesamiento múltiple del mismo asiento
+        if (processingSeats.has(seatId)) {
+            console.log(`⏳ Asiento ${seatId} ya está siendo procesado, ignorando click`);
+            return;
+        }
+        
         const esMioEnEstado = misAsientos.includes(seatId);
         
         console.log('🎯 Toggle asiento:', {
@@ -313,79 +328,82 @@ function SeatSelection() {
             misAsientosCount: misAsientos.length
         });
         
-        // CASO 1: Es mío (está en misAsientos) - LIBERAR
-        if (esMioEnEstado) {
-            try {
-                console.log(`🔓 Intentando liberar ${asiento.fila}${asiento.numero}...`);
+        // Marcar asiento como en proceso
+        setProcessingSeats(prev => new Set(prev).add(seatId));
+        
+        try {
+            // CASO 1: Es mío (está en misAsientos) - LIBERAR
+            if (esMioEnEstado) {
+                try {
+                    console.log(`🔓 Intentando liberar ${asiento.fila}${asiento.numero}...`);
+                    
+                    const response = await liberarAsiento({
+                        id_funcion: funcion.id,
+                        fila: asiento.fila,
+                        numero: asiento.numero
+                    });
+                    
+                    console.log(`✅ Respuesta liberación:`, response);
+                    
+                    // Actualizar estados locales
+                    setSelectedSeats(prev => prev.filter(s => s.id !== seatId));
+                    setMisAsientos(prev => prev.filter(id => id !== seatId));
+                    
+                    // Recargar asientos para sincronizar
+                    await cargarAsientosSilenciosamente();
+                    
+                    console.log(`✅ Asiento ${seatId} liberado exitosamente`);
+                } catch (error) {
+                    console.error(`❌ Error liberando ${seatId}:`, error);
+                    alert(`Error al liberar el asiento: ${error.response?.data?.error || error.message}`);
+                    // Forzar recarga para sincronizar
+                    await cargarAsientosSilenciosamente();
+                }
+                return;
+            }
+
+            // CASO 2: Está bloqueado - verificar de quién es
+            if (asiento.estado === 'bloqueado') {
+                console.log(`🔒 Asiento bloqueado - Verificando propiedad...`);
                 
-                const response = await liberarAsiento({
-                    id_funcion: funcion.id,
-                    fila: asiento.fila,
-                    numero: asiento.numero
+                // Obtener estado real del backend
+                const asientosActuales = await getAsientosPorFuncion(funcion.id);
+                const asientoActual = asientosActuales.find(
+                    a => a.fila === asiento.fila && a.numero === asiento.numero
+                );
+                
+                if (!asientoActual) {
+                    console.log(`ℹ️ Asiento ${seatId} ya no existe en backend (fue liberado)`);
+                    await cargarAsientosSilenciosamente();
+                    return;
+                }
+                
+                console.log(`📊 Estado real del asiento:`, {
+                    estado: asientoActual.estado,
+                    id_usuario_bloqueo: asientoActual.id_usuario_bloqueo,
+                    userId: user?.id,
+                    esMio: asientoActual.id_usuario_bloqueo === user?.id
                 });
                 
-                console.log(`✅ Respuesta liberación:`, response);
+                // Es mío pero no está en misAsientos - SINCRONIZAR
+                if (asientoActual.id_usuario_bloqueo === user?.id) {
+                    console.log(`✅ Es mío, sincronizando estado local...`);
+                    const nuevoAsiento = {
+                        fila: asiento.fila,
+                        numero: asiento.numero,
+                        id: seatId
+                    };
+                    setSelectedSeats(prev => [...prev, nuevoAsiento]);
+                    setMisAsientos(prev => [...prev, seatId]);
+                    return;
+                }
                 
-                // Actualizar estados locales
-                setSelectedSeats(prev => prev.filter(s => s.id !== seatId));
-                setMisAsientos(prev => prev.filter(id => id !== seatId));
-                
-                // Recargar asientos para sincronizar
-                await cargarAsientosSilenciosamente();
-                
-                console.log(`✅ Asiento ${seatId} liberado exitosamente`);
-            } catch (error) {
-                console.error(`❌ Error liberando ${seatId}:`, error);
-                alert(`Error al liberar el asiento: ${error.response?.data?.error || error.message}`);
-                // Forzar recarga para sincronizar
-                await cargarAsientosSilenciosamente();
-            }
-            return;
-        }
-
-        // CASO 2: Está bloqueado - verificar de quién es
-        if (asiento.estado === 'bloqueado') {
-            console.log(`🔒 Asiento bloqueado - Verificando propiedad...`);
-            
-            // Obtener estado real del backend
-            const asientosActuales = await getAsientosPorFuncion(funcion.id);
-            const asientoActual = asientosActuales.find(
-                a => a.fila === asiento.fila && a.numero === asiento.numero
-            );
-            
-            if (!asientoActual) {
-                console.log(`ℹ️ Asiento ${seatId} ya no existe en backend (fue liberado)`);
-                await cargarAsientosSilenciosamente();
+                // Es de otro usuario
+                alert('Este asiento está bloqueado por otro usuario');
                 return;
             }
-            
-            console.log(`📊 Estado real del asiento:`, {
-                estado: asientoActual.estado,
-                id_usuario_bloqueo: asientoActual.id_usuario_bloqueo,
-                userId: user?.id,
-                esMio: asientoActual.id_usuario_bloqueo === user?.id
-            });
-            
-            // Es mío pero no está en misAsientos - SINCRONIZAR
-            if (asientoActual.id_usuario_bloqueo === user?.id) {
-                console.log(`✅ Es mío, sincronizando estado local...`);
-                const nuevoAsiento = {
-                    fila: asiento.fila,
-                    numero: asiento.numero,
-                    id: seatId
-                };
-                setSelectedSeats(prev => [...prev, nuevoAsiento]);
-                setMisAsientos(prev => [...prev, seatId]);
-                return;
-            }
-            
-            // Es de otro usuario
-            alert('Este asiento está bloqueado por otro usuario');
-            return;
-        }
 
-        // CASO 3: Está libre - BLOQUEAR
-        try {
+            // CASO 3: Está libre - BLOQUEAR
             console.log(`🔒 Bloqueando asiento libre ${asiento.fila}${asiento.numero}...`);
             
             const response = await bloquearAsiento({
@@ -421,6 +439,13 @@ function SeatSelection() {
             
             // Forzar recarga para sincronizar
             await cargarAsientosSilenciosamente();
+        } finally {
+            // Liberar el asiento del conjunto de procesamiento
+            setProcessingSeats(prev => {
+                const next = new Set(prev);
+                next.delete(seatId);
+                return next;
+            });
         }
     };
 
@@ -482,7 +507,16 @@ function SeatSelection() {
         
         setIsNavigating(true);
         await liberarTodosAsientos();
-        navigate('/movies');
+        
+        // Redirigir a la película si existe, sino a movies
+        if (pelicula && pelicula.id) {
+            navigate(`/movie/${pelicula.id}`, { 
+                state: { pelicula },
+                replace: true 
+            });
+        } else {
+            navigate('/movies', { replace: true });
+        }
     };
 
     // Handlers del modal de tiempo expirado

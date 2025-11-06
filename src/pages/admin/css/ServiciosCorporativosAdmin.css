@@ -1,0 +1,404 @@
+.servicios-corporativos-admin {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.page-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.page-header h2 {
+    color: #1976d2;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    color: #666;
+    font-size: 1rem;
+}
+
+/* Quick Stats */
+.quick-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.quick-stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.quick-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.quick-stat-card.highlight {
+    background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+    color: white;
+}
+
+.quick-stat-card .stat-icon {
+    font-size: 2.5rem;
+}
+
+.quick-stat-card.highlight .stat-icon {
+    filter: brightness(1.2);
+}
+
+.quick-stat-card .stat-content h4 {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    font-weight: 500;
+}
+
+.quick-stat-card.highlight .stat-content h4 {
+    opacity: 0.95;
+}
+
+.quick-stat-card .stat-number {
+    margin: 0.25rem 0 0 0;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+/* Filters */
+.filters-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.filter-group label {
+    font-weight: 600;
+    color: white;
+    font-size: 0.95rem;
+}
+
+.filter-group select {
+    padding: 0.5rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: white;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.filter-group select option {
+    color: #333;
+    background: white;
+    padding: 0.5rem;
+}
+
+.filter-group select:hover {
+    border-color: #1976d2;
+}
+
+.filter-group select:focus {
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+}
+
+.filter-info {
+    margin-left: auto;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Boletas List */
+.boletas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.boleta-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.boleta-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.boleta-card.funcion_privada {
+    border-left: 4px solid #ff9800;
+}
+
+.boleta-card.alquiler_sala {
+    border-left: 4px solid #1976d2;
+}
+
+.boleta-card.publicidad {
+    border-left: 4px solid #9c27b0;
+}
+
+.boleta-card.vales_corporativos {
+    border-left: 4px solid #4caf50;
+}
+
+.boleta-header {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.boleta-header:hover {
+    background: #f8f9fa;
+}
+
+.boleta-info h3 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.boleta-id {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: normal;
+}
+
+.boleta-summary {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.9rem;
+    color: #666;
+    flex-wrap: wrap;
+}
+
+.boleta-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.boleta-precio {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #1976d2;
+    padding: 0.5rem 1rem;
+    background: #e3f2fd;
+    border-radius: 8px;
+}
+
+.btn-expand {
+    background: #1976d2;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.btn-expand:hover {
+    background: #1565c0;
+    transform: scale(1.1);
+}
+
+/* Estado Badges */
+.estado-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.estado-badge.activa {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.estado-badge.utilizada {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.estado-badge.cancelada {
+    background: #ffebee;
+    color: #c62828;
+}
+
+/* Boleta Details */
+.boleta-details {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    border-top: 2px solid #f0f0f0;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 2000px;
+    }
+}
+
+.detail-section {
+    margin-top: 1.5rem;
+}
+
+.detail-section h4 {
+    color: #1976d2;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    border-bottom: 2px solid #e3f2fd;
+    padding-bottom: 0.5rem;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.detail-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.detail-item.highlight {
+    background: #fff3e0;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #ff9800;
+}
+
+.detail-label {
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-value {
+    font-size: 1rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.detail-value.precio {
+    font-size: 1.5rem;
+    color: #ff9800;
+    font-weight: bold;
+}
+
+.detail-value.codigo {
+    font-family: 'Courier New', monospace;
+    background: #f5f5f5;
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+/* No Data */
+.no-data {
+    text-align: center;
+    padding: 3rem;
+    color: #999;
+    font-size: 1.1rem;
+}
+
+/* Loading */
+.loading-spinner {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.2rem;
+    color: #1976d2;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .servicios-corporativos-admin {
+        padding: 1rem;
+    }
+
+    .page-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .quick-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .filters-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-group select {
+        width: 100%;
+    }
+
+    .filter-info {
+        margin-left: 0;
+        text-align: center;
+    }
+
+    .boleta-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .boleta-actions {
+        justify-content: space-between;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+}

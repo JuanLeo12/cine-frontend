@@ -1,0 +1,488 @@
+.boleta-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+}
+
+.boleta-modal {
+  background: white;
+  border-radius: 20px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+.boleta-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #666;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.boleta-close:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.boleta-content {
+  padding: 2rem;
+}
+
+.boleta-header {
+  text-align: center;
+  border-bottom: 2px dashed #e0e0e0;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.boleta-header h2 {
+  margin: 0;
+  color: #d32f2f;
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.boleta-tipo {
+  margin: 0.5rem 0;
+  font-size: 1.2rem;
+  color: #555;
+  font-weight: 600;
+}
+
+.boleta-codigo-ref {
+  margin: 0.5rem 0 0;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #1976d2;
+  background: #e3f2fd;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.boleta-qr-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.boleta-qr-nota {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+  text-align: center;
+}
+
+.boleta-detalles {
+  border-top: 2px dashed #e0e0e0;
+  border-bottom: 2px dashed #e0e0e0;
+  padding: 1rem 0;
+  margin-bottom: 1rem;
+}
+
+.boleta-detalle-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.boleta-detalle-item:last-child {
+  border-bottom: none;
+}
+
+.boleta-label {
+  font-weight: 600;
+  color: #666;
+}
+
+.boleta-value {
+  color: #333;
+  font-weight: 500;
+  text-align: right;
+}
+
+.boleta-precio {
+  background: #fff9e6;
+  padding: 1rem !important;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+
+.boleta-precio .boleta-label,
+.boleta-precio .boleta-value {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #d32f2f;
+}
+
+.boleta-estado {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.boleta-badge {
+  display: inline-block;
+  padding: 0.5rem 1.5rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.boleta-badge.activa {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.boleta-badge.utilizada {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.boleta-badge.cancelada {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.boleta-nota {
+  background: #f5f5f5;
+  border-left: 4px solid #d32f2f;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+}
+
+.boleta-nota p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+.boleta-acciones {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.boleta-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+  min-width: 120px;
+}
+
+.boleta-btn-descargar {
+  background: #4caf50;
+  color: white;
+}
+
+.boleta-btn-descargar:hover {
+  background: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.boleta-btn-imprimir {
+  background: #2196f3;
+  color: white;
+}
+
+.boleta-btn-imprimir:hover {
+  background: #1976d2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+.boleta-btn-cerrar {
+  background: #757575;
+  color: white;
+}
+
+.boleta-btn-cerrar:hover {
+  background: #616161;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .boleta-modal-overlay,
+  .boleta-modal-overlay * {
+    visibility: visible;
+  }
+
+  .boleta-modal-overlay {
+    background: white;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .boleta-close,
+  .boleta-acciones {
+    display: none !important;
+  }
+
+  .boleta-modal {
+    box-shadow: none;
+    max-width: 100%;
+    border: 2px solid #333;
+    margin: 0;
+    border-radius: 0;
+    page-break-inside: avoid;
+  }
+
+  .boleta-content {
+    padding: 2rem;
+  }
+
+  .boleta-header h2 {
+    color: #000 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .boleta-qr-section {
+    background: #f5f5f5 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    border: 1px solid #ddd;
+  }
+
+  .boleta-codigo-ref {
+    background: #e3f2fd !important;
+    color: #1976d2 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .boleta-badge {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .boleta-nota {
+    background: #f5f5f5 !important;
+    border-left: 4px solid #d32f2f !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* Sección de Vales */
+.boleta-vales-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 2px solid #4caf50;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15);
+}
+
+.boleta-vales-title {
+  color: #2e7d32;
+  margin: 0 0 1.2rem 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+  border-bottom: 2px solid #4caf50;
+  padding-bottom: 0.8rem;
+}
+
+.boleta-vale-item {
+  background: white;
+  border: 1px solid #c8e6c9;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.boleta-vale-item:last-of-type {
+  margin-bottom: 1.2rem;
+}
+
+.boleta-vale-item:hover {
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+  transform: translateY(-2px);
+  border-color: #4caf50;
+}
+
+.boleta-vale-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e8f5e9;
+  padding-bottom: 1rem;
+}
+
+.boleta-vale-numero {
+  font-weight: 700;
+  color: #2e7d32;
+  font-size: 1rem;
+}
+
+.boleta-vale-codigo {
+  background: #e8f5e9;
+  color: #1b5e20;
+  font-family: 'Courier New', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 0.8rem;
+  border-radius: 6px;
+  letter-spacing: 1px;
+  border: 1px dashed #4caf50;
+}
+
+.boleta-vale-detalles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.boleta-vale-detalles > span {
+  color: #555;
+  font-size: 0.95rem;
+  padding: 0.4rem 0.6rem;
+  background: #f5f5f5;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.boleta-vale-detalles > span:last-child {
+  color: #d84315;
+  font-weight: 600;
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+}
+
+.boleta-vales-nota {
+  background: #e3f2fd;
+  border-left: 4px solid #2196f3;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 0;
+  text-align: center;
+  color: #0d47a1;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+@media print {
+  .boleta-vales-section {
+    background: #f8f9fa !important;
+    border: 2px solid #333 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    page-break-inside: avoid;
+  }
+
+  .boleta-vale-item {
+    background: white !important;
+    border: 1px solid #999 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .boleta-vale-codigo {
+    background: #e8f5e9 !important;
+    color: #000 !important;
+    border: 1px dashed #333 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .boleta-vales-nota {
+    background: #e3f2fd !important;
+    border-left: 4px solid #2196f3 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+@media (max-width: 600px) {
+  .boleta-acciones {
+    flex-direction: column;
+  }
+
+  .boleta-btn {
+    width: 100%;
+  }
+
+  .boleta-vales-section {
+    padding: 1rem;
+  }
+
+  .boleta-vale-item {
+    padding: 0.8rem;
+  }
+
+  .boleta-vale-codigo {
+    font-size: 1rem;
+    padding: 0.6rem;
+  }
+}

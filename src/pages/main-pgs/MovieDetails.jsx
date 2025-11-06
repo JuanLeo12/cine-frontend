@@ -56,6 +56,12 @@ function MovieDetails() {
             return;
         }
         
+        // 🚫 RESTRICCIÓN: Usuarios corporativos no pueden comprar tickets regulares
+        if (user?.rol === 'corporativo') {
+            alert('⚠️ Los usuarios corporativos solo pueden realizar compras en el apartado "Ventas Corporativas".\n\nPara comprar tickets regulares, por favor utiliza una cuenta de cliente.');
+            return;
+        }
+        
         // Usar replace para que no se acumule historial y limpiar estado previo
         navigate('/seat-selection', { 
             state: { 
@@ -189,7 +195,9 @@ function MovieDetails() {
                                                         title={pasada ? 'Función ya iniciada' : ''}
                                                     >
                                                         {funcion.hora.substring(0, 5)}
-                                                        <span className="sala-info">{funcion.sala.nombre}</span>
+                                                        <span className="sala-info">
+                                                            {funcion.sala.nombre} - {funcion.sala.tipo_sala || '2D'}
+                                                        </span>
                                                         {pasada && <span className="badge-pasada">Pasada</span>}
                                                     </button>
                                                 );

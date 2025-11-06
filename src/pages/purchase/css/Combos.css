@@ -171,8 +171,10 @@
     justify-content: center;
 }
 
-.back-btn {
-    background: #6c757d;
+.back-btn,
+.skip-btn,
+.continue-btn,
+.cancel-btn {
     color: white;
     border: none;
     padding: 1rem 2rem;
@@ -180,7 +182,11 @@
     cursor: pointer;
     font-size: 1rem;
     font-weight: 600;
-    transition: background 0.3s;
+    transition: all 0.3s;
+}
+
+.back-btn {
+    background: #6c757d;
 }
 
 .back-btn:hover {
@@ -189,14 +195,6 @@
 
 .skip-btn {
     background: #666;
-    color: white;
-    border: none;
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: background 0.3s;
 }
 
 .skip-btn:hover:not(:disabled) {
@@ -211,16 +209,17 @@
 
 .continue-btn {
     background: #e60000;
-    color: white;
-    border: none;
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: background 0.3s;
 }
 
 .continue-btn:hover {
     background: #cc0000;
+}
+
+.cancel-btn {
+    background: #f44336;
+.cancel-btn:hover:not(:disabled) {
+    background: #d32f2f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
+}
 }

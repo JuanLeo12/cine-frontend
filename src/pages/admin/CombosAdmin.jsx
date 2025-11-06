@@ -12,6 +12,7 @@ function CombosAdmin() {
         descripcion: '',
         precio: '',
         imagen_url: '',
+        tipo: 'combos',
     });
 
     useEffect(() => {
@@ -37,6 +38,7 @@ function CombosAdmin() {
                 descripcion: combo.descripcion,
                 precio: combo.precio,
                 imagen_url: combo.imagen_url,
+                tipo: combo.tipo || 'combos',
             });
         } else {
             setComboEditando(null);
@@ -45,6 +47,7 @@ function CombosAdmin() {
                 descripcion: '',
                 precio: '',
                 imagen_url: '',
+                tipo: 'combos',
             });
         }
         setModalAbierto(true);
@@ -60,29 +63,29 @@ function CombosAdmin() {
         try {
             if (comboEditando) {
                 await updateCombo(comboEditando.id, form);
-                alert('Combo actualizado exitosamente');
+                alert('Producto actualizado exitosamente');
             } else {
                 await createCombo(form);
-                alert('Combo creado exitosamente');
+                alert('Producto creado exitosamente');
             }
             cerrarModal();
             cargarCombos();
         } catch (error) {
-            console.error('Error al guardar combo:', error);
-            alert('Error al guardar combo');
+            console.error('Error al guardar producto:', error);
+            alert('Error al guardar producto');
         }
     };
 
     const handleEliminar = async (id) => {
-        if (!window.confirm('¿Estás seguro de eliminar este combo?')) return;
+        if (!window.confirm('¿Estás seguro de eliminar este producto?')) return;
         
         try {
             await deleteCombo(id);
-            alert('Combo eliminado exitosamente');
+            alert('Producto eliminado exitosamente');
             cargarCombos();
         } catch (error) {
-            console.error('Error al eliminar combo:', error);
-            alert('Error al eliminar combo');
+            console.error('Error al eliminar producto:', error);
+            alert('Error al eliminar producto');
         }
     };
 
@@ -93,20 +96,21 @@ function CombosAdmin() {
     return (
         <div>
             <div className="section-header">
-                <h2>Gestión de Combos</h2>
+                <h2>Gestión de Dulcería</h2>
                 <button className="btn-primary" onClick={() => abrirModal()}>
-                    + Nuevo Combo
+                    + Nuevo Producto
                 </button>
             </div>
 
             {combos.length === 0 ? (
-                <div className="no-data">No hay combos registrados</div>
+                <div className="no-data">No hay productos registrados</div>
             ) : (
                 <table className="data-table">
                     <thead>
                         <tr>
                             <th>Imagen</th>
                             <th>Nombre</th>
+                            <th>Tipo</th>
                             <th>Descripción</th>
                             <th>Precio</th>
                             <th>Acciones</th>
@@ -119,6 +123,11 @@ function CombosAdmin() {
                                     <img src={combo.imagen_url} alt={combo.nombre} />
                                 </td>
                                 <td>{combo.nombre}</td>
+                                <td>
+                                    {combo.tipo === 'popcorn' && '🍿 Popcorn'}
+                                    {combo.tipo === 'bebidas' && '🥤 Bebidas'}
+                                    {combo.tipo === 'combos' && '🎁 Combos'}
+                                </td>
                                 <td>{combo.descripcion}</td>
                                 <td>S/ {combo.precio}</td>
                                 <td>
@@ -144,7 +153,7 @@ function CombosAdmin() {
             {modalAbierto && (
                 <div className="modal-overlay" onClick={cerrarModal}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <h3>{comboEditando ? 'Editar Combo' : 'Nuevo Combo'}</h3>
+                        <h3>{comboEditando ? 'Editar Producto' : 'Nuevo Producto'}</h3>
                         <form onSubmit={handleSubmit}>
                             <div className="form-group">
                                 <label>Nombre *</label>
@@ -154,6 +163,20 @@ function CombosAdmin() {
                                     value={form.nombre}
                                     onChange={(e) => setForm({ ...form, nombre: e.target.value })}
                                 />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Tipo *</label>
+                                <select
+                                    required
+                                    value={form.tipo}
+                                    onChange={(e) => setForm({ ...form, tipo: e.target.value })}
+                                    style={{ padding: '0.5rem', fontSize: '1rem' }}
+                                >
+                                    <option value="popcorn">🍿 Popcorn</option>
+                                    <option value="bebidas">🥤 Bebidas</option>
+                                    <option value="combos">🎁 Combos</option>
+                                </select>
                             </div>
 
                             <div className="form-group">

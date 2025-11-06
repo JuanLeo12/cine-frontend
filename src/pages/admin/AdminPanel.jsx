@@ -7,6 +7,7 @@ import CombosAdmin from './CombosAdmin';
 import UsuariosAdmin from './UsuariosAdmin';
 import ReportesAdmin from './ReportesAdmin';
 import OrdenesAdmin from './OrdenesAdmin';
+import ServiciosCorporativosAdmin from './ServiciosCorporativosAdmin';
 import './css/AdminPanel.css';
 
 function AdminPanel() {
@@ -91,6 +92,8 @@ function AdminPanel() {
                 return <ReportesAdmin />;
             case 'ordenes':
                 return <OrdenesAdmin />;
+            case 'servicios-corporativos':
+                return <ServiciosCorporativosAdmin />;
             case 'peliculas':
                 return <PeliculasAdmin />;
             case 'sedes':
@@ -151,6 +154,12 @@ function AdminPanel() {
                     📦 Todas las Órdenes
                 </button>
                 <button
+                    className={seccionActiva === 'servicios-corporativos' ? 'active' : ''}
+                    onClick={() => setSeccionActiva('servicios-corporativos')}
+                >
+                    🏢 Servicios Corporativos
+                </button>
+                <button
                     className={seccionActiva === 'peliculas' ? 'active' : ''}
                     onClick={() => setSeccionActiva('peliculas')}
                 >
@@ -172,7 +181,7 @@ function AdminPanel() {
                     className={seccionActiva === 'combos' ? 'active' : ''}
                     onClick={() => setSeccionActiva('combos')}
                 >
-                    🍿 Combos
+                    🍿 Dulcería
                 </button>
                 <button
                     className={seccionActiva === 'usuarios' ? 'active' : ''}

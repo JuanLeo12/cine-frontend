@@ -115,11 +115,50 @@ function MisDatos() {
         const file = e.target.files[0];
         if (!file) return;
 
+        // Validar tamaño (máx 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('⚠️ La imagen es muy grande. Por favor, selecciona una foto menor a 5MB.');
+            return;
+        }
+
+        // Validar tipo
+        if (!file.type.startsWith('image/')) {
+            alert('⚠️ Por favor, selecciona un archivo de imagen válido.');
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = () => {
-            const dataUrl = reader.result;
-            setFotoPerfil(dataUrl);
-            setPreviewFoto(dataUrl);
+            const img = new Image();
+            img.onload = () => {
+                // Comprimir imagen a máx 800x800px
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                let width = img.width;
+                let height = img.height;
+                const maxSize = 800;
+                
+                if (width > maxSize || height > maxSize) {
+                    if (width > height) {
+                        height = Math.round((height * maxSize) / width);
+                        width = maxSize;
+                    } else {
+                        width = Math.round((width * maxSize) / height);
+                        height = maxSize;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Convertir a base64 con calidad 0.8
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                setFotoPerfil(compressedDataUrl);
+                setPreviewFoto(compressedDataUrl);
+            };
+            img.src = reader.result;
         };
         reader.readAsDataURL(file);
     };

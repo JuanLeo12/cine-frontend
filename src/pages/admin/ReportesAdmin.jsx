@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getOrdenesUsuario } from '../../services/api';
+import { getOrdenesUsuario, obtenerTodasBoletasCorporativas } from '../../services/api';
 import './css/ReportesAdmin.css';
 
 function ReportesAdmin() {
@@ -10,7 +10,14 @@ function ReportesAdmin() {
         combosVendidos: 0,
         ingresosPorDia: [],
         peliculasPopulares: [],
-        metodoPagoMasUsado: null
+        metodoPagoMasUsado: null,
+        // Servicios Corporativos
+        serviciosCorporativos: 0,
+        ingresosCorporativos: 0,
+        funcionesPrivadas: 0,
+        alquilerSalas: 0,
+        publicidades: 0,
+        valesCorporativos: 0
     });
     const [loading, setLoading] = useState(true);
 
@@ -46,6 +53,17 @@ function ReportesAdmin() {
             });
 
             console.log('📊 Órdenes filtradas por período:', ordenes);
+
+            // Obtener todas las boletas corporativas (admin)
+            const todasBoletas = await obtenerTodasBoletasCorporativas();
+            console.log('🎫 Boletas corporativas recibidas:', todasBoletas);
+
+            const boletasCorporativas = todasBoletas.filter(boleta => {
+                const fechaBoleta = new Date(boleta.fecha_emision);
+                return fechaBoleta >= fechaInicio && fechaBoleta <= fechaFin;
+            });
+
+            console.log('🎫 Boletas filtradas por período:', boletasCorporativas);
 
             // Calcular estadísticas
             let ventasTotal = 0;
@@ -104,12 +122,58 @@ function ReportesAdmin() {
             const metodoPagoMasUsado = Object.entries(metodosPago)
                 .sort((a, b) => b[1] - a[1])[0];
 
+            // ==========================================
+            // ESTADÍSTICAS DE SERVICIOS CORPORATIVOS
+            // ==========================================
+            let ingresosCorporativos = 0;
+            let funcionesPrivadas = 0;
+            let alquilerSalas = 0;
+            let publicidades = 0;
+            let valesCorporativos = 0;
+
+            boletasCorporativas.forEach(boleta => {
+                // Contar por tipo
+                if (boleta.tipo === 'funcion_privada') {
+                    funcionesPrivadas++;
+                    // Sumar precio_corporativo de funciones privadas
+                    if (boleta.detalles && boleta.detalles.precio_corporativo) {
+                        ingresosCorporativos += parseFloat(boleta.detalles.precio_corporativo);
+                    }
+                } else if (boleta.tipo === 'alquiler_sala') {
+                    alquilerSalas++;
+                    // Sumar precio de alquiler de salas
+                    if (boleta.detalles && boleta.detalles.precio) {
+                        ingresosCorporativos += parseFloat(boleta.detalles.precio);
+                    }
+                } else if (boleta.tipo === 'publicidad') {
+                    publicidades++;
+                    // Sumar precio de publicidad
+                    if (boleta.detalles && boleta.detalles.precio) {
+                        ingresosCorporativos += parseFloat(boleta.detalles.precio);
+                    }
+                } else if (boleta.tipo === 'vales_corporativos') {
+                    valesCorporativos++;
+                    // Sumar valor de vales
+                    if (boleta.detalles && boleta.detalles.valor) {
+                        ingresosCorporativos += parseFloat(boleta.detalles.valor);
+                    }
+                }
+            });
+
+            const serviciosCorporativos = boletasCorporativas.length;
+
             console.log('📊 Estadísticas calculadas:', {
                 ventasTotal,
                 ticketsVendidos,
                 combosVendidos,
                 peliculasPopulares,
-                metodoPagoMasUsado
+                metodoPagoMasUsado,
+                serviciosCorporativos,
+                ingresosCorporativos,
+                funcionesPrivadas,
+                alquilerSalas,
+                publicidades,
+                valesCorporativos
             });
 
             setReportes({
@@ -120,7 +184,13 @@ function ReportesAdmin() {
                 metodoPagoMasUsado: metodoPagoMasUsado ? {
                     nombre: metodoPagoMasUsado[0],
                     cantidad: metodoPagoMasUsado[1]
-                } : null
+                } : null,
+                serviciosCorporativos,
+                ingresosCorporativos,
+                funcionesPrivadas,
+                alquilerSalas,
+                publicidades,
+                valesCorporativos
             });
 
         } catch (error) {
@@ -154,7 +224,7 @@ function ReportesAdmin() {
                 <div className="stat-card">
                     <div className="stat-icon">💰</div>
                     <div className="stat-info">
-                        <h3>Ventas Totales</h3>
+                        <h3>Ventas Totales (Tickets + Combos)</h3>
                         <p className="stat-value">S/ {reportes.ventasTotal.toFixed(2)}</p>
                     </div>
                 </div>
@@ -185,6 +255,87 @@ function ReportesAdmin() {
                         </div>
                     </div>
                 )}
+            </div>
+
+            {/* NUEVA SECCIÓN: Servicios Corporativos */}
+            <div className="section-divider">
+                <h3>🏢 Servicios Corporativos</h3>
+            </div>
+
+            <div className="stats-grid">
+                <div className="stat-card corporate">
+                    <div className="stat-icon">🏢</div>
+                    <div className="stat-info">
+                        <h3>Ingresos Corporativos</h3>
+                        <p className="stat-value">S/ {reportes.ingresosCorporativos.toFixed(2)}</p>
+                    </div>
+                </div>
+
+                <div className="stat-card corporate">
+                    <div className="stat-icon">🎬</div>
+                    <div className="stat-info">
+                        <h3>Funciones Privadas</h3>
+                        <p className="stat-value">{reportes.funcionesPrivadas}</p>
+                        <p className="stat-detail">eventos reservados</p>
+                    </div>
+                </div>
+
+                <div className="stat-card corporate">
+                    <div className="stat-icon">🎪</div>
+                    <div className="stat-info">
+                        <h3>Alquiler de Salas</h3>
+                        <p className="stat-value">{reportes.alquilerSalas}</p>
+                        <p className="stat-detail">salas alquiladas</p>
+                    </div>
+                </div>
+
+                <div className="stat-card corporate">
+                    <div className="stat-icon">📺</div>
+                    <div className="stat-info">
+                        <h3>Publicidad</h3>
+                        <p className="stat-value">{reportes.publicidades || 0}</p>
+                        <p className="stat-detail">campañas activas</p>
+                    </div>
+                </div>
+
+                <div className="stat-card corporate">
+                    <div className="stat-icon">🎫</div>
+                    <div className="stat-info">
+                        <h3>Vales Corporativos</h3>
+                        <p className="stat-value">{reportes.valesCorporativos || 0}</p>
+                        <p className="stat-detail">vales emitidos</p>
+                    </div>
+                </div>
+
+                <div className="stat-card corporate">
+                    <div className="stat-icon">📊</div>
+                    <div className="stat-info">
+                        <h3>Total Servicios</h3>
+                        <p className="stat-value">{reportes.serviciosCorporativos}</p>
+                        <p className="stat-detail">boletas emitidas</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* RESUMEN GENERAL */}
+            <div className="section-divider">
+                <h3>💎 Resumen General</h3>
+            </div>
+
+            <div className="stats-grid">
+                <div className="stat-card total-summary">
+                    <div className="stat-icon">💵</div>
+                    <div className="stat-info">
+                        <h3>Ingresos Totales</h3>
+                        <p className="stat-value total">
+                            S/ {(reportes.ventasTotal + reportes.ingresosCorporativos).toFixed(2)}
+                        </p>
+                        <p className="stat-detail">
+                            Tickets: S/ {reportes.ventasTotal.toFixed(2)} + 
+                            Corporativo: S/ {reportes.ingresosCorporativos.toFixed(2)}
+                        </p>
+                    </div>
+                </div>
             </div>
 
             <div className="chart-section">

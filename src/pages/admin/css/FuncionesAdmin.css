@@ -129,6 +129,15 @@
     border-color: #e60000;
 }
 
+/* Campo de hora fin calculada (solo lectura) */
+.hora-fin-readonly {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    font-weight: 600;
+    color: #1976d2;
+    cursor: not-allowed;
+    border: 2px solid #64b5f6 !important;
+}
+
 .btn-submit {
     background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
     color: white;

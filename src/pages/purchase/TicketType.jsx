@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getTiposTicket } from '../../services/api';
+import { getTiposTicketPorSala, liberarAsiento } from '../../services/api';
 import { usePurchase } from '../../context/PurchaseContext';
 import TimerExpiredModal from '../../components/general/TimerExpiredModal';
 import './css/TicketType.css';
@@ -11,7 +11,8 @@ function TicketType() {
     const { 
         timeRemaining, 
         formatTime, 
-        extendTimer, 
+        extendTimer,
+        stopTimer, 
         setTimerExpireCallback 
     } = usePurchase();
     
@@ -64,8 +65,13 @@ function TicketType() {
 
     const cargarTiposTicket = async () => {
         try {
-            const tipos = await getTiposTicket();
-            console.log('Tipos de ticket cargados:', tipos);
+            // Obtener el tipo de sala de la función
+            const tipoSala = funcion?.sala?.tipo_sala || '2D';
+            console.log('🎬 Tipo de sala:', tipoSala);
+            
+            // Obtener tipos de ticket con precios según el tipo de sala
+            const tipos = await getTiposTicketPorSala(tipoSala);
+            console.log('Tipos de ticket cargados para sala', tipoSala, ':', tipos);
             setTiposTicket(tipos);
             
             // Inicializar cantidades en 0
@@ -87,7 +93,7 @@ function TicketType() {
         let total = 0;
         tiposTicket.forEach(tipo => {
             const cantidad = cantidades[tipo.id] || 0;
-            total += cantidad * parseFloat(tipo.precio_base);
+            total += cantidad * parseFloat(tipo.precio || tipo.precio_base || 0);
         });
         setSubtotal(total);
     };
@@ -127,8 +133,9 @@ function TicketType() {
             .filter(tipo => cantidades[tipo.id] > 0)
             .map(tipo => ({
                 id_tipo_ticket: tipo.id,
+                nombre: tipo.nombre, // Agregar nombre del tipo
                 cantidad: cantidades[tipo.id],
-                precio_unitario: parseFloat(tipo.precio_base)
+                precio_unitario: parseFloat(tipo.precio || tipo.precio_base || 0)
             }));
 
         console.log('Navegando a combos con:', { selectedSeats, funcion, pelicula, tickets, misAsientos });
@@ -145,6 +152,45 @@ function TicketType() {
                 misAsientos
             }
         });
+    };
+
+    const handleCancel = async () => {
+        const confirmar = window.confirm(
+            '⚠️ ¿Estás seguro de que deseas cancelar la compra? Se perderán todos los datos seleccionados.'
+        );
+        
+        if (!confirmar) return;
+
+        setIsNavigating(true);
+
+        // Liberar asientos
+        if (selectedSeats && selectedSeats.length > 0 && funcion) {
+            try {
+                for (const asiento of selectedSeats) {
+                    await liberarAsiento({
+                        id_funcion: funcion.id,
+                        fila: asiento.fila,
+                        numero: asiento.numero
+                    });
+                }
+                console.log('✅ Asientos liberados al cancelar');
+            } catch (error) {
+                console.error('Error liberando asientos:', error);
+            }
+        }
+
+        // Detener timer
+        stopTimer();
+
+        // Redirigir a la película
+        if (pelicula && pelicula.id) {
+            navigate(`/movie/${pelicula.id}`, { 
+                state: { pelicula },
+                replace: true 
+            });
+        } else {
+            navigate('/movies', { replace: true });
+        }
     };
 
     const handleBack = () => {
@@ -215,7 +261,7 @@ function TicketType() {
                     <div key={tipo.id} className="ticket-card">
                         <div className="ticket-info">
                             <h3>{tipo.nombre}</h3>
-                            <p className="ticket-price">S/ {parseFloat(tipo.precio_base).toFixed(2)}</p>
+                            <p className="ticket-price">S/ {parseFloat(tipo.precio || tipo.precio_base || 0).toFixed(2)}</p>
                         </div>
                         <div className="ticket-quantity">
                             <button
@@ -240,7 +286,7 @@ function TicketType() {
                         </div>
                         {cantidades[tipo.id] > 0 && (
                             <p className="ticket-subtotal">
-                                Subtotal: S/ {(cantidades[tipo.id] * parseFloat(tipo.precio_base)).toFixed(2)}
+                                Subtotal: S/ {(cantidades[tipo.id] * parseFloat(tipo.precio || tipo.precio_base || 0)).toFixed(2)}
                             </p>
                         )}
                     </div>
@@ -259,6 +305,9 @@ function TicketType() {
             </div>
 
             <div className="action-buttons">
+                <button className="cancel-btn" onClick={handleCancel}>
+                    ✕ Cancelar Compra
+                </button>
                 <button className="back-btn" onClick={handleBack}>
                     ← Volver a asientos
                 </button>

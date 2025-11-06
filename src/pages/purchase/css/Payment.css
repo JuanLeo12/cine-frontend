@@ -6,6 +6,24 @@
     border-radius: 12px;
 }
 
+.timer-banner {
+    background: linear-gradient(135deg, #e60000 0%, #ff3333 100%);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(230, 0, 0, 0.4);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
 .payment-header {
     text-align: center;
     margin-bottom: 30px;
@@ -34,7 +52,7 @@
 }
 
 .order-summary {
-    background: #333;
+    background: #333 !important;
     padding: 25px;
     border-radius: 12px;
     height: fit-content;
@@ -43,7 +61,7 @@
 }
 
 .order-summary h3 {
-    color: #e60000;
+    color: #e60000 !important;
     margin-bottom: 20px;
     font-size: 1.5rem;
 }
@@ -57,22 +75,30 @@
     border-bottom: 2px solid #e60000;
 }
 
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    color: #000000 !important;
+}
+
+.summary-item span {
+    color: #000000 !important;
+}
+
 .summary-section h4 {
-    color: #ccc;
+    color: #ccc !important;
     font-size: 1rem;
     margin-bottom: 10px;
 }
 
 .summary-section p {
-    color: #fff;
+    color: #fff !important;
     margin: 5px 0;
 }
 
-.summary-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    color: #fff;
+.summary-section strong {
+    color: #fff !important;
 }
 
 .summary-total {
@@ -304,12 +330,13 @@
 
 .action-buttons {
     display: flex;
-    gap: 20px;
+    gap: 15px;
     margin-top: 30px;
 }
 
 .pay-btn,
-.back-btn {
+.back-btn,
+.cancel-btn {
     padding: 18px 40px;
     font-size: 1.2rem;
     border: none;
@@ -317,12 +344,12 @@
     cursor: pointer;
     transition: all 0.3s;
     font-weight: bold;
-    flex: 1;
 }
 
 .pay-btn {
     background: #4caf50;
     color: white;
+    flex: 2;
 }
 
 .pay-btn:hover:not(:disabled) {
@@ -340,11 +367,29 @@
 .back-btn {
     background: #555;
     color: white;
-    flex: 0.5;
+    flex: 1;
 }
 
 .back-btn:hover:not(:disabled) {
     background: #666;
+}
+
+.cancel-btn {
+    background: #f44336;
+    color: white;
+    flex: 1;
+}
+
+.cancel-btn:hover:not(:disabled) {
+    background: #d32f2f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
+}
+
+.cancel-btn:disabled {
+    background: #555;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 @media (max-width: 968px) {

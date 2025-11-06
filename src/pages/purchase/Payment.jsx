@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getMetodosPago, createOrdenCompra, confirmarOrdenCompra, validarValeCorporativo, marcarValeUsado } from '../../services/api';
+import { getMetodosPago, createOrdenCompra, confirmarOrdenCompra, validarValeCorporativo, marcarValeUsado, liberarAsiento } from '../../services/api';
+import { usePurchase } from '../../context/PurchaseContext';
 import './css/Payment.css';
 
 function Payment() {
     const navigate = useNavigate();
     const location = useLocation();
+    const { timeRemaining, formatTime, stopTimer, startTimer, timerActive } = usePurchase();
     
     const { selectedSeats, funcion, pelicula, tickets, subtotalTickets, cart, soloCompra } = location.state || {};
 
@@ -42,6 +44,11 @@ function Payment() {
                 alert('Carrito vacío. Regresando...');
                 navigate('/candyshop');
                 return;
+            }
+            // Iniciar timer si no está activo (compra standalone de dulcería)
+            if (!timerActive) {
+                console.log('⏱️ Iniciando timer para compra de dulcería');
+                startTimer();
             }
         } else {
             // Compra normal (función + tickets + opcional combos)
@@ -103,8 +110,8 @@ function Payment() {
                 alert('Formato de expiración inválido (MM/AA)');
                 return false;
             }
-            if (!tarjeta.cvv || tarjeta.cvv.length < 3) {
-                alert('CVV inválido');
+            if (!tarjeta.cvv || tarjeta.cvv.length !== 3) {
+                alert('CVV inválido (debe tener 3 dígitos)');
                 return false;
             }
         }
@@ -130,15 +137,18 @@ function Payment() {
 
         try {
             console.log('🔄 Iniciando proceso de pago...');
-            console.log('📦 Datos de entrada:', { selectedSeats, funcion, pelicula, tickets, metodoSeleccionado, cart });
+            console.log('📦 Datos de entrada:', { selectedSeats, funcion, pelicula, tickets, metodoSeleccionado, cart, soloCompra });
 
             // 1. Crear orden pendiente
             const payloadCrear = {};
-            if (funcion && funcion.id) payloadCrear.id_funcion = funcion.id;
+            // Solo enviar id_funcion si existe (no en compras de dulcería sin función)
+            if (funcion?.id) {
+                payloadCrear.id_funcion = funcion.id;
+            }
             const ordenResponse = await createOrdenCompra(payloadCrear);
 
             console.log('✅ Orden creada:', ordenResponse);
-            const ordenId = ordenResponse.orden.id;
+            const ordenId = ordenResponse.id;
 
             // 2. Simular procesamiento de pago (2 segundos)
             await new Promise(resolve => setTimeout(resolve, 2000));
@@ -177,7 +187,10 @@ function Payment() {
                 }
             }
 
-            // 6. Navegar a confirmación
+            // 6. Detener timer
+            stopTimer();
+
+            // 7. Navegar a confirmación
             navigate('/confirmation', {
                 state: {
                     orden: confirmResponse.orden,
@@ -268,8 +281,52 @@ function Payment() {
     
     const totalGeneral = subtotal - descuento;
 
+    const handleCancelar = async () => {
+        const confirmar = window.confirm(
+            '⚠️ ¿Estás seguro de que deseas cancelar la compra? Se perderán todos los datos seleccionados.'
+        );
+        
+        if (!confirmar) return;
+
+        // Liberar asientos si hay
+        if (selectedSeats && selectedSeats.length > 0 && funcion) {
+            try {
+                for (const asiento of selectedSeats) {
+                    await liberarAsiento({
+                        id_funcion: funcion.id,
+                        fila: asiento.fila,
+                        numero: asiento.numero
+                    });
+                }
+                console.log('✅ Asientos liberados al cancelar');
+            } catch (error) {
+                console.error('Error liberando asientos:', error);
+            }
+        }
+
+        // Detener timer
+        stopTimer();
+
+        // Redirigir a la película o a movies si no hay película
+        if (pelicula && pelicula.id) {
+            navigate(`/movie/${pelicula.id}`, { 
+                state: { pelicula },
+                replace: true 
+            });
+        } else {
+            navigate('/movies', { replace: true });
+        }
+    };
+
     return (
         <div className="payment-page">
+            {/* Temporizador */}
+            {timeRemaining > 0 && (
+                <div className="timer-banner">
+                    <span>⏱️ Tiempo restante: {formatTime(timeRemaining)}</span>
+                </div>
+            )}
+            
             <div className="payment-header">
                 <h2>💳 Método de Pago</h2>
                 <p className="payment-note">🔒 Esta es una simulación. No se procesará ningún pago real.</p>
@@ -293,22 +350,22 @@ function Payment() {
 
                     <div className="summary-section">
                         <h4>Tickets</h4>
-                        {(tickets || []).map((ticket, index) => {
-                            const tipoNombre = metodosPago.length > 0 ? 
-                                `Ticket ${index + 1}` : ticket.id_tipo_ticket;
-                            return (
+                        {(tickets || []).length === 0 ? (
+                            <p style={{ color: '#999', fontStyle: 'italic' }}>Sin tickets</p>
+                        ) : (
+                            (tickets || []).map((ticket, index) => (
                                 <div key={index} className="summary-item">
-                                    <span>{ticket.cantidad}x {tipoNombre}</span>
+                                    <span>{ticket.cantidad}x {ticket.nombre || `Ticket ${index + 1}`}</span>
                                     <span>S/ {(ticket.cantidad * ticket.precio_unitario).toFixed(2)}</span>
                                 </div>
-                            );
-                        })}
+                            ))
+                        )}
                     </div>
 
-                    {/* Combos */}
+                    {/* Dulcería */}
                     {cart && cart.length > 0 && (
                         <div className="summary-section">
-                            <h4>Combos</h4>
+                            <h4>🍿 Dulcería</h4>
                             {cart.map((item, index) => (
                                 <div key={index} className="summary-item">
                                     <span>{item.quantity}x {item.nombre}</span>
@@ -413,7 +470,13 @@ function Payment() {
                                 type="text"
                                 placeholder="Nombre del titular"
                                 value={tarjeta.nombre}
-                                onChange={(e) => setTarjeta({ ...tarjeta, nombre: e.target.value.toUpperCase() })}
+                                onChange={(e) => {
+                                    const valor = e.target.value;
+                                    // Solo permitir letras y espacios
+                                    if (/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(valor)) {
+                                        setTarjeta({ ...tarjeta, nombre: valor.toUpperCase() });
+                                    }
+                                }}
                             />
                             <div className="form-row">
                                 <input
@@ -474,6 +537,9 @@ function Payment() {
                     )}
 
                     <div className="action-buttons">
+                        <button className="cancel-btn" onClick={handleCancelar} disabled={procesando}>
+                            ✕ Cancelar Compra
+                        </button>
                         <button className="back-btn" onClick={handleBack} disabled={procesando}>
                             ← Volver
                         </button>

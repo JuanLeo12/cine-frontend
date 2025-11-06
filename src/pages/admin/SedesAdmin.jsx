@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getSedes, createSede, updateSede, deleteSede } from '../../services/api';
+import { getTodasLasSedes, createSede, updateSede, deleteSede, reactivarSede } from '../../services/api';
 import './css/SedesAdmin.css';
 
 function SedesAdmin() {
@@ -16,6 +16,8 @@ function SedesAdmin() {
         cantidadSalas: 0,
         salas: []
     });
+    const [advertenciaImpacto, setAdvertenciaImpacto] = useState(null);
+    const [confirmarEliminacion, setConfirmarEliminacion] = useState(false);
 
     useEffect(() => {
         cargarSedes();
@@ -23,7 +25,7 @@ function SedesAdmin() {
 
     const cargarSedes = async () => {
         try {
-            const data = await getSedes();
+            const data = await getTodasLasSedes();
             setSedes(data);
         } catch (error) {
             console.error('Error al cargar sedes:', error);
@@ -61,6 +63,41 @@ function SedesAdmin() {
         });
     };
 
+    const agregarSala = () => {
+        setFormData(prev => {
+            // Calcular el número de la nueva sala basándose en el total de salas existentes
+            const numeroNuevaSala = prev.salas.length + 1;
+            return {
+                ...prev,
+                cantidadSalas: prev.cantidadSalas + 1,
+                salas: [...prev.salas, {
+                    nombre: `Sala ${numeroNuevaSala}`,
+                    tipo_sala: '2D',
+                    filas: 10,
+                    columnas: 12
+                }]
+            };
+        });
+    };
+
+    const eliminarSala = (index) => {
+        const sala = formData.salas[index];
+        
+        // Si la sala tiene ID (existe en BD), advertir
+        if (sala.id && !window.confirm(`¿Eliminar ${sala.nombre}? Las funciones asociadas se desactivarán.`)) {
+            return;
+        }
+
+        setFormData(prev => ({
+            ...prev,
+            cantidadSalas: prev.cantidadSalas - 1,
+            salas: prev.salas.filter((_, i) => i !== index)
+        }));
+        
+        // Limpiar advertencia si existía
+        setAdvertenciaImpacto(null);
+    };
+
     const resetForm = () => {
         setFormData({ 
             nombre: '', 
@@ -73,6 +110,8 @@ function SedesAdmin() {
         });
         setEditingId(null);
         setShowForm(false);
+        setAdvertenciaImpacto(null);
+        setConfirmarEliminacion(false);
     };
 
     const handleSubmit = async (e) => {
@@ -80,17 +119,33 @@ function SedesAdmin() {
         
         try {
             if (editingId) {
-                await updateSede(editingId, formData);
+                const dataToSend = { ...formData };
+                if (confirmarEliminacion) {
+                    dataToSend.confirmarEliminacion = true;
+                }
+                
+                await updateSede(editingId, dataToSend);
                 alert('Sede actualizada correctamente');
+                resetForm();
+                cargarSedes();
             } else {
                 await createSede(formData);
                 alert('Sede creada correctamente');
+                resetForm();
+                cargarSedes();
             }
-            resetForm();
-            cargarSedes();
         } catch (error) {
             console.error('Error al guardar sede:', error);
-            alert(error.response?.data?.error || 'Error al guardar sede');
+            
+            // Si hay funciones afectadas, mostrar advertencia
+            if (error.response?.data?.requiereConfirmacion) {
+                setAdvertenciaImpacto({
+                    mensaje: error.response.data.mensaje,
+                    funcionesAfectadas: error.response.data.funcionesAfectadas
+                });
+            } else {
+                alert(error.response?.data?.error || 'Error al guardar sede');
+            }
         }
     };
 
@@ -103,6 +158,7 @@ function SedesAdmin() {
             imagen_url: sede.imagen_url || '',
             cantidadSalas: sede.salas?.length || 0,
             salas: sede.salas?.map(s => ({
+                id: s.id, // Importante: incluir el ID para actualizar
                 nombre: s.nombre,
                 tipo_sala: s.tipo_sala || '2D',
                 filas: s.filas || 10,
@@ -111,18 +167,61 @@ function SedesAdmin() {
         });
         setEditingId(sede.id);
         setShowForm(true);
+        setAdvertenciaImpacto(null);
+        setConfirmarEliminacion(false);
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm('¿Estás seguro de eliminar esta sede?')) return;
+        // Primera confirmación
+        if (!window.confirm('¿Estás seguro de inactivar esta sede?')) {
+            return;
+        }
         
         try {
-            await deleteSede(id);
-            alert('Sede eliminada correctamente');
+            // Obtener información de la sede para verificar funciones
+            const sede = sedes.find(s => s.id === id);
+            const totalSalas = sede.salas?.length || 0;
+            
+            if (totalSalas > 0) {
+                // Segunda confirmación más específica
+                const mensaje = `⚠️ ADVERTENCIA FINAL\n\nAl inactivar esta sede:\n\n✓ La sede quedará INACTIVA (recuperable más tarde)\n✗ Se ELIMINARÁN ${totalSalas} sala(s): ${sede.salas.map(s => s.nombre).join(', ')}\n✗ Se ELIMINARÁN todas las funciones programadas\n✗ Salas y funciones NO se pueden recuperar\n\n🔄 Podrás reactivar la sede después, pero tendrás que crear salas nuevamente.\n\n¿Continuar?`;
+                
+                if (!window.confirm(mensaje)) {
+                    return;
+                }
+            }
+            
+            const response = await deleteSede(id);
+            
+            // Mostrar mensaje con detalles de lo que se eliminó
+            const funcionesEliminadas = response.data?.funcionesEliminadas || 0;
+            const salasEliminadas = response.data?.salasEliminadas || 0;
+            
+            let mensajeResultado = '✅ Sede inactivada correctamente';
+            if (salasEliminadas > 0 || funcionesEliminadas > 0) {
+                mensajeResultado += `\n\n📊 Resumen:\n- ${salasEliminadas} sala(s) eliminada(s)\n- ${funcionesEliminadas} función(es) eliminada(s)\n\n🔄 Usa "Reactivar" cuando quieras volver a usar esta sede.`;
+            }
+            
+            alert(mensajeResultado);
             cargarSedes();
         } catch (error) {
             console.error('Error al eliminar sede:', error);
             alert(error.response?.data?.error || 'Error al eliminar sede');
+        }
+    };
+
+    const handleReactivar = async (id) => {
+        if (!window.confirm('¿Reactivar esta sede? Podrás crear salas desde el panel de edición.')) {
+            return;
+        }
+
+        try {
+            await reactivarSede(id);
+            alert('✅ Sede reactivada correctamente\n\n💡 Ahora edita la sede para agregar salas.');
+            cargarSedes();
+        } catch (error) {
+            console.error('Error al reactivar sede:', error);
+            alert(error.response?.data?.error || 'Error al reactivar sede');
         }
     };
 
@@ -216,31 +315,39 @@ function SedesAdmin() {
                                 )}
                             </div>
                             
-                            {/* 🔹 Sección de Salas (solo al crear nueva sede) */}
-                            {!editingId && (
-                                <div className="form-group full-width">
-                                    <label>Cantidad de Salas</label>
-                                    <input
-                                        type="number"
-                                        name="cantidadSalas"
-                                        value={formData.cantidadSalas}
-                                        onChange={handleInputChange}
-                                        min="0"
-                                        max="20"
-                                    />
-                                </div>
-                            )}
+                            {/* 🔹 Gestión de Salas */}
+                            <div className="form-group full-width">
+                                <label>Salas de la Sede</label>
+                                {editingId && (
+                                    <p className="help-text">
+                                        ⚠️ Editar o eliminar salas puede afectar funciones activas
+                                    </p>
+                                )}
+                                <button 
+                                    type="button" 
+                                    onClick={agregarSala}
+                                    className="btn-add-sala"
+                                >
+                                    ➕ Agregar Sala
+                                </button>
+                            </div>
                             
                             {/* 🔹 Configuración de cada sala */}
-                            {!editingId && formData.cantidadSalas > 0 && (
+                            {formData.salas.length > 0 && (
                                 <div className="form-group full-width">
                                     <label>Configuración de Salas</label>
                                     <div className="salas-config">
                                         {formData.salas.map((sala, index) => (
                                             <div key={index} className="sala-item">
-                                                <span className="sala-nombre">{sala.nombre}</span>
+                                                <input
+                                                    type="text"
+                                                    value={sala.nombre || `Sala ${index + 1}`}
+                                                    onChange={(e) => handleSalaChange(index, 'nombre', e.target.value)}
+                                                    placeholder="Nombre de la sala"
+                                                    className="sala-nombre-input"
+                                                />
                                                 <select
-                                                    value={sala.tipo_sala}
+                                                    value={sala.tipo_sala || '2D'}
                                                     onChange={(e) => handleSalaChange(index, 'tipo_sala', e.target.value)}
                                                 >
                                                     <option value="2D">2D</option>
@@ -248,8 +355,49 @@ function SedesAdmin() {
                                                     <option value="4DX">4DX</option>
                                                     <option value="Xtreme">Xtreme</option>
                                                 </select>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => eliminarSala(index)}
+                                                    className="btn-remove-sala"
+                                                    title="Eliminar sala"
+                                                >
+                                                    🗑️
+                                                </button>
                                             </div>
                                         ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* ⚠️ Advertencia de impacto */}
+                            {advertenciaImpacto && (
+                                <div className="form-group full-width">
+                                    <div className="advertencia-impacto">
+                                        <h4>⚠️ Advertencia</h4>
+                                        <p>{advertenciaImpacto.mensaje}</p>
+                                        <p>Se desactivarán {advertenciaImpacto.funcionesAfectadas} funciones activas.</p>
+                                        <div className="advertencia-actions">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setConfirmarEliminacion(true);
+                                                    setAdvertenciaImpacto(null);
+                                                }}
+                                                className="btn-warning"
+                                            >
+                                                Continuar de todas formas
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setAdvertenciaImpacto(null);
+                                                    setConfirmarEliminacion(false);
+                                                }}
+                                                className="btn-secondary"
+                                            >
+                                                Cancelar
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             )}
@@ -278,12 +426,13 @@ function SedesAdmin() {
                             <th>Ciudad</th>
                             <th>Teléfono</th>
                             <th>Salas</th>
+                            <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {sedes.map((sede) => (
-                            <tr key={sede.id}>
+                            <tr key={sede.id} className={sede.estado === 'inactivo' ? 'sede-inactiva' : ''}>
                                 <td>
                                     {sede.imagen_url ? (
                                         <img 
@@ -305,21 +454,38 @@ function SedesAdmin() {
                                 <td>{sede.ciudad}</td>
                                 <td>{sede.telefono || 'N/A'}</td>
                                 <td>{sede.salas?.length || 0} salas</td>
+                                <td>
+                                    <span className={`badge badge-${sede.estado}`}>
+                                        {sede.estado === 'activo' ? '✅ Activa' : '❌ Inactiva'}
+                                    </span>
+                                </td>
                                 <td className="actions-cell">
-                                    <button
-                                        className="btn-edit"
-                                        onClick={() => handleEdit(sede)}
-                                        title="Editar"
-                                    >
-                                        ✏️
-                                    </button>
-                                    <button
-                                        className="btn-delete"
-                                        onClick={() => handleDelete(sede.id)}
-                                        title="Eliminar"
-                                    >
-                                        🗑️
-                                    </button>
+                                    {sede.estado === 'activo' ? (
+                                        <>
+                                            <button
+                                                className="btn-edit"
+                                                onClick={() => handleEdit(sede)}
+                                                title="Editar"
+                                            >
+                                                ✏️
+                                            </button>
+                                            <button
+                                                className="btn-delete"
+                                                onClick={() => handleDelete(sede.id)}
+                                                title="Inactivar"
+                                            >
+                                                🗑️
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <button
+                                            className="btn-reactivar"
+                                            onClick={() => handleReactivar(sede.id)}
+                                            title="Reactivar sede"
+                                        >
+                                            � Reactivar
+                                        </button>
+                                    )}
                                 </td>
                             </tr>
                         ))}

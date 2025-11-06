@@ -4,8 +4,8 @@ import {
   getSalas,
   getSedes,
   getPeliculas,
-  createAlquilerSala,
   createPublicidad,
+  verificarDisponibilidadSala,
 } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 import "./css/CorporateSales.css";
@@ -36,17 +36,18 @@ function CorporateSales() {
     fecha_fin: "",
     descripcion: "",
   });
+  const [archivoPublicidad, setArchivoPublicidad] = useState(null);
   const [funcionPrivadaForm, setFuncionPrivadaForm] = useState({
     id_sede: "",
     id_pelicula: "",
     id_sala: "",
     fecha: "",
     hora: "",
-    cantidad_personas: "",
     descripcion_evento: "",
   });
   const [valesForm, setValesForm] = useState({ tipo: "entrada", cantidad: 1 });
   const [codigoValeGenerado, setCodigoValeGenerado] = useState(null);
+  const [conflictosModal, setConflictosModal] = useState(null); // Estado para modal de conflictos
   const isCorporativo =
     isLoggedIn && (user?.rol === "corporativo" || user?.rol === "admin");
   const PRECIOS = {
@@ -81,7 +82,17 @@ function CorporateSales() {
         ]);
         setSedes(sedesData);
         setSalas(salasData);
-        setPeliculas(peliculasData);
+        
+        console.log('📦 Todas las películas:', peliculasData);
+        console.log('🔍 Películas con tipo cartelera:', peliculasData.filter(p => p.tipo === 'cartelera'));
+        console.log('🔍 Películas con estado activa:', peliculasData.filter(p => p.estado === 'activa'));
+        
+        // Filtrar solo películas "cartelera" (en cartelera) y activas
+        const peliculasCartelera = peliculasData.filter(
+          p => p.estado === 'activa' && p.tipo === 'cartelera'
+        );
+        console.log('🎬 Películas en cartelera filtradas:', peliculasCartelera);
+        setPeliculas(peliculasCartelera);
       } catch (err) {
         console.error("Error cargando datos:", err);
       }
@@ -102,6 +113,16 @@ function CorporateSales() {
     return sala ? sala.tipo_sala : '';
   };
 
+  // Helper: Calcular hora de fin
+  const calcularHoraFin = (horaInicio, duracionMinutos) => {
+    const [horas, minutos] = horaInicio.split(':').map(Number);
+    const minutosInicio = horas * 60 + minutos;
+    const minutosFin = minutosInicio + duracionMinutos;
+    const horasFin = Math.floor(minutosFin / 60);
+    const minutosRestantes = minutosFin % 60;
+    return `${String(horasFin).padStart(2, '0')}:${String(minutosRestantes).padStart(2, '0')}`;
+  };
+
   const handleAlquilerChange = (e) => {
     const { name, value } = e.target;
     setAlquilerForm((prev) => ({ ...prev, [name]: value }));
@@ -115,32 +136,65 @@ function CorporateSales() {
     setLoading(true);
     setError("");
     try {
+      // 1. Validar horarios
       const [horaIni, minIni] = alquilerForm.hora_inicio.split(":").map(Number);
       const [horaFin, minFin] = alquilerForm.hora_fin.split(":").map(Number);
-      const horasAlquiler =
-        (horaFin * 60 + minFin - horaIni * 60 - minIni) / 60;
+      const horasAlquiler = (horaFin * 60 + minFin - horaIni * 60 - minIni) / 60;
+
+      if (horasAlquiler <= 0) {
+        setError("❌ La hora de fin debe ser posterior a la hora de inicio");
+        setLoading(false);
+        return;
+      }
+
+      // 2. Verificar disponibilidad de la sala
+      const disponibilidad = await verificarDisponibilidadSala(
+        alquilerForm.id_sala,
+        alquilerForm.fecha,
+        alquilerForm.hora_inicio,
+        alquilerForm.hora_fin
+      );
+
+      if (!disponibilidad.disponible) {
+        // Mostrar modal de conflictos en lugar de setError
+        setConflictosModal({
+          tipoServicio: 'Alquiler de Sala',
+          sala: getTipoSala(alquilerForm.id_sala),
+          fecha: alquilerForm.fecha,
+          horario: `${alquilerForm.hora_inicio} - ${alquilerForm.hora_fin}`,
+          conflictos: disponibilidad.conflictos
+        });
+        setLoading(false);
+        return;
+      }
+
+      // 3. Calcular precio
       const multiplicador = getMultiplicadorSala(alquilerForm.id_sala);
       const tipoSala = getTipoSala(alquilerForm.id_sala);
       const precioBase = horasAlquiler * PRECIOS.alquilerSala;
       const precioTotal = precioBase * multiplicador;
       
-      await createAlquilerSala({ ...alquilerForm, precio: precioTotal });
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setSuccess(
-        `✅ Alquiler confirmado y pagado. Sala ${tipoSala}. Total: S/ ${precioTotal.toFixed(
-          2
-        )} (${horasAlquiler.toFixed(1)} horas)`
-      );
-      setAlquilerForm({
-        id_sede: "",
-        id_sala: "",
-        fecha: "",
-        hora_inicio: "",
-        hora_fin: "",
-        descripcion_evento: "",
+      // 4. Obtener nombre de sede
+      const sede = sedes.find(s => s.id === parseInt(alquilerForm.id_sede));
+      
+      // 5. Navegar a pantalla de pago
+      navigate('/payment-corporativo', {
+        state: {
+          tipoServicio: 'alquiler_sala',
+          datosServicio: {
+            ...alquilerForm,
+            precio: precioTotal
+          },
+          precioTotal,
+          detalles: {
+            sede: sede?.nombre || 'N/A',
+            sala: tipoSala,
+            fecha: alquilerForm.fecha,
+            horario: `${alquilerForm.hora_inicio} - ${alquilerForm.hora_fin} (${horasAlquiler.toFixed(1)}h)`,
+            descripcion: alquilerForm.descripcion_evento
+          }
+        }
       });
-      setActiveService(null);
-      setTimeout(() => setSuccess(""), 5000);
     } catch (err) {
       setError(err.response?.data?.error || "Error al procesar el pago");
     } finally {
@@ -148,8 +202,13 @@ function CorporateSales() {
     }
   };
 
-  const handlePublicidadChange = (e) =>
-    setPublicidadForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handlePublicidadChange = (e) => {
+    if (e.target.name === 'archivo') {
+      setArchivoPublicidad(e.target.files[0]);
+    } else {
+      setPublicidadForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    }
+  };
 
   const handlePublicidadSubmit = async (e) => {
     e.preventDefault();
@@ -160,25 +219,28 @@ function CorporateSales() {
       const fechaFin = new Date(publicidadForm.fecha_fin);
       const dias = Math.ceil((fechaFin - fechaIni) / (1000 * 60 * 60 * 24)) + 1;
       const precioTotal = dias * PRECIOS.publicidad[publicidadForm.tipo];
-      await createPublicidad({ ...publicidadForm, precio: precioTotal });
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setSuccess(
-        `✅ Campaña publicitaria contratada y pagada. Total: S/ ${precioTotal.toFixed(
-          2
-        )} (${dias} días)`
-      );
-      setPublicidadForm({
-        cliente: "",
-        tipo: "pantalla",
-        id_sede: "",
-        fecha_inicio: "",
-        fecha_fin: "",
-        descripcion: "",
+      
+      // Navegar a PaymentCorporativo con el archivo incluido
+      navigate('/payment-corporativo', {
+        state: {
+          tipoServicio: 'publicidad',
+          datosServicio: {
+            ...publicidadForm,
+            precio: precioTotal,
+            archivo: archivoPublicidad // Incluir el archivo
+          },
+          precioTotal,
+          detalles: {
+            tipo_publicidad: publicidadForm.tipo,
+            duracion_dias: dias,
+            fecha_inicio: publicidadForm.fecha_inicio,
+            fecha_fin: publicidadForm.fecha_fin,
+            sede: sedes.find(s => s.id === parseInt(publicidadForm.id_sede))?.nombre || 'N/A'
+          }
+        }
       });
-      setActiveService(null);
-      setTimeout(() => setSuccess(""), 5000);
     } catch (err) {
-      setError(err.response?.data?.error || "Error al procesar el pago");
+      setError(err.response?.data?.error || "Error al procesar la solicitud");
     } finally {
       setLoading(false);
     }
@@ -197,27 +259,74 @@ function CorporateSales() {
     setLoading(true);
     setError("");
     try {
+      // 1. Obtener duración de la película
+      const pelicula = peliculas.find(p => p.id === parseInt(funcionPrivadaForm.id_pelicula));
+      if (!pelicula) {
+        setError("Película no encontrada");
+        setLoading(false);
+        return;
+      }
+
+      // 2. Calcular hora_fin: SIEMPRE 3 horas para función privada
+      const DURACION_FUNCION_PRIVADA = 180; // 3 horas fijas
+      const hora_fin = calcularHoraFin(funcionPrivadaForm.hora, DURACION_FUNCION_PRIVADA);
+
+      // 3. Verificar disponibilidad de la sala
+      const disponibilidad = await verificarDisponibilidadSala(
+        funcionPrivadaForm.id_sala,
+        funcionPrivadaForm.fecha,
+        funcionPrivadaForm.hora,
+        hora_fin
+      );
+
+      if (!disponibilidad.disponible) {
+        // Mostrar modal de conflictos en lugar de setError
+        setConflictosModal({
+          tipoServicio: 'Función Privada',
+          sala: getTipoSala(funcionPrivadaForm.id_sala),
+          fecha: funcionPrivadaForm.fecha,
+          horario: `${funcionPrivadaForm.hora} - ${hora_fin}`,
+          pelicula: pelicula.titulo,
+          conflictos: disponibilidad.conflictos
+        });
+        setLoading(false);
+        return;
+      }
+
+      // 4. Calcular precio
       const multiplicador = getMultiplicadorSala(funcionPrivadaForm.id_sala);
       const tipoSala = getTipoSala(funcionPrivadaForm.id_sala);
       const precioTotal = PRECIOS.funcionPrivada * multiplicador;
+
+      // 5. Obtener nombre de sede
+      const sede = sedes.find(s => s.id === parseInt(funcionPrivadaForm.id_sede));
       
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      setSuccess(
-        `✅ Función privada reservada y pagada. Sala ${tipoSala}. Total: S/ ${precioTotal.toFixed(
-          2
-        )}`
-      );
-      setFuncionPrivadaForm({
-        id_sede: "",
-        id_pelicula: "",
-        id_sala: "",
-        fecha: "",
-        hora: "",
-        cantidad_personas: "",
-        descripcion_evento: "",
+      // 6. Navegar a pantalla de pago
+      navigate('/payment-corporativo', {
+        state: {
+          tipoServicio: 'funcion_privada',
+          datosServicio: {
+            id_pelicula: funcionPrivadaForm.id_pelicula,
+            id_sala: funcionPrivadaForm.id_sala,
+            fecha: funcionPrivadaForm.fecha,
+            hora: funcionPrivadaForm.hora,
+            hora_inicio: funcionPrivadaForm.hora,
+            hora_fin: hora_fin,
+            es_privada: true,
+            descripcion_evento: funcionPrivadaForm.descripcion_evento,
+            precio_corporativo: precioTotal
+          },
+          precioTotal,
+          detalles: {
+            sede: sede?.nombre || 'N/A',
+            sala: tipoSala,
+            fecha: funcionPrivadaForm.fecha,
+            horario: `${funcionPrivadaForm.hora} - ${hora_fin}`,
+            pelicula: pelicula.titulo,
+            descripcion: funcionPrivadaForm.descripcion_evento
+          }
+        }
       });
-      setActiveService(null);
-      setTimeout(() => setSuccess(""), 5000);
     } catch (err) {
       setError("Error al procesar el pago");
     } finally {
@@ -242,22 +351,27 @@ function CorporateSales() {
     try {
       const valorUnitario = PRECIOS.vales[valesForm.tipo];
       const total = valesForm.cantidad * valorUnitario;
-      const codigoGenerado = generateValeCode();
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      setCodigoValeGenerado({
-        codigo: codigoGenerado,
-        tipo: valesForm.tipo,
-        cantidad: valesForm.cantidad,
-        valor_unitario: valorUnitario,
-        total: total,
+      
+      // Navegar a PaymentCorporativo
+      navigate('/payment-corporativo', {
+        state: {
+          tipoServicio: 'vales_corporativos',
+          datosServicio: {
+            tipo: valesForm.tipo,
+            cantidad: valesForm.cantidad,
+            valor: valorUnitario,
+            valor_total: total
+          },
+          precioTotal: total,
+          detalles: {
+            tipo_vale: valesForm.tipo,
+            cantidad: valesForm.cantidad,
+            valor_unitario: valorUnitario
+          }
+        }
       });
-      setSuccess(
-        `✅ Vales comprados exitosamente. Total pagado: S/ ${total.toFixed(2)}`
-      );
-      setValesForm({ tipo: "entrada", cantidad: 1 });
-      setTimeout(() => setSuccess(""), 8000);
     } catch (err) {
-      setError("Error al comprar vales");
+      setError("Error al procesar la solicitud de vales");
     } finally {
       setLoading(false);
     }
@@ -268,7 +382,7 @@ function CorporateSales() {
       id: "funciones",
       titulo: "Funciones Privadas",
       icono: "🎬",
-      descripcion: "Celebra cumpleaños o eventos especiales",
+      descripcion: "Celebra cumpleaños o eventos especiales (3 horas)",
     },
     {
       id: "alquiler",
@@ -313,29 +427,38 @@ function CorporateSales() {
       {error && <div className="error-message">⚠️ {error}</div>}
       {success && <div className="success-message">{success}</div>}
       <div className="servicios-grid">
-        {serviciosCorporativos.map((servicio) => (
-          <div
-            key={servicio.id}
-            className={`servicio-card ${
-              activeService === servicio.id ? "active" : ""
-            }`}
-            onClick={() =>
-              isCorporativo ? setActiveService(servicio.id) : null
-            }
-            style={{ cursor: isCorporativo ? "pointer" : "default" }}
-          >
-            <div className="servicio-icono">{servicio.icono}</div>
-            <h3>{servicio.titulo}</h3>
-            <p>{servicio.descripcion}</p>
-            {isCorporativo && (
-              <button className="btn-servicio" type="button">
-                {activeService === servicio.id ? "✓ Activo" : "Seleccionar"}
-              </button>
-            )}
-          </div>
-        ))}
+        {serviciosCorporativos.map((servicio) => {
+          // Verificar si el servicio está disponible para el usuario
+          const isCliente = isLoggedIn && user?.rol === 'cliente';
+          const isDisponible = isCorporativo || (isCliente && servicio.id === "funciones");
+          
+          return (
+            <div
+              key={servicio.id}
+              className={`servicio-card ${
+                activeService === servicio.id ? "active" : ""
+              } ${!isDisponible ? "disabled" : ""}`}
+              onClick={() =>
+                isDisponible ? setActiveService(servicio.id) : null
+              }
+              style={{ cursor: isDisponible ? "pointer" : "not-allowed", opacity: isDisponible ? 1 : 0.5 }}
+            >
+              <div className="servicio-icono">{servicio.icono}</div>
+              <h3>{servicio.titulo}</h3>
+              <p>{servicio.descripcion}</p>
+              {!isDisponible && isCliente && (
+                <span className="badge-bloqueado">🔒 Solo Corporativos</span>
+              )}
+              {isDisponible && isLoggedIn && (
+                <button className="btn-servicio" type="button">
+                  {activeService === servicio.id ? "✓ Activo" : "Seleccionar"}
+                </button>
+              )}
+            </div>
+          );
+        })}
       </div>
-      {isCorporativo && activeService && (
+      {isLoggedIn && activeService && (
         <div className="servicio-content">
           {activeService === "funciones" && (
             <div className="funciones-section">
@@ -410,15 +533,26 @@ function CorporateSales() {
                   required
                   placeholder="Hora"
                 />
-                <input
-                  type="number"
-                  name="cantidad_personas"
-                  value={funcionPrivadaForm.cantidad_personas}
-                  onChange={handleFuncionPrivadaChange}
-                  required
-                  placeholder="Cantidad de personas"
-                  min="1"
-                />
+                
+                {/* Advertencia sobre disponibilidad */}
+                <div
+                  style={{
+                    background: "linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)",
+                    border: "2px solid #ff9800",
+                    borderRadius: "8px",
+                    padding: "1rem",
+                    marginTop: "1rem",
+                    marginBottom: "1rem",
+                  }}
+                >
+                  <p style={{ margin: 0, fontSize: "0.9rem", color: "#e65100", fontWeight: "600" }}>
+                    ⚠️ <strong>Importante:</strong> Las funciones privadas tienen una duración de <strong>3 horas fijas</strong>.
+                  </p>
+                  <p style={{ margin: "0.5rem 0 0 0", fontSize: "0.85rem", color: "#f57c00" }}>
+                    💡 El sistema validará que la sala esté disponible durante las 3 horas completas. Si hay conflicto con otras funciones o eventos, te lo notificaremos antes de proceder al pago.
+                  </p>
+                </div>
+
                 <textarea
                   name="descripcion_evento"
                   value={funcionPrivadaForm.descripcion_evento}
@@ -456,7 +590,7 @@ function CorporateSales() {
                       color: "#666",
                     }}
                   >
-                    Incluye sala completa por 2-3 horas
+                    Incluye sala completa por 3 horas
                     {funcionPrivadaForm.id_sala && ` - Sala ${getTipoSala(funcionPrivadaForm.id_sala)}`}
                   </p>
                 </div>
@@ -547,6 +681,39 @@ function CorporateSales() {
                   required
                   placeholder="Hora fin"
                 />
+                
+                {/* Warning sobre validación de disponibilidad */}
+                <div
+                  style={{
+                    background: "linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)",
+                    border: "2px solid #2196f3",
+                    borderRadius: "8px",
+                    padding: "1rem",
+                    marginTop: "1rem",
+                    marginBottom: "1rem",
+                  }}
+                >
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "0.9rem",
+                      color: "#0d47a1",
+                      fontWeight: "600",
+                    }}
+                  >
+                    ⚠️ <strong>Importante:</strong> El alquiler de sala permite definir el horario según tus necesidades.
+                  </p>
+                  <p
+                    style={{
+                      margin: "0.5rem 0 0 0",
+                      fontSize: "0.85rem",
+                      color: "#1565c0",
+                    }}
+                  >
+                    💡 El sistema validará que la sala esté disponible durante todo el tiempo seleccionado. Si hay conflicto con otras funciones o eventos, te lo notificaremos antes de proceder al pago.
+                  </p>
+                </div>
+                
                 <textarea
                   name="descripcion_evento"
                   value={alquilerForm.descripcion_evento}
@@ -692,6 +859,52 @@ function CorporateSales() {
                   placeholder="Descripción de la campaña"
                   rows="4"
                 ></textarea>
+
+                {/* Campo para cargar archivo de publicidad */}
+                <div style={{ marginBottom: '1rem' }}>
+                  <label 
+                    htmlFor="archivo-publicidad"
+                    style={{
+                      display: 'block',
+                      marginBottom: '0.5rem',
+                      fontWeight: 'bold',
+                      color: '#333'
+                    }}
+                  >
+                    Archivo de Publicidad:
+                  </label>
+                  <input
+                    type="file"
+                    id="archivo-publicidad"
+                    name="archivo"
+                    onChange={handlePublicidadChange}
+                    accept="image/*,video/*,.pdf"
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem',
+                      border: '2px dashed #1976d2',
+                      borderRadius: '8px',
+                      backgroundColor: '#f5f5f5',
+                      cursor: 'pointer'
+                    }}
+                  />
+                  <small style={{ display: 'block', marginTop: '0.5rem', color: '#666' }}>
+                    Formatos aceptados: Imágenes (JPG, PNG, GIF), Videos (MP4, AVI, MOV, WMV), PDF. Máximo 50MB.
+                  </small>
+                  {archivoPublicidad && (
+                    <div style={{
+                      marginTop: '0.5rem',
+                      padding: '0.5rem',
+                      backgroundColor: '#e3f2fd',
+                      borderRadius: '4px',
+                      color: '#1976d2',
+                      fontSize: '0.9rem'
+                    }}>
+                      📎 Archivo seleccionado: {archivoPublicidad.name}
+                    </div>
+                  )}
+                </div>
+
                 {publicidadForm.fecha_inicio && publicidadForm.fecha_fin && (
                   <div
                     style={{
@@ -991,6 +1204,79 @@ function CorporateSales() {
                 Iniciar Sesión
               </button>
             )}
+          </div>
+        </div>
+      )}
+      
+      {/* Modal de Conflictos de Horario */}
+      {conflictosModal && (
+        <div className="modal-overlay" onClick={() => setConflictosModal(null)}>
+          <div className="modal-content conflictos-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header conflictos-header">
+              <h2>⚠️ Conflicto de Horario Detectado</h2>
+              <button 
+                className="modal-close-btn"
+                onClick={() => setConflictosModal(null)}
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="conflicto-info">
+                <h3>📋 Tu Reserva:</h3>
+                <div className="reserva-details">
+                  <p><strong>Servicio:</strong> {conflictosModal.tipoServicio}</p>
+                  <p><strong>Sala:</strong> {conflictosModal.sala}</p>
+                  <p><strong>Fecha:</strong> {conflictosModal.fecha}</p>
+                  <p><strong>Horario solicitado:</strong> {conflictosModal.horario}</p>
+                  {conflictosModal.pelicula && (
+                    <p><strong>Película:</strong> {conflictosModal.pelicula}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="conflictos-lista">
+                <h3>🚫 Conflictos Encontrados:</h3>
+                <p className="conflictos-subtitle">
+                  La sala ya tiene los siguientes eventos programados que se cruzan con tu horario:
+                </p>
+                {conflictosModal.conflictos.map((conflicto, index) => (
+                  <div key={index} className="conflicto-item">
+                    <div className="conflicto-icon">
+                      {conflicto.tipo === 'funcion' ? '🎬' : '🏢'}
+                    </div>
+                    <div className="conflicto-details">
+                      <h4>{conflicto.titulo}</h4>
+                      <p className="conflicto-horario">
+                        🕐 {conflicto.hora_inicio} - {conflicto.hora_fin}
+                      </p>
+                      <p className="conflicto-tipo">
+                        {conflicto.tipo === 'funcion' ? 'Función' : 'Alquiler de Sala'}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="conflicto-sugerencia">
+                <h4>💡 Sugerencias:</h4>
+                <ul>
+                  <li>Intenta con un horario diferente</li>
+                  <li>Selecciona otra sala disponible</li>
+                  <li>Consulta el horario de disponibilidad de la sala</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button 
+                className="btn-primary"
+                onClick={() => setConflictosModal(null)}
+              >
+                Entendido, ajustaré mi reserva
+              </button>
+            </div>
           </div>
         </div>
       )}

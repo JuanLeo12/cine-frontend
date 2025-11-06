@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getTodasFunciones, getPeliculas, getSedes, getSalas, createFuncion, desactivarFuncionesPasadas, desactivarFuncion } from '../../services/api';
+import { getTodasFunciones, getPeliculasEnCartelera, getSedes, getSalas, createFuncion, desactivarFuncionesPasadas, desactivarFuncion } from '../../services/api';
 import './css/FuncionesAdmin.css';
 
 function FuncionesAdmin() {
@@ -23,6 +23,9 @@ function FuncionesAdmin() {
     
     // Salas filtradas por sede seleccionada
     const [salasFiltradas, setSalasFiltradas] = useState([]);
+    
+    // Hora fin calculada automáticamente
+    const [horaFinCalculada, setHoraFinCalculada] = useState('');
 
     // Estado verificación
     const [analisis, setAnalisis] = useState(null);
@@ -30,13 +33,36 @@ function FuncionesAdmin() {
     useEffect(() => {
         cargarDatos();
     }, []);
+    
+    // Calcular hora_fin cuando cambie película u hora
+    useEffect(() => {
+        if (nuevaFuncion.id_pelicula && nuevaFuncion.hora) {
+            const pelicula = peliculas.find(p => p.id === parseInt(nuevaFuncion.id_pelicula));
+            if (pelicula && pelicula.duracion) {
+                const horaFin = calcularHoraFin(nuevaFuncion.hora, pelicula.duracion);
+                setHoraFinCalculada(horaFin);
+            }
+        } else {
+            setHoraFinCalculada('');
+        }
+    }, [nuevaFuncion.id_pelicula, nuevaFuncion.hora, peliculas]);
+    
+    // Helper: Calcular hora de fin
+    const calcularHoraFin = (horaInicio, duracionMinutos) => {
+        const [horas, minutos] = horaInicio.split(':').map(Number);
+        const minutosInicio = horas * 60 + minutos;
+        const minutosFin = minutosInicio + duracionMinutos;
+        const horasFin = Math.floor(minutosFin / 60);
+        const minutosRestantes = minutosFin % 60;
+        return `${String(horasFin).padStart(2, '0')}:${String(minutosRestantes).padStart(2, '0')}`;
+    };
 
     const cargarDatos = async () => {
         try {
             setLoading(true);
             const [funcionesData, peliculasData, sedesData, salasData] = await Promise.all([
                 getTodasFunciones(),
-                getPeliculas(),
+                getPeliculasEnCartelera(),
                 getSedes(),
                 getSalas()
             ]);
@@ -256,7 +282,7 @@ function FuncionesAdmin() {
                             </div>
 
                             <div className="form-group">
-                                <label>Hora:</label>
+                                <label>Hora de Inicio:</label>
                                 <input
                                     type="time"
                                     value={nuevaFuncion.hora}
@@ -264,6 +290,19 @@ function FuncionesAdmin() {
                                     required
                                 />
                             </div>
+                            
+                            {horaFinCalculada && (
+                                <div className="form-group">
+                                    <label>Hora de Fin (calculada):</label>
+                                    <input
+                                        type="text"
+                                        value={horaFinCalculada}
+                                        readOnly
+                                        className="hora-fin-readonly"
+                                        title="Se calcula automáticamente según la duración de la película"
+                                    />
+                                </div>
+                            )}
                         </div>
 
                         <button type="submit" className="btn-submit">Crear Función</button>
@@ -368,7 +407,7 @@ function FuncionesAdmin() {
                                 <td>{funcion.pelicula?.titulo || 'N/A'}</td>
                                 <td>{funcion.sala?.sede?.nombre || 'N/A'}</td>
                                 <td>{funcion.sala?.nombre || 'N/A'}</td>
-                                <td>{new Date(funcion.fecha).toLocaleDateString('es-PE')}</td>
+                                <td>{new Date(funcion.fecha + 'T00:00:00').toLocaleDateString('es-PE')}</td>
                                 <td>{funcion.hora.substring(0, 5)}</td>
                                 <td>
                                     <span className={`badge badge-${funcion.estado}`}>

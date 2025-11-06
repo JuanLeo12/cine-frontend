@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ComboCard from '../../components/comp/ComboCard';
-import { getCombos } from '../../services/api';
+import { getCombos, liberarAsiento } from '../../services/api';
 import { usePurchase } from '../../context/PurchaseContext';
 import './css/Combos.css';
 
 function Combos() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { selectedSeats, funcion, pelicula, tickets, subtotalTickets, timeRemaining, misAsientos } = location.state || {};
-    const { formatTime } = usePurchase();
+    const { selectedSeats, funcion, pelicula, tickets, subtotalTickets, misAsientos } = location.state || {};
+    const { formatTime, stopTimer, timeRemaining } = usePurchase(); // Obtener timeRemaining del contexto
 
     const [cart, setCart] = useState([]);
     const [combos, setCombos] = useState([]);
@@ -50,8 +50,8 @@ function Combos() {
     };
 
     const handleBack = () => {
-        navigate('/ticket-type', {
-            state: {
+        navigate('/ticket-type', { 
+            state: { 
                 selectedSeats,
                 funcion,
                 pelicula,
@@ -59,6 +59,43 @@ function Combos() {
                 misAsientos
             }
         });
+    };
+
+    const handleCancel = async () => {
+        const confirmar = window.confirm(
+            '⚠️ ¿Estás seguro de que deseas cancelar la compra? Se perderán todos los datos seleccionados.'
+        );
+        
+        if (!confirmar) return;
+
+        // Liberar asientos
+        if (selectedSeats && selectedSeats.length > 0 && funcion) {
+            try {
+                for (const asiento of selectedSeats) {
+                    await liberarAsiento({
+                        id_funcion: funcion.id,
+                        fila: asiento.fila,
+                        numero: asiento.numero
+                    });
+                }
+                console.log('✅ Asientos liberados al cancelar');
+            } catch (error) {
+                console.error('Error liberando asientos:', error);
+            }
+        }
+
+        // Detener timer
+        stopTimer();
+
+        // Redirigir a la película
+        if (pelicula && pelicula.id) {
+            navigate(`/movie/${pelicula.id}`, { 
+                state: { pelicula },
+                replace: true 
+            });
+        } else {
+            navigate('/movies', { replace: true });
+        }
     };
 
     const handleContinue = () => {
@@ -143,9 +180,9 @@ function Combos() {
             </div>
             
             <div className="cart-summary">
-                <h3>🛒 Tu Carrito de Combos</h3>
+                <h3>🛒 Tu Carrito de Dulcería</h3>
                 {cart.length === 0 ? (
-                    <p className="empty-cart">No hay combos agregados</p>
+                    <p className="empty-cart">No hay productos agregados</p>
                 ) : (
                     <ul>
                         {cart.map(item => (
@@ -167,6 +204,9 @@ function Combos() {
             </div>
             
             <div className="action-buttons">
+                <button className="cancel-btn" onClick={handleCancel}>
+                    ✕ Cancelar Compra
+                </button>
                 <button className="back-btn" onClick={handleBack}>
                     ← Volver
                 </button>

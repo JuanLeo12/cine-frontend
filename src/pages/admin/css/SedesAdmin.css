@@ -219,3 +219,171 @@
         font-size: 1rem;
     }
 }
+
+/* Nuevos estilos para edición de salas */
+.btn-add-sala {
+    background: #4CAF50;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    margin-top: 0.5rem;
+}
+
+.btn-add-sala:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.sala-nombre-input {
+    padding: 0.5rem;
+    background: #2a2a2a;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    flex: 1;
+}
+
+.sala-nombre-input:focus {
+    outline: none;
+    border-color: #e60000;
+}
+
+.sala-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-remove-sala {
+    background: #f44336;
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.3s;
+}
+
+.btn-remove-sala:hover {
+    background: #d32f2f;
+    transform: scale(1.1);
+}
+
+.help-text {
+    color: #ff9800;
+    font-size: 0.85rem;
+    margin: 0.5rem 0;
+    font-style: italic;
+}
+
+.advertencia-impacto {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    padding: 1.5rem;
+    color: #856404;
+    margin-top: 1rem;
+}
+
+.advertencia-impacto h4 {
+    color: #ff9800;
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+}
+
+.advertencia-impacto p {
+    margin: 0.5rem 0;
+    color: #333;
+}
+
+.advertencia-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.advertencia-actions .btn-warning {
+    background: #ff9800;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.advertencia-actions .btn-warning:hover {
+    background: #f57c00;
+}
+
+.advertencia-actions .btn-secondary {
+    background: #6c757d;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.advertencia-actions .btn-secondary:hover {
+    background: #5a6268;
+}
+
+/* Estilos para sedes inactivas */
+.sede-inactiva {
+    opacity: 0.6;
+    background: #1a1a1a;
+}
+
+.sede-inactiva td {
+    color: #999;
+}
+
+.badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge-activo {
+    background: #4CAF50;
+    color: white;
+}
+
+.badge-inactivo {
+    background: #757575;
+    color: white;
+}
+
+.btn-reactivar {
+    background: #2196F3;
+    color: white;
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.btn-reactivar:hover {
+    background: #1976D2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+}

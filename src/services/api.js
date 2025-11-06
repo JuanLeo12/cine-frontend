@@ -74,6 +74,17 @@ export const getPeliculasPorTipo = async (tipo) => {
   }
 };
 
+// Obtener solo películas en cartelera (endpoint específico)
+export const getPeliculasEnCartelera = async () => {
+  try {
+    const response = await api.get('/peliculas/cartelera/activas');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo películas en cartelera:', error);
+    return [];
+  }
+};
+
 export const getPeliculaById = async (id) => {
   try {
     const response = await api.get(`/peliculas/${id}`);
@@ -138,6 +149,16 @@ export const getSedes = async () => {
   }
 };
 
+export const getTodasLasSedes = async () => {
+  try {
+    const response = await api.get('/sedes/admin/todas');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo todas las sedes:', error);
+    return [];
+  }
+};
+
 export const getSedeById = async (id) => {
   try {
     const response = await api.get(`/sedes/${id}`);
@@ -171,9 +192,19 @@ export const updateSede = async (id, sedeData) => {
 export const deleteSede = async (id) => {
   try {
     const response = await api.delete(`/sedes/${id}`);
-    return response.data;
+    return response;
   } catch (error) {
     console.error('Error eliminando sede:', error);
+    throw error;
+  }
+};
+
+export const reactivarSede = async (id) => {
+  try {
+    const response = await api.patch(`/sedes/${id}/reactivar`);
+    return response.data;
+  } catch (error) {
+    console.error('Error reactivando sede:', error);
     throw error;
   }
 };
@@ -197,6 +228,18 @@ export const getSalaById = async (id) => {
   } catch (error) {
     console.error('Error obteniendo sala:', error);
     return null;
+  }
+};
+
+export const verificarDisponibilidadSala = async (id_sala, fecha, hora_inicio, hora_fin) => {
+  try {
+    const response = await api.get(`/salas/${id_sala}/disponibilidad`, {
+      params: { fecha, hora_inicio, hora_fin }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error verificando disponibilidad:', error);
+    throw error;
   }
 };
 
@@ -272,7 +315,7 @@ export const desactivarFuncion = async (id) => {
   }
 };
 
-/* ----------------- COMBOS -----------------*/
+/* ----------------- DULCERÍA -----------------*/
 
 export const getCombos = async () => {
   try {
@@ -397,6 +440,16 @@ export const getTiposTicket = async () => {
   } catch (error) {
     console.error('Error obteniendo tipos de ticket:', error);
     return [];
+  }
+};
+
+export const getTiposTicketPorSala = async (tipo_sala) => {
+  try {
+    const response = await api.get(`/tipos_ticket/por-sala?tipo_sala=${tipo_sala}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo tipos de ticket por sala:', error);
+    throw error;
   }
 };
 
@@ -697,8 +750,31 @@ export const getPublicidadActiva = async () => {
 
 export const createPublicidad = async (publicidadData) => {
   try {
-    const response = await api.post('/publicidad', publicidadData);
-    return response.data;
+    // Si hay archivo, usar FormData, sino JSON normal
+    if (publicidadData.archivo) {
+      const formData = new FormData();
+      
+      // Agregar todos los campos al FormData
+      Object.keys(publicidadData).forEach(key => {
+        if (key === 'archivo') {
+          formData.append('archivo', publicidadData.archivo);
+        } else {
+          formData.append(key, publicidadData[key]);
+        }
+      });
+
+      // Crear petición con FormData (sin Content-Type, axios lo configura automáticamente)
+      const response = await axios.post(`${BASE_URL}/publicidad`, formData, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      return response.data;
+    } else {
+      // Sin archivo, usar JSON normal
+      const response = await api.post('/publicidad', publicidadData);
+      return response.data;
+    }
   } catch (error) {
     console.error('Error creando campaña:', error);
     throw error;
@@ -733,6 +809,64 @@ export const getTarifasCorporativas = async () => {
   } catch (error) {
     console.error('Error obteniendo tarifas:', error);
     return [];
+  }
+};
+
+// ====================
+// 🎫 BOLETAS CORPORATIVAS
+// ====================
+
+export const crearBoletaCorporativa = async (tipo, id_referencia) => {
+  try {
+    const response = await api.post('/boletas-corporativas', {
+      tipo,
+      id_referencia
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creando boleta corporativa:', error);
+    throw error;
+  }
+};
+
+export const obtenerBoletaPorQR = async (codigo_qr) => {
+  try {
+    const response = await api.get(`/boletas-corporativas/${codigo_qr}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo boleta:', error);
+    throw error;
+  }
+};
+
+export const obtenerMisBoletas = async () => {
+  try {
+    const response = await api.get('/boletas-corporativas/mis-boletas');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo mis boletas:', error);
+    throw error;
+  }
+};
+
+export const marcarBoletaUtilizada = async (codigo_qr) => {
+  try {
+    const response = await api.put(`/boletas-corporativas/${codigo_qr}/utilizar`);
+    return response.data;
+  } catch (error) {
+    console.error('Error marcando boleta como utilizada:', error);
+    throw error;
+  }
+};
+
+// Admin: Obtener todas las boletas corporativas
+export const obtenerTodasBoletasCorporativas = async () => {
+  try {
+    const response = await api.get('/boletas-corporativas/admin/todas');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo todas las boletas corporativas:', error);
+    throw error;
   }
 };
 

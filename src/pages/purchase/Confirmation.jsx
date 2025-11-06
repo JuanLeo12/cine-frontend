@@ -37,19 +37,64 @@ function Confirmation() {
         navigate('/mis-compras');
     };
 
-    // Generar URL del código QR único para la orden (con combos y tickets detallados)
-    const generarQR = (ordenId) => {
-        const datosQR = {
-            orden: ordenId,
-            pelicula: pelicula?.titulo || null,
-            funcion: funcion?.id || null,
-            asientos: (selectedSeats || []).map(s => s.id).join(',') || null,
-            tickets: (tickets || []).map(t => `${t.tipo_nombre || 'Ticket'}:${t.cantidad}`).join(',') || null,
-            combos: (cart || []).length > 0 ? (cart || []).map(c => `${c.nombre}:${c.quantity}`).join(',') : null,
-            fecha: new Date().toLocaleString('es-PE', { timeZone: 'America/Lima' })
+    // Generar URL del código QR único para la orden (mismo formato que MisCompras)
+    const generarQR = (orden) => {
+        const tituloPelicula = orden.funcion?.pelicula?.titulo || pelicula?.titulo || 'N/A';
+        const fecha = orden.funcion?.fecha || funcion?.fecha || 'N/A';
+        const hora = orden.funcion?.hora || funcion?.hora || 'N/A';
+        const sala = orden.funcion?.sala?.nombre || funcion?.sala?.nombre || 'N/A';
+        const sede = orden.funcion?.sala?.sede?.nombre || funcion?.sala?.sede?.nombre || 'N/A';
+        
+        // Obtener asientos (mismo formato que MisCompras)
+        const asientos = (selectedSeats || []).map(s => s.id);
+        
+        // Obtener tickets con cantidad y tipo (mismo formato que MisCompras)
+        const ticketsData = (tickets || []).map(t => {
+            const nombreTipo = t.nombre || 'Ticket';
+            const cantidad = t.cantidad;
+            return {
+                tipo: nombreTipo,
+                cantidad: cantidad,
+                descripcion: `x${cantidad} Ticket${cantidad > 1 ? 's' : ''} ${nombreTipo}`
+            };
+        });
+        
+        // Obtener combos (mismo formato que MisCompras)
+        const combosData = (cart || []).map(c => ({
+            nombre: c.nombre,
+            cantidad: c.quantity
+        }));
+        
+        const total = parseFloat(pago.monto_total);
+        const fechaCompraFormateada = new Date().toLocaleString('es-PE', { timeZone: 'America/Lima' });
+
+        const qrData = {
+            tipo: "CINESTAR_TICKET",
+            orden_id: orden.id,
+            pelicula: tituloPelicula,
+            funcion: {
+                fecha: fecha,
+                hora: hora
+            },
+            ubicacion: {
+                sede: sede,
+                sala: sala
+            },
+            asientos: asientos,
+            tickets: ticketsData,
+            combos: combosData,
+            pago: {
+                total: parseFloat(total.toFixed(2)),
+                estado: pago.estado_pago || 'completado',
+                metodo: pago.metodoPago?.nombre || 'N/A' // ← Método correcto
+            },
+            fecha_compra: fechaCompraFormateada,
+            cliente: orden.usuario?.nombre || 'N/A' // ← Cliente correcto
         };
-        const qrData = encodeURIComponent(JSON.stringify(datosQR));
-        return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${qrData}`;
+        
+        // Convertir a JSON con formato legible
+        const jsonData = JSON.stringify(qrData, null, 2);
+        return `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(jsonData)}`;
     };
 
     return (
@@ -66,7 +111,7 @@ function Confirmation() {
                     <h3>📱 Código QR de tu Compra</h3>
                     <div className="qr-container-confirmation">
                         <img 
-                            src={generarQR(orden.id)} 
+                            src={generarQR(orden)} 
                             alt={`QR Orden ${orden.id}`}
                             className="qr-code-confirmation"
                         />
@@ -113,12 +158,23 @@ function Confirmation() {
 
                     <div className="detail-card">
                         <h4>🎫 Tickets</h4>
-                        {(tickets || []).map((ticket, index) => (
-                            <div key={index} className="detail-row">
-                                <span>{ticket.cantidad}x {ticket.tipo_nombre || 'Ticket'}</span>
-                                <span>S/ {(ticket.cantidad * ticket.precio_unitario).toFixed(2)}</span>
+                        {(tickets || []).length === 0 ? (
+                            <p style={{ color: '#999', fontStyle: 'italic' }}>Sin tickets</p>
+                        ) : (
+                            <div className="tickets-list-simple">
+                                {(tickets || []).map((ticket, index) => (
+                                    <div key={index} className="ticket-line-simple">
+                                        <span className="ticket-bullet-confirm">•</span>
+                                        <span className="ticket-text-confirm">
+                                            <strong>x{ticket.cantidad}</strong> Ticket{ticket.cantidad > 1 ? 's' : ''} <strong>{ticket.nombre || 'General'}</strong>
+                                        </span>
+                                        <span className="ticket-price-confirm">
+                                            S/ {(ticket.cantidad * ticket.precio_unitario).toFixed(2)}
+                                        </span>
+                                    </div>
+                                ))}
                             </div>
-                        ))}
+                        )}
                     </div>
 
                     {cart && cart.length > 0 && (
@@ -144,7 +200,7 @@ function Confirmation() {
                         </div>
                         <div className="detail-row">
                             <span>Método de pago</span>
-                            <span>💳 {pago.estado_pago}</span>
+                            <span>💳 {pago.metodoPago?.nombre || 'No especificado'}</span>
                         </div>
                         {pago.nota && (
                             <p className="payment-note">{pago.nota}</p>
