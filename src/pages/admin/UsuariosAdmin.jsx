@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { updateUsuario } from '../../services/api';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+
 function UsuariosAdmin() {
     const [usuarios, setUsuarios] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -16,7 +18,7 @@ function UsuariosAdmin() {
     const cargarUsuarios = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:4000/usuarios', {
+            const response = await axios.get(`${API_URL}/usuarios`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setUsuarios(response.data);
