@@ -1292,7 +1292,17 @@ function MisCompras() {
             {vistaActiva === 'tickets' && (
                 <>
                     {ordenes.length === 0 ? (
-                        <p>No tienes tickets registrados aún.</p>
+                        <div className="sin-compras">
+                            <div className="sin-compras-icono">🎬</div>
+                            <h3>No tienes compras de tickets aún</h3>
+                            <p>Cuando compres tickets para películas, aparecerán aquí.</p>
+                            <button 
+                                className="btn-explorar"
+                                onClick={() => navigate('/movies')}
+                            >
+                                🍿 Ver Cartelera
+                            </button>
+                        </div>
                     ) : (
                         <div className="compras-list">
                             {ordenes.map(orden => {
@@ -1539,7 +1549,23 @@ function MisCompras() {
             {vistaActiva === 'corporativo' && (
                 <>
                     {boletasCorporativas.length === 0 ? (
-                        <p>No tienes servicios corporativos registrados aún.</p>
+                        <div className="sin-compras">
+                            <div className="sin-compras-icono">🏢</div>
+                            <h3>No tienes servicios corporativos registrados aún</h3>
+                            <p>
+                                {user?.rol === 'corporativo' 
+                                    ? 'Cuando contrates servicios corporativos, aparecerán aquí.' 
+                                    : 'Los servicios corporativos están disponibles solo para usuarios empresariales.'}
+                            </p>
+                            {user?.rol === 'corporativo' && (
+                                <button 
+                                    className="btn-explorar"
+                                    onClick={() => navigate('/corporate')}
+                                >
+                                    📋 Ver Servicios Corporativos
+                                </button>
+                            )}
+                        </div>
                     ) : (
                         <div className="compras-list">
                             {boletasCorporativas.map(boleta => {
