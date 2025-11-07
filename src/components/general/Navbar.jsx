@@ -9,7 +9,7 @@ function Navbar() {
   const [isUserOpen, setIsUserOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
-  const { isLoggedIn, user, logout } = useAuth();
+  const { isLoggedIn, user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -80,7 +80,7 @@ function Navbar() {
               </button>
               {isUserOpen && (
                 <ul className="dropdown-menu">
-                  {user.rol === 'admin' && (
+                  {isAdmin() && (
                     <li>
                       <Link to="/admin" onClick={() => setIsUserOpen(false)}>🎬 Panel Admin</Link>
                     </li>
