@@ -421,6 +421,16 @@ export const liberarAsiento = async (asientoData) => {
   }
 };
 
+export const liberarAsientosUsuarioEnFuncion = async (id_funcion) => {
+  try {
+    const response = await api.post(`/asientos/liberar-usuario/${id_funcion}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error liberando asientos del usuario:', error);
+    throw error;
+  }
+};
+
 export const getAsientosPorFuncion = async (id_funcion) => {
   try {
     const response = await api.get(`/asientos/funcion/${id_funcion}`);
@@ -763,10 +773,10 @@ export const createPublicidad = async (publicidadData) => {
         }
       });
 
-      // Crear petición con FormData (sin Content-Type, axios lo configura automáticamente)
-      const response = await axios.post(`${BASE_URL}/publicidad`, formData, {
+      // Usar la instancia api configurada que ya tiene el token en los interceptores
+      const response = await api.post('/publicidad', formData, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Content-Type': 'multipart/form-data'
         }
       });
       return response.data;
@@ -797,6 +807,51 @@ export const deletePublicidad = async (id) => {
     return response.data;
   } catch (error) {
     console.error('Error eliminando campaña:', error);
+    throw error;
+  }
+};
+
+export const descargarArchivoPublicidad = async (id) => {
+  try {
+    const response = await api.get(`/publicidad/${id}/descargar`, {
+      responseType: 'blob' // Importante para archivos binarios
+    });
+    
+    // Obtener el nombre del archivo del header Content-Disposition
+    const contentDisposition = response.headers['content-disposition'];
+    let fileName = 'archivo_publicidad';
+    
+    if (contentDisposition) {
+      // Soportar tanto filename="nombre" como filename=nombre
+      const fileNameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+      if (fileNameMatch && fileNameMatch[1]) {
+        fileName = fileNameMatch[1].replace(/['"]/g, '');
+      }
+    }
+    
+    // Detectar el tipo de contenido
+    const contentType = response.headers['content-type'] || 'application/octet-stream';
+    
+    // Crear blob con el tipo correcto
+    const blob = new Blob([response.data], { type: contentType });
+    const url = window.URL.createObjectURL(blob);
+    
+    // Crear link temporal y hacer click para descargar
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName; // Usar .download en lugar de setAttribute
+    document.body.appendChild(link);
+    link.click();
+    
+    // Limpiar después de un pequeño delay
+    setTimeout(() => {
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    }, 100);
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Error descargando archivo:', error);
     throw error;
   }
 };

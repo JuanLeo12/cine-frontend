@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { obtenerTodasBoletasCorporativas } from '../../services/api';
+import { obtenerTodasBoletasCorporativas, descargarArchivoPublicidad } from '../../services/api';
 import './css/ServiciosCorporativosAdmin.css';
 
 function ServiciosCorporativosAdmin() {
@@ -55,7 +55,7 @@ function ServiciosCorporativosAdmin() {
         if (boleta.tipo === 'funcion_privada') return detalles?.precio_corporativo;
         if (boleta.tipo === 'alquiler_sala') return detalles?.precio;
         if (boleta.tipo === 'publicidad') return detalles?.precio;
-        if (boleta.tipo === 'vales_corporativos') return detalles?.valor;
+        if (boleta.tipo === 'vales_corporativos') return detalles?.pago?.monto_total; // Monto total pagado
         return null;
     };
 
@@ -64,8 +64,17 @@ function ServiciosCorporativosAdmin() {
         if (boleta.tipo === 'funcion_privada') return detalles?.clienteCorporativo;
         if (boleta.tipo === 'alquiler_sala') return detalles?.usuario;
         if (boleta.tipo === 'publicidad') return detalles?.usuario;
-        if (boleta.tipo === 'vales_corporativos') return null; // Vales no tienen cliente directo
+        if (boleta.tipo === 'vales_corporativos') return detalles?.pago?.ordenCompra?.usuario; // Usuario del pago del vale
         return null;
+    };
+
+    const handleDescargarArchivo = async (idPublicidad) => {
+        try {
+            await descargarArchivoPublicidad(idPublicidad);
+        } catch (error) {
+            console.error('Error al descargar archivo:', error);
+            alert('Error al descargar el archivo. Por favor intenta de nuevo.');
+        }
     };
 
     // Filtrar boletas
@@ -94,8 +103,8 @@ function ServiciosCorporativosAdmin() {
             if (b.tipo === 'publicidad' && b.detalles?.precio) {
                 return sum + parseFloat(b.detalles.precio);
             }
-            if (b.tipo === 'vales_corporativos' && b.detalles?.valor) {
-                return sum + parseFloat(b.detalles.valor);
+            if (b.tipo === 'vales_corporativos' && b.detalles?.pago?.monto_total) {
+                return sum + parseFloat(b.detalles.pago.monto_total);
             }
             return sum;
         }, 0)
@@ -313,10 +322,8 @@ function ServiciosCorporativosAdmin() {
                                                     {detalles?.archivo_publicidad && (
                                                         <div className="detail-item full-width">
                                                             <span className="detail-label">Archivo de Publicidad:</span>
-                                                            <a 
-                                                                href={`${process.env.REACT_APP_API_URL || 'http://localhost:4000'}/publicidad/${detalles.id}/descargar`}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
+                                                            <button
+                                                                onClick={() => handleDescargarArchivo(detalles.id)}
                                                                 className="btn-download-archivo"
                                                                 style={{
                                                                     display: 'inline-flex',
@@ -325,16 +332,17 @@ function ServiciosCorporativosAdmin() {
                                                                     padding: '0.5rem 1rem',
                                                                     backgroundColor: '#1976d2',
                                                                     color: 'white',
-                                                                    textDecoration: 'none',
+                                                                    border: 'none',
                                                                     borderRadius: '4px',
                                                                     fontWeight: 'bold',
+                                                                    cursor: 'pointer',
                                                                     transition: 'background-color 0.2s'
                                                                 }}
                                                                 onMouseEnter={(e) => e.target.style.backgroundColor = '#1565c0'}
                                                                 onMouseLeave={(e) => e.target.style.backgroundColor = '#1976d2'}
                                                             >
                                                                 📥 Descargar Archivo
-                                                            </a>
+                                                            </button>
                                                             <small style={{ display: 'block', marginTop: '0.5rem', color: '#666' }}>
                                                                 Archivo: {detalles.archivo_publicidad.split('/').pop()}
                                                             </small>
@@ -345,64 +353,126 @@ function ServiciosCorporativosAdmin() {
                                         )}
 
                                         {/* Detalles del servicio */}
-                                        <div className="detail-section">
-                                            <h4>📋 Detalles del Servicio</h4>
-                                            <div className="detail-grid">
-                                                {boleta.tipo === 'funcion_privada' && detalles?.pelicula && (
+                                        {boleta.tipo !== 'vales_corporativos' ? (
+                                            <div className="detail-section">
+                                                <h4>📋 Detalles del Servicio</h4>
+                                                <div className="detail-grid">
+                                                    {boleta.tipo === 'funcion_privada' && detalles?.pelicula && (
+                                                        <div className="detail-item">
+                                                            <span className="detail-label">Película:</span>
+                                                            <span className="detail-value">{detalles.pelicula.titulo}</span>
+                                                        </div>
+                                                    )}
                                                     <div className="detail-item">
-                                                        <span className="detail-label">Película:</span>
-                                                        <span className="detail-value">{detalles.pelicula.titulo}</span>
+                                                        <span className="detail-label">Sede:</span>
+                                                        <span className="detail-value">
+                                                            {detalles?.sala?.sede?.nombre || 'N/A'} - {detalles?.sala?.sede?.ciudad || ''}
+                                                        </span>
                                                     </div>
-                                                )}
-                                                <div className="detail-item">
-                                                    <span className="detail-label">Sede:</span>
-                                                    <span className="detail-value">
-                                                        {detalles?.sala?.sede?.nombre || 'N/A'} - {detalles?.sala?.sede?.ciudad || ''}
-                                                    </span>
-                                                </div>
-                                                <div className="detail-item">
-                                                    <span className="detail-label">Sala:</span>
-                                                    <span className="detail-value">
-                                                        {detalles?.sala?.nombre || 'N/A'} ({detalles?.sala?.tipo_sala || 'N/A'})
-                                                    </span>
-                                                </div>
-                                                {boleta.tipo === 'alquiler_sala' && detalles?.sala?.capacidad && (
                                                     <div className="detail-item">
-                                                        <span className="detail-label">Capacidad:</span>
-                                                        <span className="detail-value">{detalles.sala.capacidad} personas</span>
+                                                        <span className="detail-label">Sala:</span>
+                                                        <span className="detail-value">
+                                                            {detalles?.sala?.nombre || 'N/A'} ({detalles?.sala?.tipo_sala || 'N/A'})
+                                                        </span>
                                                     </div>
-                                                )}
-                                                <div className="detail-item">
-                                                    <span className="detail-label">Fecha:</span>
-                                                    <span className="detail-value">
-                                                        {detalles?.fecha ? new Date(detalles.fecha + 'T00:00:00').toLocaleDateString('es-PE', {
-                                                            weekday: 'long',
-                                                            year: 'numeric',
-                                                            month: 'long',
-                                                            day: 'numeric'
-                                                        }) : 'N/A'}
-                                                    </span>
+                                                    {boleta.tipo === 'alquiler_sala' && detalles?.sala?.capacidad && (
+                                                        <div className="detail-item">
+                                                            <span className="detail-label">Capacidad:</span>
+                                                            <span className="detail-value">{detalles.sala.capacidad} personas</span>
+                                                        </div>
+                                                    )}
+                                                    <div className="detail-item">
+                                                        <span className="detail-label">Fecha:</span>
+                                                        <span className="detail-value">
+                                                            {detalles?.fecha ? new Date(detalles.fecha + 'T00:00:00').toLocaleDateString('es-PE', {
+                                                                weekday: 'long',
+                                                                year: 'numeric',
+                                                                month: 'long',
+                                                                day: 'numeric'
+                                                            }) : 'N/A'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="detail-item">
+                                                        <span className="detail-label">Horario:</span>
+                                                        <span className="detail-value">
+                                                            {detalles?.hora_inicio || 'N/A'} - {detalles?.hora_fin || 'N/A'}
+                                                        </span>
+                                                    </div>
+                                                    {detalles?.descripcion_evento && (
+                                                        <div className="detail-item full-width">
+                                                            <span className="detail-label">Descripción:</span>
+                                                            <span className="detail-value">{detalles.descripcion_evento}</span>
+                                                        </div>
+                                                    )}
+                                                    {precio && (
+                                                        <div className="detail-item highlight">
+                                                            <span className="detail-label">Precio Total:</span>
+                                                            <span className="detail-value precio">S/ {parseFloat(precio).toFixed(2)}</span>
+                                                        </div>
+                                                    )}
                                                 </div>
-                                                <div className="detail-item">
-                                                    <span className="detail-label">Horario:</span>
-                                                    <span className="detail-value">
-                                                        {detalles?.hora_inicio || 'N/A'} - {detalles?.hora_fin || 'N/A'}
-                                                    </span>
-                                                </div>
-                                                {detalles?.descripcion_evento && (
-                                                    <div className="detail-item full-width">
-                                                        <span className="detail-label">Descripción:</span>
-                                                        <span className="detail-value">{detalles.descripcion_evento}</span>
-                                                    </div>
-                                                )}
-                                                {precio && (
-                                                    <div className="detail-item highlight">
-                                                        <span className="detail-label">Precio Total:</span>
-                                                        <span className="detail-value precio">S/ {parseFloat(precio).toFixed(2)}</span>
-                                                    </div>
-                                                )}
                                             </div>
-                                        </div>
+                                        ) : (
+                                            <div className="detail-section">
+                                                <h4>🎫 Detalles del Vale Corporativo</h4>
+                                                <div className="detail-grid">
+                                                    <div className="detail-item">
+                                                        <span className="detail-label">Código del Vale:</span>
+                                                        <span className="detail-value codigo">{detalles?.codigo || 'N/A'}</span>
+                                                    </div>
+                                                    <div className="detail-item">
+                                                        <span className="detail-label">Tipo de Vale:</span>
+                                                        <span className="detail-value">{detalles?.tipo === 'entrada' ? '🎬 Entrada' : '🍿 Combo'}</span>
+                                                    </div>
+                                                    <div className="detail-item">
+                                                        <span className="detail-label">Descuento:</span>
+                                                        <span className="detail-value valor-destacado">{parseFloat(detalles?.valor || 0).toFixed(0)}%</span>
+                                                    </div>
+                                                    <div className="detail-item">
+                                                        <span className="detail-label">Usos Disponibles:</span>
+                                                        <span className="detail-value" style={{ 
+                                                            fontWeight: 'bold', 
+                                                            color: detalles?.usado ? '#d32f2f' : '#4CAF50' 
+                                                        }}>
+                                                            {detalles?.usos_disponibles || 0} de {detalles?.cantidad_usos || 1} usos
+                                                            {detalles?.usado && ' (AGOTADO)'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="detail-item">
+                                                        <span className="detail-label">Fecha de Expiración:</span>
+                                                        <span className="detail-value">
+                                                            {detalles?.fecha_expiracion ? new Date(detalles.fecha_expiracion).toLocaleDateString('es-PE', {
+                                                                year: 'numeric',
+                                                                month: 'long',
+                                                                day: 'numeric'
+                                                            }) : 'N/A'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="detail-item">
+                                                        <span className="detail-label">Fecha de Pago:</span>
+                                                        <span className="detail-value">
+                                                            {detalles?.pago?.fecha_pago ? new Date(detalles.pago.fecha_pago).toLocaleDateString('es-PE', {
+                                                                year: 'numeric',
+                                                                month: 'long',
+                                                                day: 'numeric',
+                                                                hour: '2-digit',
+                                                                minute: '2-digit'
+                                                            }) : 'N/A'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="detail-item">
+                                                        <span className="detail-label">Método de Pago:</span>
+                                                        <span className="detail-value">{detalles?.pago?.metodoPago?.nombre || 'N/A'}</span>
+                                                    </div>
+                                                    {precio && (
+                                                        <div className="detail-item highlight">
+                                                            <span className="detail-label">Monto Pagado:</span>
+                                                            <span className="detail-value precio">S/ {parseFloat(precio).toFixed(2)}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
 
                                         {/* Información de la boleta */}
                                         <div className="detail-section">

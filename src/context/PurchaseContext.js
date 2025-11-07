@@ -11,16 +11,37 @@ export const usePurchase = () => {
 };
 
 export const PurchaseProvider = ({ children }) => {
-    const [timeRemaining, setTimeRemaining] = useState(300); // 5 minutos
-    const [timerActive, setTimerActive] = useState(false);
+    // Recuperar tiempo del localStorage si existe
+    const getInitialTime = () => {
+        const saved = localStorage.getItem('purchaseTimeRemaining');
+        const savedTimestamp = localStorage.getItem('purchaseTimestamp');
+        if (saved && savedTimestamp) {
+            const elapsed = Math.floor((Date.now() - parseInt(savedTimestamp)) / 1000);
+            const remaining = parseInt(saved) - elapsed;
+            return remaining > 0 ? remaining : 0;
+        }
+        return 300;
+    };
+
+    const [timeRemaining, setTimeRemaining] = useState(getInitialTime());
+    const [timerActive, setTimerActive] = useState(localStorage.getItem('purchaseTimerActive') === 'true');
     const [purchaseData, setPurchaseData] = useState(null);
-    const [hasActiveSelection, setHasActiveSelection] = useState(false); // Para bloquear navegación
-    const onTimerExpireRef = useRef(null); // Usar ref en lugar de state para evitar re-renders
+    const [hasActiveSelection, setHasActiveSelection] = useState(false);
+    const onTimerExpireRef = useRef(null);
     const intervaloRef = useRef(null);
 
     // Temporizador global de compra
     useEffect(() => {
-        if (!timerActive) return;
+        if (!timerActive) {
+            // Limpiar localStorage si el timer no está activo
+            localStorage.removeItem('purchaseTimeRemaining');
+            localStorage.removeItem('purchaseTimestamp');
+            localStorage.removeItem('purchaseTimerActive');
+            return;
+        }
+
+        // Guardar en localStorage
+        localStorage.setItem('purchaseTimerActive', 'true');
 
         if (intervaloRef.current) {
             clearInterval(intervaloRef.current);
@@ -28,7 +49,13 @@ export const PurchaseProvider = ({ children }) => {
 
         intervaloRef.current = setInterval(() => {
             setTimeRemaining((prev) => {
-                if (prev <= 1) {
+                const newTime = prev - 1;
+                
+                // Guardar en localStorage
+                localStorage.setItem('purchaseTimeRemaining', newTime.toString());
+                localStorage.setItem('purchaseTimestamp', Date.now().toString());
+                
+                if (newTime <= 0) {
                     stopTimer();
                     // Llamar callback si existe
                     if (onTimerExpireRef.current) {
@@ -36,7 +63,7 @@ export const PurchaseProvider = ({ children }) => {
                     }
                     return 0;
                 }
-                return prev - 1;
+                return newTime;
             });
         }, 1000);
 
@@ -45,11 +72,17 @@ export const PurchaseProvider = ({ children }) => {
                 clearInterval(intervaloRef.current);
             }
         };
-    }, [timerActive]); // Solo depende de timerActive
+    }, [timerActive]);
 
-    const startTimer = () => {
+    const startTimer = (id_funcion = null) => {
         setTimeRemaining(300);
         setTimerActive(true);
+        localStorage.setItem('purchaseTimeRemaining', '300');
+        localStorage.setItem('purchaseTimestamp', Date.now().toString());
+        localStorage.setItem('purchaseTimerActive', 'true');
+        if (id_funcion) {
+            localStorage.setItem('purchaseIdFuncion', id_funcion.toString());
+        }
     };
 
     const stopTimer = () => {
@@ -57,6 +90,11 @@ export const PurchaseProvider = ({ children }) => {
         if (intervaloRef.current) {
             clearInterval(intervaloRef.current);
         }
+        // Limpiar localStorage
+        localStorage.removeItem('purchaseTimeRemaining');
+        localStorage.removeItem('purchaseTimestamp');
+        localStorage.removeItem('purchaseTimerActive');
+        localStorage.removeItem('purchaseIdFuncion');
     };
 
     const resetTimer = () => {
@@ -65,8 +103,11 @@ export const PurchaseProvider = ({ children }) => {
 
     const extendTimer = () => {
         setTimeRemaining(300); // Reiniciar a 5 minutos
+        localStorage.setItem('purchaseTimeRemaining', '300');
+        localStorage.setItem('purchaseTimestamp', Date.now().toString());
         if (!timerActive) {
             setTimerActive(true);
+            localStorage.setItem('purchaseTimerActive', 'true');
         }
     };
 
@@ -87,7 +128,25 @@ export const PurchaseProvider = ({ children }) => {
     const clearPurchase = () => {
         setPurchaseData(null);
         stopTimer();
+        setHasActiveSelection(false);
     };
+
+    // Prevenir recarga de página cuando hay compra activa
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if (timerActive) {
+                e.preventDefault();
+                e.returnValue = '⚠️ Tienes una compra en proceso. ¿Estás seguro de que quieres salir? Perderás tu selección de asientos.';
+                return e.returnValue;
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [timerActive]);
 
     const value = {
         timeRemaining,
@@ -102,7 +161,8 @@ export const PurchaseProvider = ({ children }) => {
         formatTime,
         setPurchase,
         clearPurchase,
-        setHasActiveSelection
+        setHasActiveSelection,
+        getStoredIdFuncion: () => localStorage.getItem('purchaseIdFuncion')
     };
 
     return (

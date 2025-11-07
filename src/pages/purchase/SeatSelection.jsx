@@ -12,11 +12,12 @@ function SeatSelection() {
     const { 
         timeRemaining, 
         timerActive, 
-        startTimer, 
+        startTimer,
+        stopTimer,
         extendTimer,
         setTimerExpireCallback,
         formatTime, 
-        setHasActiveSelection 
+        setHasActiveSelection
     } = usePurchase();
     const { user } = useAuth();
     
@@ -48,6 +49,7 @@ function SeatSelection() {
         }
         
         if (!funcion || !pelicula) {
+            console.log('⚠️ No hay información de función/película - redirigiendo a /movies');
             alert('No se pudo cargar la información de la función');
             navigate('/movies');
             return;
@@ -71,7 +73,7 @@ function SeatSelection() {
         
         // Iniciar temporizador global solo si no está activo
         if (!timerActive) {
-            startTimer();
+            startTimer(funcion.id_funcion); // Guardar id_funcion en localStorage
         }
         
         // Actualización automática de asientos cada 3 segundos
@@ -109,7 +111,7 @@ function SeatSelection() {
             }
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, []); // Ejecutar solo al montar
 
     // Monitorear cuando el timer llega a 0
     useEffect(() => {
@@ -508,6 +510,9 @@ function SeatSelection() {
         setIsNavigating(true);
         await liberarTodosAsientos();
         
+        // Detener el timer
+        stopTimer();
+        
         // Redirigir a la película si existe, sino a movies
         if (pelicula && pelicula.id) {
             navigate(`/movie/${pelicula.id}`, { 
@@ -530,6 +535,10 @@ function SeatSelection() {
         setShowTimerModal(false);
         setIsNavigating(true);
         await liberarTodosAsientos();
+        
+        // Detener el timer
+        stopTimer();
+        
         alert('⏰ Tu tiempo de compra ha expirado. Vuelve a seleccionar tus asientos.');
         
         // Verificar que pelicula existe antes de navegar
@@ -579,13 +588,18 @@ function SeatSelection() {
                         <span className="row-label">{fila[0].fila}</span>
                         {fila.map((asiento) => {
                             const esMioAsiento = misAsientos.includes(asiento.id);
+                            // Si el asiento está bloqueado por MÍ pero no está en misAsientos,
+                            // mostrarlo como disponible para que pueda renovar el bloqueo
+                            const bloqueadoPorMi = asiento.estado === 'bloqueado' && asiento.id_usuario_bloqueo === user?.id;
+                            const estadoVisual = (bloqueadoPorMi && !esMioAsiento) ? 'libre' : asiento.estado;
+                            
                             return (
                                 <button
                                     key={asiento.id}
-                                    className={`seat ${asiento.estado} ${esMioAsiento ? 'mi-seleccion' : ''}`}
+                                    className={`seat ${estadoVisual} ${esMioAsiento ? 'mi-seleccion' : ''}`}
                                     onClick={() => toggleSeat(asiento)}
-                                    disabled={asiento.estado === 'ocupado' || (asiento.estado === 'bloqueado' && !esMioAsiento)}
-                                    title={`${asiento.id} - ${esMioAsiento ? 'Tu selección' : asiento.estado}`}
+                                    disabled={asiento.estado === 'ocupado' || (asiento.estado === 'bloqueado' && !bloqueadoPorMi && !esMioAsiento)}
+                                    title={`${asiento.id} - ${esMioAsiento ? 'Tu selección' : (bloqueadoPorMi && !esMioAsiento) ? 'Disponible (tu bloqueo anterior)' : asiento.estado}`}
                                 >
                                     <span className="seat-label">{asiento.id}</span>
                                 </button>

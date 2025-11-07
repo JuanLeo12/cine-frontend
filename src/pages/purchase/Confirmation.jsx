@@ -8,7 +8,18 @@ function Confirmation() {
     const location = useLocation();
     const { stopTimer, clearPurchase, setHasActiveSelection } = usePurchase();
     
-    const { orden, pago, pelicula, funcion, selectedSeats, tickets, cart } = location.state || {};
+    const { orden, pago, pelicula, funcion, selectedSeats, tickets, cart, valeAplicado } = location.state || {};
+
+    // DEBUG: Ver qué valores tenemos
+    React.useEffect(() => {
+        console.log('📊 Confirmation - Datos recibidos:', {
+            pago_monto_total: pago?.monto_total,
+            orden_monto_total: orden?.monto_total,
+            valeAplicado,
+            tickets,
+            cart
+        });
+    }, [pago, orden, valeAplicado, tickets, cart]);
 
     // Detener timer cuando se complete la compra
     useEffect(() => {
@@ -194,10 +205,58 @@ function Confirmation() {
                     )}
 
                     <div className="detail-card payment-info">
-                        <div className="detail-row total">
-                            <span>Total Pagado</span>
-                            <strong>S/ {parseFloat(pago.monto_total).toFixed(2)}</strong>
-                        </div>
+                        {(() => {
+                            // Calcular subtotal original (tickets + combos)
+                            const subtotalTickets = (tickets || []).reduce((sum, t) => sum + (t.cantidad * t.precio_unitario), 0);
+                            const subtotalCombos = (cart || []).reduce((sum, c) => sum + (c.quantity * c.precio), 0);
+                            
+                            // Calcular subtotal solo de combos tipo "combos" (no popcorn ni bebidas)
+                            const subtotalCombosDescuento = (cart || [])
+                                .filter(c => c.tipo === 'combos')
+                                .reduce((sum, c) => sum + (c.quantity * c.precio), 0);
+                            
+                            const subtotalOriginal = subtotalTickets + subtotalCombos;
+                            
+                            // Si hay vale, calcular descuento
+                            if (valeAplicado) {
+                                const porcentaje = valeAplicado.valor || 20;
+                                let descuento = 0;
+                                
+                                if (valeAplicado.tipo === 'entrada') {
+                                    descuento = subtotalTickets * (porcentaje / 100);
+                                } else if (valeAplicado.tipo === 'combo') {
+                                    // Descuento solo aplica a combos tipo "combos"
+                                    descuento = subtotalCombosDescuento * (porcentaje / 100);
+                                }
+                                
+                                const totalCalculado = subtotalOriginal - descuento;
+                                
+                                return (
+                                    <>
+                                        <div className="detail-row">
+                                            <span>Subtotal</span>
+                                            <strong>S/ {subtotalOriginal.toFixed(2)}</strong>
+                                        </div>
+                                        <div className="detail-row discount">
+                                            <span>💎 Descuento Vale ({porcentaje}% en {valeAplicado.tipo === 'entrada' ? 'Tickets' : 'Combos'})</span>
+                                            <strong style={{ color: '#27ae60' }}>- S/ {descuento.toFixed(2)}</strong>
+                                        </div>
+                                        <div className="detail-row total">
+                                            <span>Total Pagado</span>
+                                            <strong>S/ {totalCalculado.toFixed(2)}</strong>
+                                        </div>
+                                    </>
+                                );
+                            } else {
+                                // Sin vale, mostrar solo total
+                                return (
+                                    <div className="detail-row total">
+                                        <span>Total Pagado</span>
+                                        <strong>S/ {subtotalOriginal.toFixed(2)}</strong>
+                                    </div>
+                                );
+                            }
+                        })()}
                         <div className="detail-row">
                             <span>Método de pago</span>
                             <span>💳 {pago.metodoPago?.nombre || 'No especificado'}</span>

@@ -47,15 +47,23 @@ function MisCompras() {
                                 tipo: boleta.tipo,
                                 estado: boleta.estado,
                                 tiene_vales: boleta.vales ? `Sí (${boleta.vales.length})` : 'No',
-                                tiene_detalles: !!boleta.detalles
+                                tiene_detalles: !!boleta.detalles,
+                                id_pago_orden: boleta.id_pago_orden,
+                                id_orden_compra: boleta.detalles?.id_orden_compra
                             });
                             
-                            // Obtener el id de orden desde el pago (id_referencia es el id_pago)
-                            if (boleta.id_pago_orden) {
-                                idsOrdenesConBoleta.push(boleta.id_pago_orden);
+                            // Obtener el id de orden asociado a esta boleta
+                            // Para vales: usar id_pago_orden o detalles.id_orden_compra
+                            // Para otros servicios: pueden tener id_pago_orden si hay pago asociado
+                            const idOrdenAsociada = boleta.id_pago_orden || boleta.detalles?.id_orden_compra;
+                            if (idOrdenAsociada) {
+                                idsOrdenesConBoleta.push(idOrdenAsociada);
+                                console.log(`  ✅ Orden ${idOrdenAsociada} marcada para exclusión (tiene boleta ${boleta.tipo})`);
                             }
                         });
                     }
+                    
+                    console.log('🚫 IDs de órdenes a excluir de Tickets:', idsOrdenesConBoleta);
                     
                     setBoletasCorporativas(dataBoletas || []);
                 } catch (error) {
@@ -100,26 +108,37 @@ function MisCompras() {
         cargarCompras();
     }, [cargarCompras]);
 
+    // Cambiar vista por defecto si no hay tickets pero sí hay servicios corporativos
+    useEffect(() => {
+        if (!loading && ordenes.length === 0 && boletasCorporativas.length > 0) {
+            setVistaActiva('corporativo');
+        }
+    }, [loading, ordenes.length, boletasCorporativas.length]);
+
     const calcularTotal = (orden) => {
-        // Si tiene monto_total guardado, usarlo
+        // Si tiene monto_total guardado, usarlo (ya incluye descuentos)
         if (orden.monto_total && orden.monto_total > 0) {
             return Number(orden.monto_total);
         }
 
-        // Si no, calcular desde tickets y combos
+        // Si no, calcular desde tickets y combos CON descuentos
         let total = 0;
 
-        // Sumar tickets
+        // Sumar tickets (con descuento si aplica)
         if (orden.ordenTickets && orden.ordenTickets.length > 0) {
             orden.ordenTickets.forEach(ot => {
-                total += Number(ot.precio_unitario || 0) * Number(ot.cantidad || 1);
+                const subtotal = Number(ot.precio_unitario || 0) * Number(ot.cantidad || 1);
+                const descuento = Number(ot.descuento || 0);
+                total += subtotal - descuento;
             });
         }
 
-        // Sumar combos
+        // Sumar combos (con descuento si aplica)
         if (orden.ordenCombos && orden.ordenCombos.length > 0) {
             orden.ordenCombos.forEach(oc => {
-                total += Number(oc.precio_unitario || 0) * Number(oc.cantidad || 0);
+                const subtotal = Number(oc.precio_unitario || 0) * Number(oc.cantidad || 0);
+                const descuento = Number(oc.descuento || 0);
+                total += subtotal - descuento;
             });
         }
 
@@ -546,6 +565,57 @@ function MisCompras() {
 
                         <div class="total-section">
                             <h3>💰 Resumen de Pago</h3>
+                            ${(() => {
+                                // Calcular si hubo descuento
+                                let subtotalOriginal = 0;
+                                let descuentoTotal = 0;
+                                let porcentajeDescuento = 0;
+                                let tipoDescuento = '';
+                                
+                                // Tickets
+                                if (orden.ordenTickets && orden.ordenTickets.length > 0) {
+                                    orden.ordenTickets.forEach(ot => {
+                                        const subtotal = Number(ot.precio_unitario || 0) * Number(ot.cantidad || 1);
+                                        const desc = Number(ot.descuento || 0);
+                                        subtotalOriginal += subtotal;
+                                        descuentoTotal += desc;
+                                        
+                                        if (desc > 0 && subtotal > 0) {
+                                            porcentajeDescuento = (desc / subtotal) * 100;
+                                            tipoDescuento = 'Tickets';
+                                        }
+                                    });
+                                }
+                                
+                                // Combos
+                                if (orden.ordenCombos && orden.ordenCombos.length > 0) {
+                                    orden.ordenCombos.forEach(oc => {
+                                        const subtotal = Number(oc.precio_unitario || 0) * Number(oc.cantidad || 0);
+                                        const desc = Number(oc.descuento || 0);
+                                        subtotalOriginal += subtotal;
+                                        descuentoTotal += desc;
+                                        
+                                        if (desc > 0 && subtotal > 0 && !tipoDescuento) {
+                                            porcentajeDescuento = (desc / subtotal) * 100;
+                                            tipoDescuento = 'Combos';
+                                        }
+                                    });
+                                }
+                                
+                                if (descuentoTotal > 0) {
+                                    return `
+                                        <div class="total-row">
+                                            <span>Subtotal:</span>
+                                            <span>S/ ${subtotalOriginal.toFixed(2)}</span>
+                                        </div>
+                                        <div class="total-row" style="color: #27ae60;">
+                                            <span>💎 Descuento Vale (${porcentajeDescuento.toFixed(0)}% en ${tipoDescuento}):</span>
+                                            <span>- S/ ${descuentoTotal.toFixed(2)}</span>
+                                        </div>
+                                    `;
+                                }
+                                return '';
+                            })()}
                             <div class="total-row">
                                 <span>Método de pago:</span>
                                 <span>${orden.pago?.metodoPago?.nombre || 'N/A'}</span>
@@ -936,7 +1006,13 @@ function MisCompras() {
             <body>
                 <div class="header">
                     <h1>🎬 CineStar</h1>
-                    <p class="tipo-servicio">${esValeCorporativo ? 'Vale Corporativo' : (boleta.tipo === 'funcion_privada' ? 'Boleta de Función Privada' : 'Boleta de Alquiler de Sala')}</p>
+                    <p class="tipo-servicio">${
+                        esValeCorporativo ? 'Vale Corporativo' : 
+                        boleta.tipo === 'funcion_privada' ? 'Boleta de Función Privada' : 
+                        boleta.tipo === 'alquiler_sala' ? 'Boleta de Alquiler de Sala' :
+                        boleta.tipo === 'publicidad' ? 'Boleta de Publicidad' :
+                        'Boleta de Servicio Corporativo'
+                    }</p>
                 </div>
 
                 <div class="codigo-principal">
@@ -971,16 +1047,12 @@ function MisCompras() {
                             </div>
                             <div class="vale-details-grid">
                                 <div class="vale-detail">
-                                    <span class="vale-detail-label">Valor por uso</span>
-                                    <span class="vale-detail-value">S/ ${parseFloat(vale.valor).toFixed(2)}</span>
+                                    <span class="vale-detail-label">Descuento</span>
+                                    <span class="vale-detail-value">${parseFloat(vale.valor).toFixed(0)}%</span>
                                 </div>
                                 <div class="vale-detail">
                                     <span class="vale-detail-label">Usos disponibles</span>
                                     <span class="vale-detail-value">${vale.usos_disponibles || 0} de ${vale.cantidad_usos || 1}</span>
-                                </div>
-                                <div class="vale-detail">
-                                    <span class="vale-detail-label">Monto total</span>
-                                    <span class="vale-detail-value">S/ ${(parseFloat(vale.valor) * (vale.cantidad_usos || 1)).toFixed(2)}</span>
                                 </div>
                                 <div class="vale-detail">
                                     <span class="vale-detail-label">Fecha de expiración</span>
@@ -990,8 +1062,9 @@ function MisCompras() {
                             <div class="vale-instrucciones">
                                 <strong>📝 Instrucciones de uso:</strong>
                                 <p>• Presenta este código al momento de realizar tu compra</p>
-                                <p>• Cada uso consumirá ${vale.tipo === 'entrada' ? '1 entrada' : '1 combo'} del vale</p>
-                                <p>• El vale es válido hasta la fecha de expiración indicada</p>
+                                <p>• Obtienes ${parseFloat(vale.valor).toFixed(0)}% de descuento en ${vale.tipo === 'entrada' ? 'entradas' : 'combos'}</p>
+                                <p>• El vale tiene ${vale.cantidad_usos || 1} uso(s) disponible(s)</p>
+                                <p>• Válido hasta la fecha de expiración indicada</p>
                             </div>
                         </div>
                         `).join('')}
@@ -1197,12 +1270,15 @@ function MisCompras() {
             {/* Tabs para cambiar entre vistas - Mostrar siempre si es usuario corporativo/cliente */}
             {(user?.rol === 'corporativo' || user?.rol === 'cliente') && (
                 <div className="compras-tabs">
-                    <button 
-                        className={`tab-btn ${vistaActiva === 'tickets' ? 'active' : ''}`}
-                        onClick={() => setVistaActiva('tickets')}
-                    >
-                        🎫 Tickets ({ordenes.length})
-                    </button>
+                    {/* Solo mostrar tab de Tickets si el usuario tiene órdenes regulares */}
+                    {ordenes.length > 0 && (
+                        <button 
+                            className={`tab-btn ${vistaActiva === 'tickets' ? 'active' : ''}`}
+                            onClick={() => setVistaActiva('tickets')}
+                        >
+                            🎫 Tickets ({ordenes.length})
+                        </button>
+                    )}
                     <button 
                         className={`tab-btn ${vistaActiva === 'corporativo' ? 'active' : ''}`}
                         onClick={() => setVistaActiva('corporativo')}
@@ -1343,6 +1419,62 @@ function MisCompras() {
                                         {/* Resumen de Pago */}
                                         <div className="seccion-detalle resumen-pago">
                                             <h4>💰 Resumen de Pago</h4>
+                                            {(() => {
+                                                // Calcular si hubo descuento
+                                                let subtotalOriginal = 0;
+                                                let descuentoTotal = 0;
+                                                let porcentajeDescuento = 0;
+                                                let tipoDescuento = '';
+                                                
+                                                // Tickets
+                                                if (orden.ordenTickets && orden.ordenTickets.length > 0) {
+                                                    orden.ordenTickets.forEach(ot => {
+                                                        const subtotal = Number(ot.precio_unitario || 0) * Number(ot.cantidad || 1);
+                                                        const desc = Number(ot.descuento || 0);
+                                                        subtotalOriginal += subtotal;
+                                                        descuentoTotal += desc;
+                                                        
+                                                        // Calcular porcentaje si hay descuento
+                                                        if (desc > 0 && subtotal > 0) {
+                                                            porcentajeDescuento = (desc / subtotal) * 100;
+                                                            tipoDescuento = 'Tickets';
+                                                        }
+                                                    });
+                                                }
+                                                
+                                                // Combos
+                                                if (orden.ordenCombos && orden.ordenCombos.length > 0) {
+                                                    orden.ordenCombos.forEach(oc => {
+                                                        const subtotal = Number(oc.precio_unitario || 0) * Number(oc.cantidad || 0);
+                                                        const desc = Number(oc.descuento || 0);
+                                                        subtotalOriginal += subtotal;
+                                                        descuentoTotal += desc;
+                                                        
+                                                        // Calcular porcentaje si hay descuento
+                                                        if (desc > 0 && subtotal > 0 && !tipoDescuento) {
+                                                            porcentajeDescuento = (desc / subtotal) * 100;
+                                                            tipoDescuento = 'Combos';
+                                                        }
+                                                    });
+                                                }
+                                                
+                                                return descuentoTotal > 0 ? (
+                                                    <>
+                                                        <div className="linea-subtotal">
+                                                            <span>Subtotal:</span>
+                                                            <span>S/ {subtotalOriginal.toFixed(2)}</span>
+                                                        </div>
+                                                        <div className="linea-descuento">
+                                                            <span style={{ color: '#27ae60' }}>
+                                                                💎 Descuento Vale ({porcentajeDescuento.toFixed(0)}% en {tipoDescuento}):
+                                                            </span>
+                                                            <span style={{ color: '#27ae60', fontWeight: 'bold' }}>
+                                                                - S/ {descuentoTotal.toFixed(2)}
+                                                            </span>
+                                                        </div>
+                                                    </>
+                                                ) : null;
+                                            })()}
                                             <div className="linea-total">
                                                 <span className="label-total">Total Pagado:</span>
                                                 <span className="valor-total">S/ {total.toFixed(2)}</span>
@@ -1422,6 +1554,7 @@ function MisCompras() {
                                                 <h3>
                                                     {boleta.tipo === 'funcion_privada' ? '🎬 Función Privada' : 
                                                      boleta.tipo === 'alquiler_sala' ? '🏢 Alquiler de Sala' : 
+                                                     boleta.tipo === 'publicidad' ? '📢 Publicidad' :
                                                      '🎟️ Vales Corporativos'} 
                                                     <span className="codigo-corto">{datosQR.codigo}</span>
                                                 </h3>
@@ -1439,6 +1572,16 @@ function MisCompras() {
                                                         }) : 'N/A'
                                                     }
                                                 </p>
+                                                {boleta.tipo === 'vales_corporativos' && boleta.vales && (
+                                                    <p style={{ 
+                                                        marginTop: '8px', 
+                                                        fontSize: '0.95em', 
+                                                        color: boleta.vales.reduce((sum, v) => sum + (v.usos_disponibles || 0), 0) > 0 ? '#4CAF50' : '#d32f2f',
+                                                        fontWeight: 'bold'
+                                                    }}>
+                                                        📊 {boleta.vales.reduce((sum, v) => sum + (v.usos_disponibles || 0), 0)} de {boleta.vales.reduce((sum, v) => sum + (v.cantidad_usos || 1), 0)} usos restantes
+                                                    </p>
+                                                )}
                                             </div>
                                             <div className="compra-summary">
                                                 <span className={`estado estado-${boleta.estado}`}>
@@ -1483,7 +1626,11 @@ function MisCompras() {
                                                         <div className="seccion-detalle seccion-vales-info">
                                                             <h4>🎟️ Información de la Compra</h4>
                                                             <div className="info-funcion">
-                                                                <p><strong>Cantidad de vales:</strong> {boleta.vales?.length || detalles?.cantidad_vales || 0}</p>
+                                                                <p><strong>Códigos generados:</strong> {boleta.vales?.length || 0}</p>
+                                                                <p><strong>Total de usos comprados:</strong> {boleta.vales?.reduce((sum, v) => sum + (v.cantidad_usos || 1), 0) || 0} usos</p>
+                                                                <p><strong>Usos disponibles restantes:</strong> <span style={{ color: '#4CAF50', fontWeight: 'bold', fontSize: '1.1em' }}>{boleta.vales?.reduce((sum, v) => sum + (v.usos_disponibles || 0), 0) || 0} usos</span></p>
+                                                                <p><strong>Precio por uso:</strong> S/ 7.00</p>
+                                                                <p><strong>Descuento que otorga:</strong> 20% en {boleta.vales?.[0]?.tipo === 'entrada' ? 'entradas' : 'combos'}</p>
                                                                 <p><strong>Fecha de compra:</strong> {detalles?.fecha_compra ? new Date(detalles.fecha_compra).toLocaleDateString('es-PE', {
                                                                     year: 'numeric',
                                                                     month: 'long',
@@ -1491,8 +1638,10 @@ function MisCompras() {
                                                                     hour: '2-digit',
                                                                     minute: '2-digit'
                                                                 }) : 'N/A'}</p>
-                                                                {detalles?.monto_total && (
-                                                                    <p className="precio-destacado"><strong>Total pagado:</strong> S/ {parseFloat(detalles.monto_total).toFixed(2)}</p>
+                                                                {detalles?.monto_total != null && (
+                                                                    <p className="precio-destacado">
+                                                                        <strong>Total pagado:</strong> S/ {parseFloat(detalles.monto_total).toFixed(2)}
+                                                                    </p>
                                                                 )}
                                                             </div>
                                                         </div>
@@ -1507,7 +1656,7 @@ function MisCompras() {
                                                                             <div className="vale-header">
                                                                                 <span className="vale-numero">Código del Vale</span>
                                                                                 <span className={`vale-estado ${vale.usado ? 'usado' : 'vigente'}`}>
-                                                                                    {vale.usado ? '✗ Agotado' : `✓ ${vale.usos_disponibles || 0} usos disponibles`}
+                                                                                    {vale.usado ? '✗ Agotado (0 usos)' : `✓ Vigente (${vale.usos_disponibles || 0} de ${vale.cantidad_usos || 1} usos restantes)`}
                                                                                 </span>
                                                                             </div>
                                                                             <div className="vale-codigo-display">
@@ -1520,12 +1669,15 @@ function MisCompras() {
                                                                                     <span className="vale-value">{vale.tipo === 'entrada' ? '🎬 Entrada' : '🍿 Combo'}</span>
                                                                                 </div>
                                                                                 <div className="vale-detalle-item">
-                                                                                    <span className="vale-label">Valor por uso:</span>
-                                                                                    <span className="vale-value valor-destacado">S/ {parseFloat(vale.valor).toFixed(2)}</span>
+                                                                                    <span className="vale-label">Descuento:</span>
+                                                                                    <span className="vale-value valor-destacado">{parseFloat(vale.valor).toFixed(0)}% de descuento</span>
                                                                                 </div>
                                                                                 <div className="vale-detalle-item">
-                                                                                    <span className="vale-label">Usos disponibles:</span>
-                                                                                    <span className="vale-value">{vale.usos_disponibles || 0} de {vale.cantidad_usos || 1}</span>
+                                                                                    <span className="vale-label">Usos:</span>
+                                                                                    <span className="vale-value" style={{ fontWeight: 'bold', color: vale.usado ? '#d32f2f' : '#4CAF50' }}>
+                                                                                        {vale.usos_disponibles || 0} de {vale.cantidad_usos || 1} disponible(s)
+                                                                                        {vale.usado && ' (AGOTADO)'}
+                                                                                    </span>
                                                                                 </div>
                                                                                 <div className="vale-detalle-item">
                                                                                     <span className="vale-label">Vencimiento:</span>
@@ -1542,7 +1694,7 @@ function MisCompras() {
                                                                     ))}
                                                                 </div>
                                                                 <div className="vales-nota">
-                                                                    <p>💡 Presenta este código al momento de comprar tus tickets o combos. Cada uso consumirá 1 unidad del vale.</p>
+                                                                    <p>💡 <strong>Cómo usar tu vale:</strong> Presenta este código al momento de comprar tus tickets o combos para obtener <strong>20% de descuento</strong>. Puedes usar el mismo código las veces indicadas en "Usos disponibles".</p>
                                                                 </div>
                                                             </div>
                                                         )}

@@ -62,7 +62,10 @@ function CorporateSales() {
       popcorn: 400,
       tv_wall: 700,
     },
-    vales: { entrada: 25.0, combo: 35.0 },
+    vales: { 
+      entrada: 7.0,  // Precio de compra del vale (no el descuento)
+      combo: 7.0     // El descuento es 20% (se calcula al usar el vale)
+    },
     // Multiplicadores por tipo de sala
     multiplicadorSala: {
       "2D": 1.0,      // Precio base
@@ -981,11 +984,10 @@ function CorporateSales() {
                     required
                   >
                     <option value="entrada">
-                      Vale de Entrada - S/ {PRECIOS.vales.entrada.toFixed(2)}{" "}
-                      c/u
+                      Vale de Entrada - S/ {PRECIOS.vales.entrada.toFixed(2)} c/u (20% descuento)
                     </option>
                     <option value="combo">
-                      Vale de Combo - S/ {PRECIOS.vales.combo.toFixed(2)} c/u
+                      Vale de Combo - S/ {PRECIOS.vales.combo.toFixed(2)} c/u (20% descuento)
                     </option>
                   </select>
                   <input
@@ -1038,8 +1040,17 @@ function CorporateSales() {
                         fontStyle: "italic",
                       }}
                     >
-                      Se generará 1 código con {valesForm.cantidad} usos
-                      disponibles
+                      Se generará 1 código con {valesForm.cantidad} usos disponibles
+                    </p>
+                    <p
+                      style={{
+                        margin: "0.5rem 0 0 0",
+                        fontSize: "0.85rem",
+                        color: "#1976d2",
+                        fontWeight: "600",
+                      }}
+                    >
+                      ✨ Cada uso otorga 20% de descuento en {valesForm.tipo === 'entrada' ? 'entradas' : 'combos'}
                     </p>
                   </div>
                   <button

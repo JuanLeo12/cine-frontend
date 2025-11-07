@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getMetodosPago, createOrdenCompra, confirmarOrdenCompra, validarValeCorporativo, marcarValeUsado, liberarAsiento } from '../../services/api';
 import { usePurchase } from '../../context/PurchaseContext';
+import TimerExpiredModal from '../../components/general/TimerExpiredModal';
 import './css/Payment.css';
 
 function Payment() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { timeRemaining, formatTime, stopTimer, startTimer, timerActive } = usePurchase();
+    const { timeRemaining, formatTime, stopTimer, startTimer, timerActive, extendTimer, setTimerExpireCallback } = usePurchase();
     
     const { selectedSeats, funcion, pelicula, tickets, subtotalTickets, cart, soloCompra } = location.state || {};
 
@@ -15,6 +16,7 @@ function Payment() {
     const [metodoSeleccionado, setMetodoSeleccionado] = useState(null);
     const [loading, setLoading] = useState(true);
     const [procesando, setProcesando] = useState(false);
+    const [showTimerModal, setShowTimerModal] = useState(false);
 
     // Formulario Tarjeta
     const [tarjeta, setTarjeta] = useState({
@@ -35,6 +37,18 @@ function Payment() {
     const [valeAplicado, setValeAplicado] = useState(null);
     const [validandoVale, setValidandoVale] = useState(false);
     const [errorVale, setErrorVale] = useState('');
+
+    // Configurar callback cuando el timer expire
+    useEffect(() => {
+        setTimerExpireCallback(() => {
+            console.log('⏰ Timer expirado - mostrando modal');
+            setShowTimerModal(true);
+        });
+        
+        return () => {
+            setTimerExpireCallback(null);
+        };
+    }, [setTimerExpireCallback]);
 
     useEffect(() => {
         // Validar según tipo de compra
@@ -78,6 +92,42 @@ function Payment() {
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [procesando]);
+
+    // Manejar extensión de tiempo
+    const handleExtendTime = () => {
+        extendTimer();
+        setShowTimerModal(false);
+    };
+
+    // Manejar salida (cancelar compra)
+    const handleExitPurchase = async () => {
+        // Liberar asientos si existen
+        if (selectedSeats && selectedSeats.length > 0) {
+            try {
+                await Promise.all(
+                    selectedSeats.map(seat =>
+                        liberarAsiento({
+                            id_funcion: funcion.id,
+                            fila: seat.fila,
+                            numero: seat.numero
+                        })
+                    )
+                );
+            } catch (error) {
+                console.error('Error liberando asientos:', error);
+            }
+        }
+        
+        stopTimer();
+        setShowTimerModal(false);
+        
+        // Redirigir según tipo de compra
+        if (soloCompra === 'combos') {
+            navigate('/candyshop');
+        } else {
+            navigate('/movies');
+        }
+    };
 
     const cargarMetodosPago = async () => {
         try {
@@ -199,7 +249,8 @@ function Payment() {
                     funcion,
                     selectedSeats,
                     tickets,
-                    cart
+                    cart,
+                    valeAplicado // Pasar vale aplicado para mostrar descuento
                 }
             });
 
@@ -216,6 +267,7 @@ function Payment() {
             '⚠️ Si retrocedes, tendrás que volver a seleccionar el tipo de tickets. ¿Deseas continuar?'
         );
         if (confirmBack) {
+            // NO detener el timer aquí, solo navegar hacia atrás
             navigate(-1);
         }
     };
@@ -233,7 +285,32 @@ function Payment() {
             const resultado = await validarValeCorporativo(codigoVale.trim());
             
             if (resultado.valido) {
-                setValeAplicado(resultado.vale);
+                const vale = resultado.vale;
+                
+                // Validar que haya productos aplicables según el tipo de vale
+                if (vale.tipo === 'entrada') {
+                    // Vale de entrada: debe haber tickets seleccionados
+                    if (!selectedSeats || selectedSeats.length === 0) {
+                        setErrorVale('⚠️ Este vale de descuento es para ENTRADAS. No tienes entradas seleccionadas.');
+                        setValeAplicado(null);
+                        alert('⚠️ Este vale de descuento es para ENTRADAS. Por favor, selecciona entradas para aplicar este vale.');
+                        setValidandoVale(false);
+                        return;
+                    }
+                } else if (vale.tipo === 'combo') {
+                    // Vale de combo: debe haber al menos un combo tipo "combos" en el carrito
+                    const tieneCombos = (cart || []).some(item => item.tipo === 'combos');
+                    
+                    if (!tieneCombos) {
+                        setErrorVale('⚠️ Este vale de descuento es para COMBOS. No tienes combos seleccionados (solo aplica a combos completos, no canchita o bebidas solas).');
+                        setValeAplicado(null);
+                        alert('⚠️ Este vale de descuento es para COMBOS.\n\nSolo aplica a combos completos (no canchita o bebidas individuales).\n\nPor favor, agrega combos a tu carrito para aplicar este vale.');
+                        setValidandoVale(false);
+                        return;
+                    }
+                }
+                
+                setValeAplicado(vale);
                 setErrorVale('');
                 alert(`✅ ${resultado.mensaje}`);
             } else {
@@ -265,17 +342,26 @@ function Payment() {
 
     // Calcular total con combos
     const totalCombos = (cart || []).reduce((sum, item) => sum + (item.precio * item.quantity), 0);
+    
+    // Calcular total de combos tipo "combos" (no popcorn ni bebidas individuales)
+    const totalCombosDescuento = (cart || [])
+        .filter(item => item.tipo === 'combos')
+        .reduce((sum, item) => sum + (item.precio * item.quantity), 0);
+    
     const subtotal = subtotalTickets + totalCombos;
     
     // Calcular descuento si hay vale aplicado
     let descuento = 0;
     if (valeAplicado) {
+        // El campo "valor" ahora representa el PORCENTAJE de descuento (ej: 15 = 15%)
+        const porcentajeDescuento = valeAplicado.valor / 100;
+        
         if (valeAplicado.tipo === 'entrada') {
-            // Descuento solo aplica a tickets
-            descuento = Math.min(valeAplicado.valor, subtotalTickets);
+            // Descuento del X% solo aplica a tickets
+            descuento = subtotalTickets * porcentajeDescuento;
         } else if (valeAplicado.tipo === 'combo') {
-            // Descuento solo aplica a combos
-            descuento = Math.min(valeAplicado.valor, totalCombos);
+            // Descuento del X% solo aplica a combos tipo "combos"
+            descuento = totalCombosDescuento * porcentajeDescuento;
         }
     }
     
@@ -401,7 +487,7 @@ function Payment() {
                                 <div className="vale-info">
                                     <span className="vale-codigo">✅ {valeAplicado.codigo}</span>
                                     <span className="vale-descuento">
-                                        -S/ {valeAplicado.valor} en {valeAplicado.tipo === 'entrada' ? 'entradas' : 'combos'}
+                                        {valeAplicado.valor}% de descuento en {valeAplicado.tipo === 'entrada' ? 'entradas' : 'combos'}
                                     </span>
                                 </div>
                                 <button onClick={handleQuitarVale} className="btn-quitar-vale">
@@ -423,7 +509,7 @@ function Payment() {
                     )}
                     {valeAplicado && descuento > 0 && (
                         <div className="summary-discount">
-                            <span>Descuento ({valeAplicado.codigo})</span>
+                            <span>Descuento {valeAplicado.valor}% ({valeAplicado.codigo})</span>
                             <span className="discount-amount">- S/ {descuento.toFixed(2)}</span>
                         </div>
                     )}
@@ -555,6 +641,14 @@ function Payment() {
                     </div>
                 </div>
             </div>
+
+            {/* Modal de tiempo expirado */}
+            {showTimerModal && (
+                <TimerExpiredModal
+                    onExtend={handleExtendTime}
+                    onExit={handleExitPurchase}
+                />
+            )}
         </div>
     );
 }

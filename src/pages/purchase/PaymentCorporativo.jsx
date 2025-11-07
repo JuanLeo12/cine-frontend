@@ -4,7 +4,8 @@ import {
     crearBoletaCorporativa, 
     createFuncion, 
     createAlquilerSala, 
-    createPublicidad, 
+    createPublicidad,
+    deletePublicidad,
     crearValeCorporativo 
 } from '../../services/api';
 import BoletaCorporativa from '../../components/comp/BoletaCorporativa';
@@ -24,6 +25,7 @@ function PaymentCorporativo() {
     const [procesando, setProcesando] = useState(false);
     const [boletaGenerada, setBoletaGenerada] = useState(null);
     const [error, setError] = useState('');
+    const [publicidadCreada, setPublicidadCreada] = useState(null); // Guardar ID de publicidad creada
 
     // Formulario Tarjeta (único método de pago permitido)
     const [tarjeta, setTarjeta] = useState({
@@ -114,6 +116,21 @@ function PaymentCorporativo() {
         return true;
     };
 
+    const handleCancelar = async () => {
+        // Si hay una publicidad creada pero no se completó el pago, eliminarla
+        if (publicidadCreada && tipoServicio === 'publicidad') {
+            try {
+                console.log('🗑️ Eliminando publicidad no pagada:', publicidadCreada);
+                await deletePublicidad(publicidadCreada);
+                console.log('✅ Publicidad eliminada correctamente');
+            } catch (error) {
+                console.error('❌ Error al eliminar publicidad:', error);
+                // No mostrar error al usuario, solo registrarlo
+            }
+        }
+        navigate('/corporate');
+    };
+
     const procesarPago = async () => {
         setError('');
         
@@ -169,10 +186,9 @@ function PaymentCorporativo() {
                 const valeResponse = await crearValeCorporativo({
                     codigo: codigoVale,
                     tipo: datosServicio.tipo,
-                    valor: datosServicio.valor,
+                    valor: 20.00, // Siempre 20% de descuento
                     fecha_expiracion: calcularFechaExpiracion(),
-                    cantidad_usos: datosServicio.cantidad, // Total de usos
-                    usos_disponibles: datosServicio.cantidad, // Inicialmente todos disponibles
+                    cantidad_usos: datosServicio.cantidad, // Total de usos solicitados
                     id_pago: idPago // Asociar el vale al pago
                 });
                 
@@ -194,6 +210,9 @@ function PaymentCorporativo() {
                     servicioCreado = await createAlquilerSala(datosServicio);
                 } else if (tipoServicio === 'publicidad') {
                     servicioCreado = await createPublicidad(datosServicio);
+                    // Guardar el ID de la publicidad creada para poder eliminarla si se cancela
+                    const idPublicidad = servicioCreado.id || servicioCreado.publicidad?.id;
+                    setPublicidadCreada(idPublicidad);
                 }
             }
 
@@ -471,7 +490,7 @@ function PaymentCorporativo() {
                         <div className="payment-actions">
                             <button
                                 className="btn-cancelar"
-                                onClick={() => navigate('/corporate')}
+                                onClick={handleCancelar}
                                 disabled={procesando}
                             >
                                 ← Cancelar
