@@ -393,12 +393,22 @@
 }
 
 @media (max-width: 968px) {
+    .payment-page {
+        margin: 20px auto;
+        padding: 15px;
+    }
+
     .payment-container {
         grid-template-columns: 1fr;
     }
 
     .order-summary {
         position: static;
+        padding: 20px;
+    }
+
+    .payment-form-container {
+        padding: 20px;
     }
 
     .payment-methods {
@@ -408,10 +418,68 @@
     .action-buttons {
         flex-direction: column;
     }
+
+    .pay-btn,
+    .back-btn,
+    .cancel-btn {
+        width: 100%;
+    }
+
+    .timer-banner {
+        font-size: 1rem;
+        padding: 12px;
+    }
+
+    .payment-header h2 {
+        font-size: 1.5rem;
+    }
 }
 
 @media (max-width: 600px) {
+    .payment-page {
+        margin: 10px;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
     .payment-methods {
         grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-note {
+        font-size: 0.85rem;
+        padding: 8px 15px;
+    }
+
+    .summary-total {
+        font-size: 1.2rem;
+    }
+
+    .payment-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .order-summary h3,
+    .payment-form-container h3 {
+        font-size: 1.2rem;
+    }
+
+    .pay-btn,
+    .back-btn,
+    .cancel-btn {
+        padding: 15px 30px;
+        font-size: 1rem;
+    }
+
+    .vale-input-group {
+        flex-direction: column;
+    }
+
+    .btn-validar-vale {
+        width: 100%;
     }
 }
