@@ -213,6 +213,12 @@ function OrdenesAdmin() {
                                                         }
                                                     </span>
                                                 </div>
+                                                {orden.descuento > 0 && (
+                                                    <div className="detalle-item">
+                                                        <span>💰 Descuento Aplicado:</span>
+                                                        <span className="descuento-text">- S/ {Number(orden.descuento).toFixed(2)}</span>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                     </div>

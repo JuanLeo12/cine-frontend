@@ -55,7 +55,6 @@ function MisDatos() {
                 payload.direccion = direccion;
                 payload.fecha_nacimiento = fechaNacimiento;
                 payload.genero = genero;
-                payload.foto_perfil = fotoPerfil;
             } else if (isCorporativo) {
                 payload.ruc = ruc;
                 payload.representante = representante;
@@ -63,7 +62,11 @@ function MisDatos() {
                 payload.telefono = telefono;
                 payload.direccion = direccion;
             }
-            // Admin solo actualiza nombre y email
+            // Todos los roles pueden tener foto de perfil
+            if (fotoPerfil) {
+                payload.foto_perfil = fotoPerfil;
+            }
+            // Admin solo actualiza nombre, email y foto
             
             // Si quiere cambiar contraseña, validar y agregar
             if (cambiarPassword) {
@@ -282,16 +285,6 @@ function MisDatos() {
                                 <option value="femenino">Femenino</option>
                             </select>
                         </div>
-
-                        <div className="form-group">
-                            <label>Foto de Perfil</label>
-                            <input type="file" accept="image/*" onChange={handleFotoChange} />
-                            {previewFoto && (
-                                <div className="preview-foto">
-                                    <img src={previewFoto} alt="Preview" />
-                                </div>
-                            )}
-                        </div>
                     </>
                 )}
 
@@ -365,6 +358,17 @@ function MisDatos() {
                         </div>
                     </>
                 )}
+                
+                {/* Foto de perfil (para todos los roles) */}
+                <div className="form-group">
+                    <label>Foto de Perfil</label>
+                    <input type="file" accept="image/*" onChange={handleFotoChange} />
+                    {previewFoto && (
+                        <div className="preview-foto">
+                            <img src={previewFoto} alt="Preview" />
+                        </div>
+                    )}
+                </div>
                 
                 {/* Sección cambiar contraseña (para todos) */}
                 <div className="form-group full-width">

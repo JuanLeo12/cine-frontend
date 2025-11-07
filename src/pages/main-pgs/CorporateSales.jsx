@@ -103,6 +103,16 @@ function CorporateSales() {
     cargarDatos();
   }, []);
 
+  // Auto-llenar el nombre del cliente con el usuario corporativo logueado
+  useEffect(() => {
+    if (user && (user.rol === 'corporativo' || user.rol === 'admin')) {
+      setPublicidadForm(prev => ({
+        ...prev,
+        cliente: user.nombre || user.email || ''
+      }));
+    }
+  }, [user]);
+
   // Helper: Obtener multiplicador de precio según tipo de sala
   const getMultiplicadorSala = (id_sala) => {
     const sala = salas.find(s => s.id === parseInt(id_sala));
@@ -796,6 +806,8 @@ function CorporateSales() {
                   value={publicidadForm.cliente}
                   onChange={handlePublicidadChange}
                   placeholder="Nombre del cliente/empresa"
+                  disabled
+                  title="El nombre del cliente se toma del usuario logueado"
                   required
                 />
                 <select

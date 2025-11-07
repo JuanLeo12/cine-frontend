@@ -235,6 +235,12 @@
     color: #333;
 }
 
+.descuento-text {
+    color: #4caf50 !important;
+    font-weight: bold !important;
+    font-size: 1.1rem !important;
+}
+
 @media (max-width: 768px) {
     .ordenes-admin {
         padding: 1.5rem 1rem;
