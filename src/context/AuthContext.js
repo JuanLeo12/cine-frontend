@@ -116,7 +116,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const isAdmin = () => {
-        return user?.rol === 'admin';
+        return user?.rol === 'admin' || user?.rol === 'administrador';
     };
 
     const isCorporativo = () => {
