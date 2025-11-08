@@ -192,6 +192,15 @@ function MisCompras() {
         const combos = (orden.ordenCombos || []).map(oc => ({ nombre: oc.combo?.nombre || 'N/A', cantidad: oc.cantidad }));
         const fechaCompraFormateada = orden.fecha_compra ? new Date(orden.fecha_compra).toLocaleString('es-PE', { timeZone: 'America/Lima' }) : 'N/A';
 
+        // Calcular descuento total
+        let descuentoTotal = 0;
+        (orden.ordenTickets || []).forEach(ot => {
+            descuentoTotal += Number(ot.descuento || 0) * Number(ot.cantidad || 1);
+        });
+        (orden.ordenCombos || []).forEach(oc => {
+            descuentoTotal += Number(oc.descuento || 0) * Number(oc.cantidad || 0);
+        });
+
         const qrData = {
             tipo: "CINESTAR_TICKET",
             orden_id: orden.id,
@@ -209,6 +218,7 @@ function MisCompras() {
             combos: combos,
             pago: {
                 total: parseFloat(total.toFixed(2)),
+                descuento: descuentoTotal > 0 ? parseFloat(descuentoTotal.toFixed(2)) : 0,
                 estado: orden.pago?.estado_pago || 'pendiente',
                 metodo: orden.pago?.metodoPago?.nombre || 'N/A'
             },

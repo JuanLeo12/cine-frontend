@@ -51,6 +51,21 @@ function OrdenesAdmin() {
         return total;
     };
 
+    const calcularDescuento = (orden) => {
+        let descuentoTotal = 0;
+        if (orden.ordenTickets) {
+            orden.ordenTickets.forEach(ot => {
+                descuentoTotal += Number(ot.descuento || 0) * Number(ot.cantidad || 1);
+            });
+        }
+        if (orden.ordenCombos) {
+            orden.ordenCombos.forEach(oc => {
+                descuentoTotal += Number(oc.descuento || 0) * Number(oc.cantidad || 0);
+            });
+        }
+        return descuentoTotal;
+    };
+
     const getEstadoBadgeClass = (estado) => {
         switch(estado) {
             case 'pagada': return 'badge-pagada';
@@ -213,12 +228,15 @@ function OrdenesAdmin() {
                                                         }
                                                     </span>
                                                 </div>
-                                                {orden.descuento > 0 && (
-                                                    <div className="detalle-item">
-                                                        <span>💰 Descuento Aplicado:</span>
-                                                        <span className="descuento-text">- S/ {Number(orden.descuento).toFixed(2)}</span>
-                                                    </div>
-                                                )}
+                                                {(() => {
+                                                    const descuentoTotal = calcularDescuento(orden);
+                                                    return descuentoTotal > 0 && (
+                                                        <div className="detalle-item">
+                                                            <span>💰 Descuento Aplicado:</span>
+                                                            <span className="descuento-text">- S/ {descuentoTotal.toFixed(2)}</span>
+                                                        </div>
+                                                    );
+                                                })()}
                                             </div>
                                         )}
                                     </div>
