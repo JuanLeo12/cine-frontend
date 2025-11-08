@@ -19,6 +19,7 @@ function Carousel({ peliculas }) {
   useEffect(() => {
     startAutoSlide();
     return () => stopAutoSlide();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [peliculas]);
 
   const startAutoSlide = () => {

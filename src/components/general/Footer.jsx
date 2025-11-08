@@ -2,6 +2,11 @@ import React from 'react';
 import './css/Footer.css';
 
 function Footer() {
+    const handleClick = (e) => {
+        e.preventDefault();
+        // Links de placeholder - implementar en el futuro
+    };
+
     return (
         <footer className="footer">
             <div className="footer-content">
@@ -13,17 +18,17 @@ function Footer() {
                 <div className="footer-section">
                     <h4>Enlaces Legales</h4>
                     <ul>
-                        <li><a href="#">Términos y Condiciones</a></li>
-                        <li><a href="#">Política de Privacidad</a></li>
-                        <li><a href="#">Libro de Reclamaciones</a></li>
+                        <li><a href="/" onClick={handleClick}>Términos y Condiciones</a></li>
+                        <li><a href="/" onClick={handleClick}>Política de Privacidad</a></li>
+                        <li><a href="/" onClick={handleClick}>Libro de Reclamaciones</a></li>
                     </ul>
                 </div>
                 <div className="footer-section">
                     <h4>Síguenos</h4>
                     <div className="social-icons">
-                        <a href="#" target="_blank" rel="noopener noreferrer">Facebook</a>
-                        <a href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
-                        <a href="#" target="_blank" rel="noopener noreferrer">Twitter</a>
+                        <a href="/" onClick={handleClick} target="_blank" rel="noopener noreferrer">Facebook</a>
+                        <a href="/" onClick={handleClick} target="_blank" rel="noopener noreferrer">Instagram</a>
+                        <a href="/" onClick={handleClick} target="_blank" rel="noopener noreferrer">Twitter</a>
                     </div>
                 </div>
             </div>

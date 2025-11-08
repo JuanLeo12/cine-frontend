@@ -4,7 +4,6 @@ import {
   getSalas,
   getSedes,
   getPeliculas,
-  createPublicidad,
   verificarDisponibilidadSala,
 } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
@@ -16,6 +15,7 @@ function CorporateSales() {
   const [activeService, setActiveService] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  // eslint-disable-next-line no-unused-vars
   const [success, setSuccess] = useState("");
   const [salas, setSalas] = useState([]);
   const [sedes, setSedes] = useState([]);
@@ -350,6 +350,7 @@ function CorporateSales() {
   const handleValesChange = (e) =>
     setValesForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
+  // eslint-disable-next-line no-unused-vars
   const generateValeCode = () => {
     const prefix = valesForm.tipo === "entrada" ? "ENT" : "CMB";
     const random = Math.random().toString(36).substring(2, 8).toUpperCase();
