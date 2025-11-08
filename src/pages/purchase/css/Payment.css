@@ -392,6 +392,7 @@
     opacity: 0.6;
 }
 
+/* Tablets y pantallas medianas */
 @media (max-width: 968px) {
     .payment-page {
         margin: 20px auto;
@@ -400,29 +401,35 @@
 
     .payment-container {
         grid-template-columns: 1fr;
+        gap: 20px;
     }
 
     .order-summary {
         position: static;
         padding: 20px;
+        order: 2; /* Mostrar resumen después del formulario en tablets */
     }
 
     .payment-form-container {
         padding: 20px;
+        order: 1;
     }
 
     .payment-methods {
         grid-template-columns: 1fr 1fr;
+        gap: 12px;
     }
 
     .action-buttons {
         flex-direction: column;
+        gap: 12px;
     }
 
     .pay-btn,
     .back-btn,
     .cancel-btn {
         width: 100%;
+        flex: 1;
     }
 
     .timer-banner {
@@ -431,55 +438,247 @@
     }
 
     .payment-header h2 {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
+    }
+
+    .payment-note {
+        font-size: 0.9rem;
     }
 }
 
+/* Móviles */
 @media (max-width: 600px) {
     .payment-page {
-        margin: 10px;
+        margin: 0;
         padding: 10px;
+        border-radius: 0;
+        background: #1a1a1a;
+    }
+
+    .timer-banner {
+        font-size: 0.9rem;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 6px;
+    }
+
+    .payment-header {
+        margin-bottom: 20px;
+    }
+
+    .payment-header h2 {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+    }
+
+    .payment-note {
+        font-size: 0.8rem;
+        padding: 8px 12px;
+    }
+
+    .payment-container {
+        gap: 15px;
+    }
+
+    /* Resumen de compra */
+    .order-summary {
+        padding: 15px;
         border-radius: 8px;
+    }
+
+    .order-summary h3 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+
+    .summary-section {
+        padding: 12px 0;
+    }
+
+    .summary-section h4 {
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+    }
+
+    .summary-section p {
+        font-size: 0.9rem;
+    }
+
+    .summary-item {
+        padding: 6px 0;
+        font-size: 0.9rem;
+    }
+
+    .summary-total {
+        font-size: 1.1rem;
+        padding: 15px 0;
+    }
+
+    .summary-subtotal,
+    .summary-discount {
+        font-size: 0.9rem;
+        padding: 10px 0;
+    }
+
+    /* Formulario de pago */
+    .payment-form-container {
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+    .payment-form-container h3 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
     }
 
     .payment-methods {
         grid-template-columns: 1fr;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .payment-method-btn {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+
+    .payment-form h4 {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+    }
+
+    .payment-form input {
+        padding: 12px;
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+        border-radius: 6px;
     }
 
     .form-row {
         grid-template-columns: 1fr;
+        gap: 12px;
     }
 
-    .payment-note {
+    .payment-help {
+        padding: 12px;
         font-size: 0.85rem;
-        padding: 8px 15px;
+        margin-top: 12px;
     }
 
-    .summary-total {
-        font-size: 1.2rem;
+    /* Sección de vales */
+    .vale-section {
+        padding: 12px !important;
     }
 
-    .payment-header h2 {
-        font-size: 1.3rem;
+    .vale-section h4 {
+        font-size: 0.95rem !important;
+        margin-bottom: 12px !important;
     }
 
-    .order-summary h3,
-    .payment-form-container h3 {
-        font-size: 1.2rem;
+    .vale-input-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .vale-input {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+
+    .btn-validar-vale {
+        width: 100%;
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .vale-aplicado {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .vale-codigo {
+        font-size: 1rem;
+    }
+
+    .vale-descuento {
+        font-size: 0.85rem;
+    }
+
+    .btn-quitar-vale {
+        width: 100%;
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    .error-vale {
+        font-size: 0.85rem;
+    }
+
+    /* Botones de acción */
+    .action-buttons {
+        margin-top: 20px;
+        gap: 10px;
     }
 
     .pay-btn,
     .back-btn,
     .cancel-btn {
-        padding: 15px 30px;
+        padding: 14px 20px;
+        font-size: 0.95rem;
+        border-radius: 6px;
+    }
+}
+
+/* Móviles muy pequeños */
+@media (max-width: 360px) {
+    .payment-page {
+        padding: 8px;
+    }
+
+    .payment-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .payment-note {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+    }
+
+    .order-summary,
+    .payment-form-container {
+        padding: 12px;
+    }
+
+    .order-summary h3,
+    .payment-form-container h3 {
+        font-size: 1.1rem;
+    }
+
+    .summary-item,
+    .summary-section p {
+        font-size: 0.85rem;
+    }
+
+    .summary-total {
         font-size: 1rem;
     }
 
-    .vale-input-group {
-        flex-direction: column;
+    .payment-method-btn {
+        padding: 10px;
+        font-size: 0.85rem;
     }
 
-    .btn-validar-vale {
-        width: 100%;
+    .payment-form input {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .pay-btn,
+    .back-btn,
+    .cancel-btn {
+        padding: 12px 16px;
+        font-size: 0.9rem;
     }
 }
