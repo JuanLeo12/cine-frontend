@@ -196,9 +196,11 @@ function PaymentCorporativo() {
                 
                 console.log(`✅ Vale creado con ${datosServicio.cantidad} usos disponibles`);
                 console.log(`   Código: ${vale.codigo}`);
+                console.log(`   ID del vale: ${vale.id}`);
                 
                 servicioCreado = { 
-                    id: idPago, // Usamos el ID del pago como referencia
+                    id: vale.id, // ← USAR ID DEL VALE, no del pago
+                    idPago: idPago, // Guardar también el ID del pago por referencia
                     vale: vale,
                     vales: [vale] // Para compatibilidad con el código existente
                 };
@@ -221,7 +223,8 @@ function PaymentCorporativo() {
             
             // Obtener el ID de referencia según el tipo de servicio
             if (tipoServicio === 'vales_corporativos') {
-                idReferencia = idPago; // El id de referencia es el id del pago
+                // Para vales: usar el ID del vale creado
+                idReferencia = servicioCreado.id; // ID del vale
             } else if (tipoServicio === 'funcion_privada') {
                 idReferencia = servicioCreado.id || servicioCreado.funcion?.id;
             } else if (tipoServicio === 'alquiler_sala') {
