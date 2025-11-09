@@ -43,30 +43,30 @@
 
 /* ======== FILTERS ======== */
 .filters {
-    margin: 0 auto 2.5rem auto;
+    margin: 0 auto 2rem auto;
     text-align: center;
-    padding: 1.2rem;
+    padding: 1rem;
     background: var(--color-bg-card);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     box-shadow: var(--shadow-sm);
     border: 2px solid var(--color-border);
-    max-width: 380px;
+    max-width: 320px;
     width: 100%;
     box-sizing: border-box;
 }
 
 .filters h3 {
     color: #FFC107;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 700;
-    margin: 0 0 0.8rem 0;
+    margin: 0 0 0.7rem 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .filters select {
-    padding: 0.7rem 1rem;
-    font-size: 0.9rem;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.85rem;
     border: 2px solid var(--color-border);
     border-radius: var(--radius-sm);
     background: var(--color-bg-secondary);
@@ -74,7 +74,7 @@
     cursor: pointer;
     transition: var(--transition-normal);
     width: 100%;
-    max-width: 280px;
+    max-width: 250px;
     font-weight: 600;
     box-sizing: border-box;
 }
@@ -92,14 +92,14 @@
 
 .cinema-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 2rem;
     justify-items: center;
 }
 
 .cinema-grid > * {
     width: 100%;
-    max-width: 400px;
+    max-width: 350px;
 }
 
 /* ======== RESPONSIVE ======== */

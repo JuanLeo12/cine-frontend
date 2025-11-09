@@ -12,6 +12,9 @@
     text-align: center;
     transition: var(--transition-normal);
     position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .combo-card::before {
