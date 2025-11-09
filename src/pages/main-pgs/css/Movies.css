@@ -2,7 +2,7 @@
 
 .movies {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   padding: 2rem;
   max-width: 1600px;
   margin: 0 auto;
@@ -10,17 +10,23 @@
   box-sizing: border-box;
   overflow-x: hidden;
   min-height: 80vh;
+  align-items: flex-start;
 }
 
+/* ======== PANEL DE FILTROS SIDEBAR ======== */
 .filters {
-    width: 100%;
+    width: 280px;
+    min-width: 280px;
     background: var(--color-bg-card);
     color: var(--color-text-primary);
-    padding: 1.5rem 2rem;
+    padding: 1.5rem;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
     border: 2px solid var(--color-border);
     transition: var(--transition-normal);
+    position: sticky;
+    top: 100px;
+    align-self: flex-start;
 }
 
 .filters:hover {
@@ -46,12 +52,11 @@
     content: '🎬 ';
 }
 
-/* Grid de filtros */
-.filters-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+/* Layout vertical de filtros */
+.filters-vertical {
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
-  align-items: start;
 }
 
 .filter-item {
@@ -59,10 +64,9 @@
   flex-direction: column;
 }
 
-.filter-item-button {
-  display: flex;
-  align-items: flex-end;
-  padding-top: 1.7rem;
+.movies-content {
+  flex: 1;
+  width: 100%;
 }
 
 .filter-label {
@@ -72,7 +76,6 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 0 !important;
-  white-space: nowrap;
 }
 
 [data-theme="light"] .filter-label {
@@ -88,7 +91,7 @@
   font-size: 0.85rem !important;
   font-weight: 500;
   transition: var(--transition-normal);
-  min-height: 38px;
+  width: 100%;
 }
 
 .filter-select:hover {
@@ -200,28 +203,41 @@
   width: 100%;
 }
 
+@media (max-width: 992px) {
+  .movies {
+    flex-direction: column;
+  }
+
+  .filters {
+    width: 100%;
+    min-width: 100%;
+    position: relative;
+    top: 0;
+  }
+
+  .filters-vertical {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .btn-clear-filters {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (max-width: 768px) {
   .movies {
     padding: 1.5rem 1rem;
   }
 
   .filters {
-    padding: 1.2rem 1.5rem;
+    padding: 1.2rem;
   }
 
   .filters h3 {
     font-size: 1rem;
     margin-bottom: 1rem;
-  }
-
-  .filters-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-
-  .filter-item-button {
-    grid-column: 1 / -1;
-    padding-top: 0;
   }
 
   .filter-label {
@@ -252,7 +268,7 @@
     font-size: 0.95rem;
   }
 
-  .filters-grid {
+  .filters-vertical {
     grid-template-columns: 1fr;
   }
 

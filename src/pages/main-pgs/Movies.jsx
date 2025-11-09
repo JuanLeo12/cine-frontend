@@ -106,11 +106,11 @@ function Movies() {
 
   return (
     <div className="movies">
-      {/* 🔹 Panel de filtros con Bootstrap */}
+      {/* 🔹 Panel de filtros lateral */}
       <aside className="filters">
         <h3>Filtros</h3>
 
-        <div className="filters-grid">
+        <div className="filters-vertical">
           {/* Tipo */}
           <div className="filter-item">
             <Form.Label className="filter-label">TIPO:</Form.Label>
@@ -213,25 +213,23 @@ function Movies() {
           )}
 
           {/* Botón limpiar */}
-          <div className="filter-item filter-item-button">
-            <Button
-              variant="outline-danger"
-              className="btn-clear-filters"
-              onClick={() => {
-                setGenero("Todos");
-                setClasificacion("Todos");
-                setSedeId("Todas");
-                setFecha("");
-              }}
-            >
-              Limpiar Filtros
-            </Button>
-          </div>
+          <Button
+            variant="outline-danger"
+            className="btn-clear-filters mt-3"
+            onClick={() => {
+              setGenero("Todos");
+              setClasificacion("Todos");
+              setSedeId("Todas");
+              setFecha("");
+            }}
+          >
+            Limpiar Filtros
+          </Button>
         </div>
       </aside>
 
       {/* 🔹 Sección principal de películas */}
-      <main style={{ width: "100%" }}>
+      <main className="movies-content">
         {loading ? (
           <p style={{ textAlign: "center", marginTop: "50px" }}>
             Cargando películas...
