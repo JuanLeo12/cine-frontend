@@ -54,20 +54,19 @@
 
 /* Contenedor de filtros en fila */
 .filters-row {
-  display: flex;
-  flex-direction: row;
-  gap: 1.5rem;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  width: 100%;
+  display: grid;
+  grid-template-columns: auto auto auto auto auto auto;
+  gap: 2rem;
+  align-items: start;
+  width: fit-content;
+  max-width: 100%;
 }
 
 /* ======== FILTER GROUPS ======== */
 .filter-group {
   margin: 0;
-  flex: 0 0 auto;
-  width: auto;
-  min-width: 140px;
+  display: inline-block;
+  vertical-align: top;
 }
 
 .filter-group label {
@@ -221,6 +220,12 @@
 }
 
 /* ======== RESPONSIVE ======== */
+@media (max-width: 1200px) {
+  .filters-row {
+    grid-template-columns: auto auto auto;
+  }
+}
+
 @media (max-width: 900px) {
   .movies {
     padding: 1.5rem 1rem;
@@ -228,8 +233,8 @@
   }
 
   .filters-row {
-    flex-direction: column;
-    align-items: stretch;
+    grid-template-columns: auto auto;
+    gap: 1.5rem;
   }
 
   .filter-group {
@@ -247,6 +252,7 @@
 
   .filter-group select {
     font-size: 0.95rem;
+    width: 100%;
   }
 }
 
@@ -265,6 +271,7 @@
   }
 
   .filters-row {
+    grid-template-columns: 1fr;
     gap: 1rem;
   }
 
@@ -279,6 +286,7 @@
   .filter-group select {
     font-size: 0.9rem;
     padding: 0.7rem 0.9rem;
+    width: 100%;
   }
 
   .filter-group div label {
