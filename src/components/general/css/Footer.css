@@ -1,122 +1,438 @@
-.footer {
-    background-color: #000;
-    color: white;
-    padding: 2rem 1rem;
+/* ============================================.footer {
+
+   🎬 FOOTER - CineStar Premium Design    background-color: #000;
+
+   Identidad: Rojo #DC0A0A + Dorado #FFC107    color: white;
+
+   ============================================ */    padding: 2rem 1rem;
+
     margin-top: 2rem;
+
+.footer {}
+
+  background: linear-gradient(180deg, var(--color-bg-primary) 0%, #000000 100%);
+
+  color: var(--color-text-primary);.footer-content {
+
+  padding: var(--spacing-2xl) var(--spacing-lg);    display: flex;
+
+  margin-top: var(--spacing-2xl);    justify-content: space-around;
+
+  border-top: 3px solid #DC0A0A;    flex-wrap: wrap;
+
+  position: relative;    max-width: 1200px;
+
+  overflow: hidden;    margin: 0 auto;
+
+}    gap: 2rem;
+
 }
 
-.footer-content {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    max-width: 1200px;
-    margin: 0 auto;
-    gap: 2rem;
-}
+/* Efecto decorativo de fondo */
 
-.footer-section {
-    margin-bottom: 1.5rem;
-    min-width: 200px;
-    flex: 1;
-}
+.footer::before {.footer-section {
 
-.footer-section h4 {
-    color: #e60000;
-    margin-bottom: 0.5rem;
-    font-size: 1.1rem;
-}
+  content: '';    margin-bottom: 1.5rem;
 
-.footer-section ul {
-    list-style: none;
-    padding: 0;
-}
+  position: absolute;    min-width: 200px;
 
-.footer-section ul li {
-    margin: 0.3rem 0;
+  top: 0;    flex: 1;
+
+  left: 0;}
+
+  right: 0;
+
+  height: 200px;.footer-section h4 {
+
+  background: radial-gradient(circle at 20% 50%, rgba(220, 10, 10, 0.1) 0%, transparent 50%),    color: #e60000;
+
+              radial-gradient(circle at 80% 50%, rgba(255, 193, 7, 0.05) 0%, transparent 50%);    margin-bottom: 0.5rem;
+
+  pointer-events: none;    font-size: 1.1rem;
+
+}}
+
+
+
+.footer-content {.footer-section ul {
+
+  display: grid;    list-style: none;
+
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));    padding: 0;
+
+  gap: var(--spacing-2xl);}
+
+  max-width: 1400px;
+
+  margin: 0 auto;.footer-section ul li {
+
+  position: relative;    margin: 0.3rem 0;
+
+  z-index: 1;}
+
 }
 
 .footer-section a {
-    color: white;
-    text-decoration: none;
-    transition: color 0.3s;
+
+/* ============================================    color: white;
+
+   📄 SECCIONES DEL FOOTER    text-decoration: none;
+
+   ============================================ */    transition: color 0.3s;
+
+.footer-section {}
+
+  display: flex;
+
+  flex-direction: column;.footer-section a:hover {
+
+  gap: var(--spacing-md);    color: #e60000;
+
+}}
+
+
+
+.footer-section h4 {.social-icons {
+
+  color: #FFC107;    display: flex;
+
+  margin: 0 0 var(--spacing-sm) 0;    gap: 1rem;
+
+  font-size: 1.3rem;    flex-wrap: wrap;
+
+  font-weight: 700;}
+
+  text-transform: uppercase;
+
+  letter-spacing: 1px;.social-icons a {
+
+  position: relative;    font-size: 1.5rem;
+
+  padding-bottom: var(--spacing-sm);    transition: transform 0.3s;
+
+}}
+
+
+
+.footer-section h4::after {.social-icons a:hover {
+
+  content: '';    transform: scale(1.2);
+
+  position: absolute;}
+
+  bottom: 0;
+
+  left: 0;.footer-bottom {
+
+  width: 50px;    text-align: center;
+
+  height: 3px;    padding-top: 1rem;
+
+  background: linear-gradient(90deg, #DC0A0A 0%, #FFC107 100%);    margin-top: 1rem;
+
+  border-radius: 2px;    border-top: 1px solid #444;
+
+}}
+
+
+
+.footer-section p {/* ======== RESPONSIVE ======== */
+
+  color: var(--color-text-secondary);@media (max-width: 768px) {
+
+  margin: 0.5rem 0;    .footer {
+
+  font-size: 1rem;        padding: 1.5rem 1rem;
+
+  display: flex;    }
+
+  align-items: center;
+
+  gap: 0.5rem;    .footer-content {
+
+  transition: color 0.3s ease;        flex-direction: column;
+
+}        align-items: center;
+
+        text-align: center;
+
+.footer-section p:hover {        gap: 1.5rem;
+
+  color: #FFC107;    }
+
 }
 
-.footer-section a:hover {
-    color: #e60000;
+    .footer-section {
+
+/* ============================================        min-width: 100%;
+
+   🔗 ENLACES        margin-bottom: 1rem;
+
+   ============================================ */    }
+
+.footer-section ul {
+
+  list-style: none;    .footer-section h4 {
+
+  padding: 0;        font-size: 1rem;
+
+  margin: 0;    }
+
+  display: flex;
+
+  flex-direction: column;    .social-icons {
+
+  gap: 0.75rem;        justify-content: center;
+
+}    }
+
+
+
+.footer-section ul li {    .footer-bottom {
+
+  margin: 0;        font-size: 0.9rem;
+
+}    }
+
 }
 
+.footer-section a {
+
+  color: var(--color-text-secondary);@media (max-width: 480px) {
+
+  text-decoration: none;    .footer {
+
+  transition: all 0.3s ease;        padding: 1rem 0.8rem;
+
+  font-size: 1rem;    }
+
+  font-weight: 500;
+
+  display: inline-block;    .footer-section h4 {
+
+  position: relative;        font-size: 0.95rem;
+
+  padding-left: 20px;    }
+
+}
+
+    .footer-section ul li {
+
+.footer-section a::before {        font-size: 0.9rem;
+
+  content: '▸';    }
+
+  position: absolute;
+
+  left: 0;    .social-icons a {
+
+  color: #DC0A0A;        font-size: 1.3rem;
+
+  transition: all 0.3s ease;    }
+
+}
+
+    .footer-bottom {
+
+.footer-section a:hover {        font-size: 0.85rem;
+
+  color: #FFC107;        padding-top: 0.8rem;
+
+  transform: translateX(5px);    }
+
+}}
+
+.footer-section a:hover::before {
+  color: #FFC107;
+  transform: translateX(-3px);
+}
+
+/* ============================================
+   📱 REDES SOCIALES
+   ============================================ */
 .social-icons {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-sm);
 }
 
 .social-icons a {
-    font-size: 1.5rem;
-    transition: transform 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: rgba(220, 10, 10, 0.1);
+  border: 2px solid rgba(255, 193, 7, 0.3);
+  border-radius: 50%;
+  color: #FFC107;
+  font-size: 1.3rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.social-icons a::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #DC0A0A 0%, #FFC107 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 50%;
 }
 
 .social-icons a:hover {
-    transform: scale(1.2);
+  border-color: #FFC107;
+  transform: translateY(-5px) scale(1.1);
+  box-shadow: 0 8px 20px rgba(220, 10, 10, 0.5);
 }
 
+.social-icons a:hover::before {
+  opacity: 1;
+}
+
+.social-icons a span {
+  position: relative;
+  z-index: 1;
+}
+
+.social-icons a:active {
+  transform: translateY(-2px) scale(1.05);
+}
+
+/* ============================================
+   📝 FOOTER BOTTOM - Copyright
+   ============================================ */
 .footer-bottom {
-    text-align: center;
-    padding-top: 1rem;
-    margin-top: 1rem;
-    border-top: 1px solid #444;
+  text-align: center;
+  padding-top: var(--spacing-xl);
+  margin-top: var(--spacing-xl);
+  border-top: 1px solid rgba(255, 193, 7, 0.2);
+  position: relative;
+  z-index: 1;
 }
 
-/* ======== RESPONSIVE ======== */
+.footer-bottom p {
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.footer-bottom p::before {
+  content: '🎬';
+  font-size: 1.2rem;
+  filter: drop-shadow(0 0 8px rgba(255, 193, 7, 0.5));
+}
+
+/* ============================================
+   📱 RESPONSIVE
+   ============================================ */
+@media (max-width: 1024px) {
+  .footer-content {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-xl);
+  }
+}
+
 @media (max-width: 768px) {
-    .footer {
-        padding: 1.5rem 1rem;
-    }
+  .footer {
+    padding: var(--spacing-xl) var(--spacing-md);
+  }
 
-    .footer-content {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: 1.5rem;
-    }
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+    text-align: left;
+  }
 
-    .footer-section {
-        min-width: 100%;
-        margin-bottom: 1rem;
-    }
+  .footer-section h4 {
+    font-size: 1.15rem;
+  }
 
-    .footer-section h4 {
-        font-size: 1rem;
-    }
+  .footer-section h4::after {
+    width: 40px;
+  }
 
-    .social-icons {
-        justify-content: center;
-    }
+  .footer-section p,
+  .footer-section a {
+    font-size: 0.95rem;
+  }
 
-    .footer-bottom {
-        font-size: 0.9rem;
-    }
+  .social-icons {
+    justify-content: flex-start;
+  }
+
+  .social-icons a {
+    width: 45px;
+    height: 45px;
+    font-size: 1.2rem;
+  }
+
+  .footer-bottom p {
+    font-size: 0.9rem;
+  }
 }
 
 @media (max-width: 480px) {
-    .footer {
-        padding: 1rem 0.8rem;
-    }
+  .footer {
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
 
-    .footer-section h4 {
-        font-size: 0.95rem;
-    }
+  .footer-content {
+    gap: var(--spacing-md);
+  }
 
-    .footer-section ul li {
-        font-size: 0.9rem;
-    }
+  .footer-section h4 {
+    font-size: 1.05rem;
+  }
 
-    .social-icons a {
-        font-size: 1.3rem;
-    }
+  .footer-section p,
+  .footer-section a {
+    font-size: 0.9rem;
+  }
 
-    .footer-bottom {
-        font-size: 0.85rem;
-        padding-top: 0.8rem;
-    }
+  .social-icons a {
+    width: 42px;
+    height: 42px;
+    font-size: 1.1rem;
+  }
+
+  .footer-bottom {
+    padding-top: var(--spacing-md);
+    margin-top: var(--spacing-md);
+  }
+
+  .footer-bottom p {
+    font-size: 0.85rem;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .footer-bottom p::before {
+    font-size: 1.5rem;
+  }
+}
+
+/* ============================================
+   ✨ ANIMACIONES ESPECIALES
+   ============================================ */
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(220, 10, 10, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 193, 7, 0.5);
+  }
+}
+
+.footer-section h4 {
+  animation: glow 3s ease-in-out infinite;
 }

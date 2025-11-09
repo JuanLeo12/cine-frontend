@@ -71,7 +71,7 @@ function Carousel({ peliculas }) {
             className="carousel-more-btn"
             onClick={() => navigate(`/movie/${peliculas[currentIndex]?.id}`)}
           >
-            Ver más detalles
+            <span>Ver más detalles</span>
           </button>
         </div>
       </div>
