@@ -45,28 +45,28 @@
 .filters {
     margin: 0 auto 3rem auto;
     text-align: center;
-    padding: 2rem;
+    padding: 1.5rem;
     background: var(--color-bg-card);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
     border: 2px solid var(--color-border);
-    max-width: 600px;
+    max-width: 450px;
     width: 100%;
     box-sizing: border-box;
 }
 
 .filters h3 {
     color: #FFC107;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     font-weight: 700;
-    margin-bottom: 1rem;
+    margin: 0 0 1rem 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .filters select {
-    padding: 1rem 1.5rem;
-    font-size: 1rem;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.95rem;
     border: 2px solid var(--color-border);
     border-radius: var(--radius-md);
     background: var(--color-bg-secondary);
@@ -74,7 +74,7 @@
     cursor: pointer;
     transition: var(--transition-normal);
     width: 100%;
-    max-width: 350px;
+    max-width: 300px;
     font-weight: 600;
     box-sizing: border-box;
 }
@@ -111,18 +111,18 @@
     }
 
     .filters {
-        padding: 1.5rem;
+        padding: 1.2rem;
         margin-bottom: 2rem;
         max-width: 100%;
     }
 
     .filters h3 {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
     }
 
     .filters select {
-        padding: 0.9rem 1.2rem;
-        font-size: 0.95rem;
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
         max-width: 100%;
     }
 
@@ -148,18 +148,18 @@
     }
 
     .filters {
-        padding: 1.2rem;
+        padding: 1rem;
         margin-bottom: 1.5rem;
         max-width: 100%;
     }
 
     .filters h3 {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
 
     .filters select {
-        padding: 0.8rem 1rem;
-        font-size: 0.9rem;
+        padding: 0.7rem 0.9rem;
+        font-size: 0.85rem;
         max-width: 100%;
     }
 
