@@ -107,12 +107,22 @@
     text-decoration: none;
 }
 
+.social-icons a svg {
+    width: 24px;
+    height: 24px;
+    transition: all 0.3s ease;
+}
+
 .social-icons a:hover {
     border-color: #FFC107;
     transform: translateY(-5px) scale(1.1);
     box-shadow: 0 8px 20px rgba(220, 10, 10, 0.5);
     background: linear-gradient(135deg, #DC0A0A 0%, #FFC107 100%);
     color: #000000;
+}
+
+.social-icons a:hover svg {
+    transform: scale(1.1);
 }
 
 .footer-bottom {
