@@ -1,307 +1,611 @@
-/* ============================================.movie-card {
+/* ============================================/* ============================================.movie-card {
 
-   🎬 MOVIE CARD - CineStar Premium Design    background: white;
+   🎬 MOVIE CARD - CineStar Premium Design
+
+   Inspirado en Netflix + IMAX   🎬 MOVIE CARD - CineStar Premium Design    background: white;
+
+   ============================================ */
 
    Inspirado en Netflix + IMAX    border-radius: 8px;
 
-   ============================================ */    overflow: hidden;
+.movie-card {
 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;   ============================================ */    overflow: hidden;
 
-.movie-card {    transition: transform 0.3s;
+  background: var(--color-bg-card);
 
-  position: relative;    display: flex;
-
-  background: var(--color-bg-card);    flex-direction: column;
-
-  border-radius: var(--radius-lg);}
+  border-radius: var(--radius-lg);    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
   overflow: hidden;
 
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);.movie-card:hover {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);.movie-card {    transition: transform 0.3s;
 
-  cursor: pointer;    transform: translateY(-5px);
+  cursor: pointer;
 
-  display: flex;}
+  display: flex;  position: relative;    display: flex;
 
   flex-direction: column;
 
-  box-shadow: var(--shadow-card);.movie-card img {
+  box-shadow: var(--shadow-card);  background: var(--color-bg-card);    flex-direction: column;
 
-  border: 1px solid rgba(255, 193, 7, 0.1);    width: 100%;
+  border: 1px solid rgba(255, 193, 7, 0.1);
 
-}    height: 300px;
+}  border-radius: var(--radius-lg);}
 
-    object-fit: cover;
 
-/* Efecto hover espectacular */    display: block;
 
-.movie-card:hover {}
+/* Efecto hover espectacular */  overflow: hidden;
 
-  transform: translateY(-12px) scale(1.02);
+.movie-card:hover {
 
-  box-shadow: .movie-card .movie-info {
+  transform: translateY(-12px) scale(1.02);  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);.movie-card:hover {
 
-    0 20px 40px rgba(0, 0, 0, 0.7),    padding: 0.5rem;
+  box-shadow: 
 
-    0 0 30px rgba(220, 10, 10, 0.3),    flex-grow: 1;
+    0 20px 40px rgba(0, 0, 0, 0.7),  cursor: pointer;    transform: translateY(-5px);
 
-    inset 0 0 0 2px rgba(255, 193, 7, 0.3);    display: flex;
+    0 0 30px rgba(220, 10, 10, 0.3),
 
-  border-color: rgba(255, 193, 7, 0.5);    flex-direction: column;
+    inset 0 0 0 2px rgba(255, 193, 7, 0.3);  display: flex;}
 
-}    justify-content: space-between;
+  border-color: rgba(255, 193, 7, 0.5);
 
-}
+}  flex-direction: column;
 
-.movie-card:active {
 
-  transform: translateY(-8px) scale(1.01);.movie-card h3 {
 
-}    font-size: 1.1rem;
+.movie-card:active {  box-shadow: var(--shadow-card);.movie-card img {
 
-    margin: 0 0 0.3rem 0;
+  transform: translateY(-8px) scale(1.01);
 
-/* ============================================    color: #333;
+}  border: 1px solid rgba(255, 193, 7, 0.1);    width: 100%;
 
-   🖼️ POSTER - Imagen de película    overflow: hidden;
 
-   ============================================ */    text-overflow: ellipsis;
 
-.movie-poster {    display: -webkit-box;
+/* ============================================}    height: 300px;
 
-  width: 100%;    -webkit-box-orient: vertical;
+   🖼️ POSTER - Imagen de película
 
-  height: 400px;    line-height: 1.3;
+   ============================================ */    object-fit: cover;
 
-  object-fit: cover;}
+.movie-poster {
+
+  width: 100%;/* Efecto hover espectacular */    display: block;
+
+  height: 400px;
+
+  object-fit: cover;.movie-card:hover {}
 
   display: block;
 
-  transition: all 0.4s ease;
+  transition: all 0.4s ease;  transform: translateY(-12px) scale(1.02);
 
-  position: relative;.movie-card p {
+  position: relative;
 
-}    padding: 0 0.5rem;
+}  box-shadow: .movie-card .movie-info {
 
-    margin: 0.3rem 0;
 
-.movie-card:hover .movie-poster {    color: #666;
 
-  transform: scale(1.05);}
+.movie-card:hover .movie-poster {    0 20px 40px rgba(0, 0, 0, 0.7),    padding: 0.5rem;
 
-  filter: brightness(1.1) contrast(1.05);
+  transform: scale(1.05);
 
-}.movie-card a {
+  filter: brightness(1.1) contrast(1.05);    0 0 30px rgba(220, 10, 10, 0.3),    flex-grow: 1;
 
-    display: block;
+}
 
-/* Overlay gradient sobre el poster */    padding: 0.5rem;
+    inset 0 0 0 2px rgba(255, 193, 7, 0.3);    display: flex;
 
-.movie-card::before {    background: #e60000;
+/* Overlay gradient sobre el poster */
 
-  content: '';    color: white;
+.movie-card::before {  border-color: rgba(255, 193, 7, 0.5);    flex-direction: column;
 
-  position: absolute;    text-align: center;
+  content: '';
 
-  top: 0;    text-decoration: none;
+  position: absolute;}    justify-content: space-between;
 
-  left: 0;    font-weight: bold;
+  top: 0;
 
-  right: 0;    transition: background 0.3s;
+  left: 0;}
 
-  height: 200px;}
+  right: 0;
+
+  height: 200px;.movie-card:active {
 
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
 
-  z-index: 1;.movie-card a:hover {
+  z-index: 1;  transform: translateY(-8px) scale(1.01);.movie-card h3 {
 
-  opacity: 0;    background: #cc0000;
+  opacity: 0;
 
-  transition: opacity 0.3s ease;}
+  transition: opacity 0.3s ease;}    font-size: 1.1rem;
 
   pointer-events: none;
 
-}/* ======== RESPONSIVE ======== */
-
-@media (max-width: 768px) {
-
-.movie-card:hover::before {    .movie-card img {
-
-  opacity: 1;        height: 250px;
-
-}    }
+}    margin: 0 0 0.3rem 0;
 
 
 
-/* ============================================    .movie-card h3 {
+.movie-card:hover::before {/* ============================================    color: #333;
 
-   ℹ️ INFO - Información de película        font-size: 1rem;
+  opacity: 1;
 
-   ============================================ */    }
+}   🖼️ POSTER - Imagen de película    overflow: hidden;
+
+
+
+/* ============================================   ============================================ */    text-overflow: ellipsis;
+
+   ℹ️ INFO - Información de película
+
+   ============================================ */.movie-poster {    display: -webkit-box;
 
 .movie-info {
 
-  padding: var(--spacing-lg);    .movie-card p {
+  padding: var(--spacing-lg);  width: 100%;    -webkit-box-orient: vertical;
 
-  flex-grow: 1;        font-size: 0.9rem;
+  flex-grow: 1;
 
-  display: flex;    }
+  display: flex;  height: 400px;    line-height: 1.3;
 
   flex-direction: column;
 
-  gap: var(--spacing-sm);    .movie-card a {
+  gap: var(--spacing-sm);  object-fit: cover;}
 
-  background: var(--gradient-card);        padding: 0.5rem;
+  background: var(--gradient-card);
 
-  position: relative;        font-size: 0.9rem;
+  position: relative;  display: block;
 
-  z-index: 2;    }
+  z-index: 2;
 
-}}
+}  transition: all 0.4s ease;
 
 
 
-/* Título de película */@media (max-width: 480px) {
+/* Título de película */  position: relative;.movie-card p {
 
-.movie-info h3 {    .movie-card img {
+.movie-info h3 {
 
-  font-size: 1.25rem;        height: 220px;
+  font-size: 1.25rem;}    padding: 0 0.5rem;
 
-  font-weight: 700;    }
+  font-weight: 700;
 
-  margin: 0;
+  margin: 0;    margin: 0.3rem 0;
 
-  color: var(--color-text-primary);    .movie-card h3 {
+  color: var(--color-text-primary);
 
-  overflow: hidden;        font-size: 0.95rem;
+  overflow: hidden;.movie-card:hover .movie-poster {    color: #666;
 
-  text-overflow: ellipsis;    }
+  text-overflow: ellipsis;
 
-  display: -webkit-box;
+  display: -webkit-box;  transform: scale(1.05);}
 
-  -webkit-box-orient: vertical;    .movie-card p {
+  -webkit-box-orient: vertical;
 
-  -webkit-line-clamp: 2;        font-size: 0.85rem;
+  -webkit-line-clamp: 2;  filter: brightness(1.1) contrast(1.05);
 
-  line-height: 1.4;        padding: 0 0.4rem;
+  line-height: 1.4;
 
-  min-height: 2.8rem;    }
+  min-height: 2.8rem;}.movie-card a {
 
   transition: color 0.3s ease;
 
-}    .movie-card a {
+}    display: block;
 
-        padding: 0.45rem;
 
-.movie-card:hover .movie-info h3 {        font-size: 0.85rem;
 
-  color: #FFC107;    }
+.movie-card:hover .movie-info h3 {/* Overlay gradient sobre el poster */    padding: 0.5rem;
 
-  text-shadow: 0 0 10px rgba(255, 193, 7, 0.3);}
+  color: #FFC107;
+
+  text-shadow: 0 0 10px rgba(255, 193, 7, 0.3);.movie-card::before {    background: #e60000;
+
 }
+
+  content: '';    color: white;
 
 /* Detalles (género, duración) */
-.movie-info p {
+
+.movie-info p {  position: absolute;    text-align: center;
+
   margin: 0;
-  padding: 0;
+
+  padding: 0;  top: 0;    text-decoration: none;
+
   color: var(--color-text-secondary);
-  font-size: 0.9rem;
+
+  font-size: 0.9rem;  left: 0;    font-weight: bold;
+
   font-weight: 500;
-  display: flex;
+
+  display: flex;  right: 0;    transition: background 0.3s;
+
   align-items: center;
-  gap: var(--spacing-xs);
+
+  gap: var(--spacing-xs);  height: 200px;}
+
 }
+
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
 
 .movie-info p:first-of-type::before {
-  content: '🎭';
+
+  content: '🎭';  z-index: 1;.movie-card a:hover {
+
   font-size: 1rem;
+
+}  opacity: 0;    background: #cc0000;
+
+
+
+.movie-info p:last-of-type::before {  transition: opacity 0.3s ease;}
+
+  content: '⏱️';
+
+  font-size: 1rem;  pointer-events: none;
+
 }
 
-.movie-info p:last-of-type::before {
-  content: '⏱️';
-  font-size: 1rem;
+}/* ======== RESPONSIVE ======== */
+
+/* ============================================
+
+   🔘 BOTÓN - Ver Detalles@media (max-width: 768px) {
+
+   ============================================ */
+
+.movie-info a {.movie-card:hover::before {    .movie-card img {
+
+  display: flex;
+
+  align-items: center;  opacity: 1;        height: 250px;
+
+  justify-content: center;
+
+  gap: var(--spacing-sm);}    }
+
+  padding: var(--spacing-md) var(--spacing-lg);
+
+  margin-top: auto;
+
+  background: linear-gradient(135deg, #DC0A0A 0%, #B00808 100%);
+
+  color: #ffffff;/* ============================================    .movie-card h3 {
+
+  text-align: center;
+
+  text-decoration: none;   ℹ️ INFO - Información de película        font-size: 1rem;
+
+  font-weight: 700;
+
+  font-size: 0.95rem;   ============================================ */    }
+
+  border-radius: var(--radius-md);
+
+  transition: all 0.3s ease;.movie-info {
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.5px;  padding: var(--spacing-lg);    .movie-card p {
+
+  position: relative;
+
+  overflow: hidden;  flex-grow: 1;        font-size: 0.9rem;
+
+  box-shadow: 0 4px 12px rgba(220, 10, 10, 0.3);
+
+}  display: flex;    }
+
+
+
+/* Efecto de brillo en el botón */  flex-direction: column;
+
+.movie-info a::before {
+
+  content: '';  gap: var(--spacing-sm);    .movie-card a {
+
+  position: absolute;
+
+  inset: 0;  background: var(--gradient-card);        padding: 0.5rem;
+
+  background: linear-gradient(135deg, transparent, rgba(255, 193, 7, 0.3), transparent);
+
+  transform: translateX(-100%);  position: relative;        font-size: 0.9rem;
+
+  transition: transform 0.6s ease;
+
+}  z-index: 2;    }
+
+
+
+.movie-card:hover .movie-info a::before {}}
+
+  transform: translateX(100%);
+
+}
+
+
+
+.movie-info a::after {/* Título de película */@media (max-width: 480px) {
+
+  content: '▶';
+
+  font-size: 0.8rem;.movie-info h3 {    .movie-card img {
+
+  transition: transform 0.3s ease;
+
+}  font-size: 1.25rem;        height: 220px;
+
+
+
+.movie-info a:hover {  font-weight: 700;    }
+
+  background: linear-gradient(135deg, #FFC107 0%, #FFA000 100%);
+
+  color: #000000;  margin: 0;
+
+  box-shadow: 0 6px 20px rgba(255, 193, 7, 0.5);
+
+  transform: translateY(-2px);  color: var(--color-text-primary);    .movie-card h3 {
+
+}
+
+  overflow: hidden;        font-size: 0.95rem;
+
+.movie-info a:hover::after {
+
+  transform: translateX(4px);  text-overflow: ellipsis;    }
+
+}
+
+  display: -webkit-box;
+
+.movie-info a:active {
+
+  transform: translateY(0);  -webkit-box-orient: vertical;    .movie-card p {
+
+}
+
+  -webkit-line-clamp: 2;        font-size: 0.85rem;
+
+/* ============================================
+
+   🏷️ BADGE - Etiqueta de estado (opcional)  line-height: 1.4;        padding: 0 0.4rem;
+
+   ============================================ */
+
+.movie-badge {  min-height: 2.8rem;    }
+
+  position: absolute;
+
+  top: 12px;  transition: color 0.3s ease;
+
+  right: 12px;
+
+  background: linear-gradient(135deg, #DC0A0A 0%, #8B0000 100%);}    .movie-card a {
+
+  color: #ffffff;
+
+  padding: 6px 12px;        padding: 0.45rem;
+
+  border-radius: var(--radius-full);
+
+  font-size: 0.75rem;.movie-card:hover .movie-info h3 {        font-size: 0.85rem;
+
+  font-weight: 700;
+
+  text-transform: uppercase;  color: #FFC107;    }
+
+  letter-spacing: 0.5px;
+
+  z-index: 3;  text-shadow: 0 0 10px rgba(255, 193, 7, 0.3);}
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);}
+
+  animation: pulse-badge 2s ease-in-out infinite;
+
+}/* Detalles (género, duración) */
+
+.movie-info p {
+
+@keyframes pulse-badge {  margin: 0;
+
+  0%, 100% {  padding: 0;
+
+    box-shadow: 0 4px 12px rgba(220, 10, 10, 0.5);  color: var(--color-text-secondary);
+
+  }  font-size: 0.9rem;
+
+  50% {  font-weight: 500;
+
+    box-shadow: 0 4px 20px rgba(220, 10, 10, 0.8);  display: flex;
+
+  }  align-items: center;
+
+}  gap: var(--spacing-xs);
+
 }
 
 /* ============================================
+
+   📱 RESPONSIVE.movie-info p:first-of-type::before {
+
+   ============================================ */  content: '🎭';
+
+@media (max-width: 1024px) {  font-size: 1rem;
+
+  .movie-poster {}
+
+    height: 350px;
+
+  }.movie-info p:last-of-type::before {
+
+    content: '⏱️';
+
+  .movie-info h3 {  font-size: 1rem;
+
+    font-size: 1.15rem;}
+
+  }
+
+}/* ============================================
+
    🔘 BOTÓN - Ver Detalles
-   ============================================ */
-.movie-info a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md) var(--spacing-lg);
-  margin-top: auto;
-  background: linear-gradient(135deg, #DC0A0A 0%, #B00808 100%);
-  color: #ffffff;
-  text-align: center;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 0.95rem;
-  border-radius: var(--radius-md);
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(220, 10, 10, 0.3);
+
+@media (max-width: 768px) {   ============================================ */
+
+  .movie-poster {.movie-info a {
+
+    height: 320px;  display: flex;
+
+  }  align-items: center;
+
+    justify-content: center;
+
+  .movie-info {  gap: var(--spacing-sm);
+
+    padding: var(--spacing-md);  padding: var(--spacing-md) var(--spacing-lg);
+
+  }  margin-top: auto;
+
+    background: linear-gradient(135deg, #DC0A0A 0%, #B00808 100%);
+
+  .movie-info h3 {  color: #ffffff;
+
+    font-size: 1.1rem;  text-align: center;
+
+    min-height: 2.6rem;  text-decoration: none;
+
+  }  font-weight: 700;
+
+    font-size: 0.95rem;
+
+  .movie-info p {  border-radius: var(--radius-md);
+
+    font-size: 0.85rem;  transition: all 0.3s ease;
+
+  }  text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+
+  .movie-info a {  position: relative;
+
+    padding: var(--spacing-sm) var(--spacing-md);  overflow: hidden;
+
+    font-size: 0.9rem;  box-shadow: 0 4px 12px rgba(220, 10, 10, 0.3);
+
+  }}
+
 }
 
 /* Efecto de brillo en el botón */
-.movie-info a::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent, rgba(255, 193, 7, 0.3), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.6s ease;
-}
 
-.movie-card:hover .movie-info a::before {
-  transform: translateX(100%);
-}
+@media (max-width: 480px) {.movie-info a::before {
 
-.movie-info a::after {
-  content: '▶';
-  font-size: 0.8rem;
-  transition: transform 0.3s ease;
-}
+  .movie-poster {  content: '';
 
-.movie-info a:hover {
-  background: linear-gradient(135deg, #FFC107 0%, #FFA000 100%);
-  color: #000000;
-  box-shadow: 0 6px 20px rgba(255, 193, 7, 0.5);
-  transform: translateY(-2px);
-}
+    height: 350px;  position: absolute;
 
-.movie-info a:hover::after {
+  }  inset: 0;
+
+    background: linear-gradient(135deg, transparent, rgba(255, 193, 7, 0.3), transparent);
+
+  .movie-info {  transform: translateX(-100%);
+
+    padding: var(--spacing-md);  transition: transform 0.6s ease;
+
+  }}
+
+  
+
+  .movie-info h3 {.movie-card:hover .movie-info a::before {
+
+    font-size: 1.05rem;  transform: translateX(100%);
+
+    min-height: 2.5rem;}
+
+  }
+
+  .movie-info a::after {
+
+  .movie-info p {  content: '▶';
+
+    font-size: 0.8rem;  font-size: 0.8rem;
+
+  }  transition: transform 0.3s ease;
+
+  }
+
+  .movie-info a {
+
+    padding: 12px var(--spacing-md);.movie-info a:hover {
+
+    font-size: 0.85rem;  background: linear-gradient(135deg, #FFC107 0%, #FFA000 100%);
+
+  }  color: #000000;
+
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.5);
+
+  .movie-card:hover {  transform: translateY(-2px);
+
+    transform: translateY(-8px) scale(1.01);}
+
+  }
+
+}.movie-info a:hover::after {
+
   transform: translateX(4px);
-}
 
-.movie-info a:active {
-  transform: translateY(0);
-}
+/* ============================================}
 
-/* ============================================
-   🏷️ BADGE - Etiqueta de estado (opcional)
-   ============================================ */
-.movie-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
+   ✨ ANIMACIONES ESPECIALES
+
+   ============================================ */.movie-info a:active {
+
+@keyframes fadeIn {  transform: translateY(0);
+
+  from {}
+
+    opacity: 0;
+
+    transform: translateY(20px);/* ============================================
+
+  }   🏷️ BADGE - Etiqueta de estado (opcional)
+
+  to {   ============================================ */
+
+    opacity: 1;.movie-badge {
+
+    transform: translateY(0);  position: absolute;
+
+  }  top: 12px;
+
+}  right: 12px;
+
   background: linear-gradient(135deg, #DC0A0A 0%, #8B0000 100%);
-  color: #ffffff;
-  padding: 6px 12px;
-  border-radius: var(--radius-full);
+
+.movie-card {  color: #ffffff;
+
+  animation: fadeIn 0.5s ease-out;  padding: 6px 12px;
+
+}  border-radius: var(--radius-full);
+
   font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  z-index: 3;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  animation: pulse-badge 2s ease-in-out infinite;
-}
+
+/* Delay progresivo para grid */  font-weight: 700;
+
+.movie-card:nth-child(1) { animation-delay: 0.05s; }  text-transform: uppercase;
+
+.movie-card:nth-child(2) { animation-delay: 0.1s; }  letter-spacing: 0.5px;
+
+.movie-card:nth-child(3) { animation-delay: 0.15s; }  z-index: 3;
+
+.movie-card:nth-child(4) { animation-delay: 0.2s; }  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+
+.movie-card:nth-child(5) { animation-delay: 0.25s; }  animation: pulse-badge 2s ease-in-out infinite;
+
+.movie-card:nth-child(6) { animation-delay: 0.3s; }}
+
 
 @keyframes pulse-badge {
   0%, 100% {
