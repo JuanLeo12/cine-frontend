@@ -5,7 +5,7 @@
   padding: 1rem 2rem;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 999;
   box-shadow: var(--shadow-md);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--color-border);
@@ -170,24 +170,31 @@
 
 .dropdown-menu {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 0.5rem);
   right: 0;
-  background: white;
-  min-width: 160px;
+  background: var(--color-bg-card);
+  min-width: 200px;
   list-style: none;
   padding: 0.5rem 0;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  z-index: 101;
+  margin: 0;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  border: 2px solid var(--color-border);
+  z-index: 1000;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: all var(--transition-fast);
 }
 
 .dropdown-menu li {
-  padding: 0.5rem 1rem;
+  padding: 0;
+  margin: 0;
 }
 
 .dropdown-menu a,
 .dropdown-menu button {
-  color: black;
+  color: var(--color-text-primary);
   text-decoration: none;
   display: block;
   width: 100%;
@@ -196,11 +203,43 @@
   border: none;
   cursor: pointer;
   font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.75rem 1.25rem;
+  transition: all var(--transition-fast);
+  border-radius: 0;
 }
 
 .dropdown-menu a:hover,
 .dropdown-menu button:hover {
-  background-color: #f5f5f5;
+  background: var(--color-bg-hover);
+  color: var(--color-primary);
+}
+
+.dropdown-menu li:first-child a,
+.dropdown-menu li:first-child button {
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.dropdown-menu li:last-child a,
+.dropdown-menu li:last-child button {
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+/* Separador para el botón de cerrar sesión */
+.dropdown-menu li:last-child {
+  border-top: 1px solid var(--color-border);
+  margin-top: 0.25rem;
+  padding-top: 0.25rem;
+}
+
+.dropdown-menu button {
+  color: #DC0A0A;
+  font-weight: 600;
+}
+
+.dropdown-menu button:hover {
+  background: rgba(220, 10, 10, 0.1);
+  color: #DC0A0A;
 }
 
 /* ======== HAMBURGUESA (MÓVIL) ======== */
