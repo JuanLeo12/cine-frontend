@@ -133,16 +133,29 @@
 }
 
 /* Bootstrap Input Group override */
+.modal-content .input-group {
+    display: flex;
+    width: 100%;
+}
+
 .modal-content .input-group .form-control {
     margin: 0;
+    flex: 1;
+    border-right: none;
 }
 
 .modal-content .input-group .btn {
     border: 2px solid var(--color-border);
+    border-left: none;
     background: var(--color-bg-secondary);
     color: var(--color-text-primary);
-    font-size: 1.4rem;
-    padding: 0 1rem;
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+    transition: all 0.3s ease;
 }
 
 .modal-content .input-group .btn:hover:not(:disabled) {
@@ -151,9 +164,22 @@
     color: var(--color-text-primary);
 }
 
+.modal-content .input-group .btn:focus {
+    box-shadow: none;
+    border-color: #FFC107;
+}
+
 .modal-content .input-group .btn:disabled {
     cursor: not-allowed;
     opacity: 0.4;
+}
+
+.modal-content .input-group .form-control:focus {
+    border-right: none;
+}
+
+.modal-content .input-group .form-control:focus + .btn {
+    border-color: #FFC107;
 }
 
 /* Bootstrap Buttons override */
