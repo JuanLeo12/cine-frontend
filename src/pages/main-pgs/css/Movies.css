@@ -112,7 +112,7 @@
   margin: 0.7rem 0;
   font-weight: 500;
   font-size: 0.85rem;
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
   cursor: pointer;
   transition: var(--transition-fast);
   padding: 0.4rem;
@@ -156,15 +156,24 @@
 }
 
 /* ======== MOVIE GRID ======== */
-.movie-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.5rem;
-  width: 100%;
+.row {
+  --bs-gutter-x: 1.5rem;
+  --bs-gutter-y: 1.5rem;
 }
 
-.movie-grid > * {
-  height: 100%;
+/* Asegurar que las cards tengan el mismo tamaño */
+.row .col-12,
+.row .col-sm-6,
+.row .col-md-4,
+.row .col-lg-3 {
+  display: flex;
+}
+
+.row .col-12 > *,
+.row .col-sm-6 > *,
+.row .col-md-4 > *,
+.row .col-lg-3 > * {
+  width: 100%;
 }
 
 /* ======== RESPONSIVE ======== */

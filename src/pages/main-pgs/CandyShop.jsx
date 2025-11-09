@@ -261,17 +261,19 @@ function CandyShop() {
                 </div>
             )}
 
-            <div className="combo-grid">
+            <div className="row g-4">
                 {combosFiltrados.length > 0 ? (
                     combosFiltrados.map(combo => (
-                        <div key={combo.id} className="combo-card-wrapper">
-                            <ComboCard combo={combo} />
-                            <button 
-                                className="btn-agregar-combo"
-                                onClick={() => agregarAlCarrito(combo)}
-                            >
-                                🛒 Agregar al Carrito
-                            </button>
+                        <div key={combo.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <div className="combo-card-wrapper">
+                                <ComboCard combo={combo} />
+                                <button 
+                                    className="btn-agregar-combo"
+                                    onClick={() => agregarAlCarrito(combo)}
+                                >
+                                    🛒 Agregar al Carrito
+                                </button>
+                            </div>
                         </div>
                     ))
                 ) : (

@@ -45,10 +45,12 @@ function Cinemas() {
                     ))}
                 </select>
             </div>
-            <div className="cinema-grid">
+            <div className="row g-4">
                 {sedesFiltradas.length > 0 ? (
                     sedesFiltradas.map(sede => (
-                        <CinemaCard key={sede.id} sede={sede} />
+                        <div key={sede.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <CinemaCard sede={sede} />
+                        </div>
                     ))
                 ) : (
                     <p style={{ textAlign: 'center', width: '100%' }}>

@@ -218,9 +218,13 @@ function Movies() {
             Cargando películas...
           </p>
         ) : (
-          <div className="movie-grid">
+          <div className="row g-4">
             {peliculas.length > 0 ? (
-              peliculas.map((p) => <MovieCard key={p.id} pelicula={p} />)
+              peliculas.map((p) => (
+                <div key={p.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
+                  <MovieCard pelicula={p} />
+                </div>
+              ))
             ) : (
               <p style={{ textAlign: "center", width: "100%" }}>
                 No hay películas disponibles con los filtros seleccionados.

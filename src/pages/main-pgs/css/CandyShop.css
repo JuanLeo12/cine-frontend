@@ -54,12 +54,17 @@
     transform: translateY(-2px);
 }
 
-/* ======== COMBO GRID ======== */
-.combo-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2rem;
-    margin-bottom: 3rem;
+/* ======== COMBO GRID - BOOTSTRAP ======== */
+.row {
+    --bs-gutter-x: 2rem;
+    --bs-gutter-y: 2rem;
+}
+
+.row .col-12,
+.row .col-sm-6,
+.row .col-md-4,
+.row .col-lg-3 {
+    display: flex;
 }
 
 .combo-card-wrapper {

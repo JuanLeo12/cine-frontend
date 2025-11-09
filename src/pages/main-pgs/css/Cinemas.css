@@ -90,16 +90,24 @@
     box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
 }
 
-.cinema-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 2rem;
-    justify-items: center;
+/* ======== BOOTSTRAP GRID ======== */
+.row {
+    --bs-gutter-x: 2rem;
+    --bs-gutter-y: 2rem;
 }
 
-.cinema-grid > * {
+.row .col-12,
+.row .col-sm-6,
+.row .col-md-4,
+.row .col-lg-3 {
+    display: flex;
+}
+
+.row .col-12 > *,
+.row .col-sm-6 > *,
+.row .col-md-4 > *,
+.row .col-lg-3 > * {
     width: 100%;
-    max-width: 350px;
 }
 
 /* ======== RESPONSIVE ======== */
