@@ -1,5 +1,6 @@
 // src/components/LoginModal.jsx
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './css/LoginModal.css';
@@ -143,7 +144,7 @@ function LoginModal({ onClose }) {
         reader.readAsDataURL(file);
     };
 
-    return (
+    return ReactDOM.createPortal(
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <h2>{isLogin ? '🔐 Iniciar Sesión' : '✨ Crear Cuenta'}</h2>
@@ -378,7 +379,8 @@ function LoginModal({ onClose }) {
                     ✖️ Cerrar
                 </button>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
 
