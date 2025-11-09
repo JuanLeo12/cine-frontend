@@ -1,32 +1,29 @@
 /* ============================================
    MOVIES CATALOG - CINESTAR REDESIGN
-   Catálogo con filtros premium
+   Catálogo con filtros horizontales
    ============================================ */
 
 .movies {
   display: flex;
+  flex-direction: column;
   padding: 2rem;
   max-width: 1600px;
   margin: 0 auto;
-  gap: 2.5rem;
-  flex-wrap: wrap;
+  gap: 2rem;
   box-sizing: border-box;
   overflow-x: hidden;
   min-height: 80vh;
 }
 
-/* ======== PANEL DE FILTROS ======== */
+/* ======== PANEL DE FILTROS HORIZONTAL ======== */
 .filters {
-    width: 260px;
+    width: 100%;
     background: var(--color-bg-card);
     color: var(--color-text-primary);
     padding: 1.5rem;
     border-radius: var(--radius-lg);
-    height: fit-content;
     box-shadow: var(--shadow-lg);
     border: 2px solid var(--color-border);
-    position: sticky;
-    top: 100px;
     transition: var(--transition-normal);
 }
 
@@ -56,9 +53,17 @@
     content: '🎬 ';
 }
 
+/* Contenedor de filtros en fila */
+.filters-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  align-items: start;
+}
+
 /* ======== FILTER GROUPS ======== */
 .filter-group {
-  margin: 1.2rem 0;
+  margin: 0;
 }
 
 .filter-group label {
@@ -69,6 +74,15 @@
   color: #FFC107;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+/* Modo claro: texto negro para opciones */
+[data-theme="light"] .filter-group div label {
+  color: #1a1a1a !important;
+}
+
+[data-theme="light"] .filter-group select {
+  color: #1a1a1a !important;
 }
 
 /* ======== SELECTS ======== */
@@ -179,16 +193,12 @@
 /* ======== RESPONSIVE ======== */
 @media (max-width: 900px) {
   .movies {
-    flex-direction: column;
     padding: 1.5rem 1rem;
     gap: 2rem;
   }
 
-  .filters {
-    width: 100%;
-    position: relative;
-    top: 0;
-    padding: 1.5rem;
+  .filters-row {
+    grid-template-columns: 1fr 1fr;
   }
 
   .filters h3 {
@@ -201,11 +211,6 @@
 
   .filter-group select {
     font-size: 0.95rem;
-  }
-
-  .movie-grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1.5rem;
   }
 }
 
@@ -223,12 +228,13 @@
     box-sizing: border-box;
   }
 
-  .filters h3 {
-    font-size: 1.3rem;
+  .filters-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
-  .filter-group {
-    margin: 1.2rem 0;
+  .filters h3 {
+    font-size: 1.3rem;
   }
 
   .filter-group label {
@@ -248,10 +254,5 @@
   .btn-clear-filters {
     padding: 0.9rem;
     font-size: 0.95rem;
-  }
-
-  .movie-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
   }
 }

@@ -109,85 +109,86 @@ function Movies() {
       <aside className="filters">
         <h3>Filtros</h3>
 
-        {/* Tipo */}
-        <div className="filter-group">
-          <label>Tipo:</label>
-          <div>
-            <label>
-              <input
-                type="radio"
-                name="tipo"
-                value="cartelera"
-                checked={tipo === "cartelera"}
-                onChange={() => setTipo("cartelera")}
-              />{" "}
-              En Cartelera
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="tipo"
-                value="proxEstreno"
-                checked={tipo === "proxEstreno"}
-                onChange={() => setTipo("proxEstreno")}
-              />{" "}
-              Próximos Estrenos
-            </label>
-          </div>
-        </div>
-
-        {/* Género */}
-        <div className="filter-group">
-          <label>Género:</label>
-          <select value={genero} onChange={(e) => setGenero(e.target.value)}>
-            {generos.map((g) => (
-              <option key={g} value={g}>
-                {g || "Sin género"}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Clasificación */}
-        <div className="filter-group">
-          <label>Clasificación:</label>
-          <select
-            value={clasificacion}
-            onChange={(e) => setClasificacion(e.target.value)}
-          >
-            {clasificaciones.map((c) => (
-              <option key={c} value={c}>
-                {c || "Sin clasificación"}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Sede */}
-        {tipo === "cartelera" && (
+        <div className="filters-row">
+          {/* Tipo */}
           <div className="filter-group">
-            <label>Sede:</label>
-            <select value={sedeId} onChange={(e) => setSedeId(e.target.value)}>
-              <option value="Todas">Todas las sedes</option>
-              {sedes.map((sede) => (
-                <option key={sede.id} value={sede.id}>
-                  {sede.nombre}
+            <label>Tipo:</label>
+            <div>
+              <label>
+                <input
+                  type="radio"
+                  name="tipo"
+                  value="cartelera"
+                  checked={tipo === "cartelera"}
+                  onChange={() => setTipo("cartelera")}
+                />{" "}
+                En Cartelera
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="tipo"
+                  value="proxEstreno"
+                  checked={tipo === "proxEstreno"}
+                  onChange={() => setTipo("proxEstreno")}
+                />{" "}
+                Próximos Estrenos
+              </label>
+            </div>
+          </div>
+
+          {/* Género */}
+          <div className="filter-group">
+            <label>Género:</label>
+            <select value={genero} onChange={(e) => setGenero(e.target.value)}>
+              {generos.map((g) => (
+                <option key={g} value={g}>
+                  {g || "Sin género"}
                 </option>
               ))}
             </select>
           </div>
-        )}
 
-        {/* Fecha */}
-        {tipo === "cartelera" && (
+          {/* Clasificación */}
           <div className="filter-group">
-            <label>Fecha:</label>
-            <select value={fecha} onChange={(e) => setFecha(e.target.value)}>
-              <option value="">Todas las fechas</option>
-              {fechasDisponibles.map((f) => (
-                <option key={f} value={f}>
-                  {new Date(f + 'T00:00:00').toLocaleDateString('es-PE', {
-                    weekday: 'short',
+            <label>Clasificación:</label>
+            <select
+              value={clasificacion}
+              onChange={(e) => setClasificacion(e.target.value)}
+            >
+              {clasificaciones.map((c) => (
+                <option key={c} value={c}>
+                  {c || "Sin clasificación"}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Sede */}
+          {tipo === "cartelera" && (
+            <div className="filter-group">
+              <label>Sede:</label>
+              <select value={sedeId} onChange={(e) => setSedeId(e.target.value)}>
+                <option value="Todas">Todas las sedes</option>
+                {sedes.map((sede) => (
+                  <option key={sede.id} value={sede.id}>
+                    {sede.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Fecha */}
+          {tipo === "cartelera" && (
+            <div className="filter-group">
+              <label>Fecha:</label>
+              <select value={fecha} onChange={(e) => setFecha(e.target.value)}>
+                <option value="">Todas las fechas</option>
+                {fechasDisponibles.map((f) => (
+                  <option key={f} value={f}>
+                    {new Date(f + 'T00:00:00').toLocaleDateString('es-PE', {
+                      weekday: 'short',
                     day: 'numeric',
                     month: 'short'
                   })}
@@ -196,6 +197,7 @@ function Movies() {
             </select>
           </div>
         )}
+        </div>
 
         {/* Botón limpiar filtros */}
         <button 
@@ -212,7 +214,7 @@ function Movies() {
       </aside>
 
       {/* 🔹 Sección principal de películas */}
-      <main style={{ flex: 1, minWidth: "0" }}>
+      <main style={{ width: "100%" }}>
         {loading ? (
           <p style={{ textAlign: "center", marginTop: "50px" }}>
             Cargando películas...
