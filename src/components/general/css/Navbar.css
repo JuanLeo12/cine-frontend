@@ -1,6 +1,6 @@
 /* ======== NAVBAR PRINCIPAL ======== */
 .navbar {
-  background-color: var(--color-bg-elevated);
+  background: var(--color-bg-elevated);
   color: var(--color-text-primary);
   padding: 1rem 2rem;
   position: sticky;
@@ -10,6 +10,17 @@
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--color-border);
   transition: all var(--transition-normal);
+}
+
+/* Glassmorphism effect para el navbar */
+[data-theme="dark"] .navbar {
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(10px) saturate(180%);
+}
+
+[data-theme="light"] .navbar {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px) saturate(180%);
 }
 
 .nav-container {
