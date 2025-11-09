@@ -1,30 +1,94 @@
+/* ============================================
+   CINEMAS PAGE - CINESTAR REDESIGN
+   Nuestros cines con diseño premium
+   ============================================ */
+
 .cinemas {
     padding: 2rem;
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 0 auto;
     box-sizing: border-box;
     overflow-x: hidden;
+    min-height: 80vh;
 }
 
 .cinemas h1 {
-    color: #e60000;
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
+    color: #FFC107;
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 0 20px rgba(255, 193, 7, 0.3);
+    position: relative;
+    padding-bottom: 1rem;
 }
 
+.cinemas h1::before {
+    content: '🎬 ';
+}
+
+.cinemas h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 3px;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+}
+
+/* ======== FILTERS ======== */
 .filters {
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
+    text-align: center;
+    padding: 2rem;
+    background: var(--color-bg-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    border: 2px solid var(--color-border);
 }
 
 .filters h3 {
-    color: #e60000;
-    font-size: 1.5rem;
+    color: #FFC107;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filters select {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: var(--transition-normal);
+    min-width: 250px;
+    font-weight: 600;
+}
+
+.filters select:hover {
+    border-color: rgba(255, 193, 7, 0.5);
+    background: var(--color-bg-tertiary);
+}
+
+.filters select:focus {
+    outline: none;
+    border-color: #FFC107;
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
 }
 
 .cinema-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
 }
 
 /* ======== RESPONSIVE ======== */
@@ -34,40 +98,66 @@
     }
 
     .cinemas h1 {
-        font-size: 1.6rem;
+        font-size: 2rem;
     }
 
-    .filters h3 {
-        font-size: 1.3rem;
-    }
-
-    .cinema-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 1.2rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .cinemas {
-        padding: 1rem 0.5rem;
-        width: 100%;
-        max-width: 100vw;
-    }
-
-    .cinemas h1 {
-        font-size: 1.4rem;
+    .cinemas h1::after {
+        width: 150px;
     }
 
     .filters {
-        margin-bottom: 1.5rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
     }
 
     .filters h3 {
         font-size: 1.2rem;
     }
 
+    .filters select {
+        padding: 0.9rem 1.2rem;
+        font-size: 0.95rem;
+        min-width: 200px;
+    }
+
+    .cinema-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .cinemas {
+        padding: 1rem 0.8rem;
+        width: 100%;
+        max-width: 100vw;
+    }
+
+    .cinemas h1 {
+        font-size: 1.6rem;
+    }
+
+    .cinemas h1::after {
+        width: 120px;
+    }
+
+    .filters {
+        padding: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .filters h3 {
+        font-size: 1.1rem;
+    }
+
+    .filters select {
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+        min-width: 100%;
+    }
+
     .cinema-grid {
         grid-template-columns: 1fr;
-        gap: 1rem;
+        gap: 1.2rem;
     }
 }
