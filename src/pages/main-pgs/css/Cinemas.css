@@ -43,13 +43,16 @@
 
 /* ======== FILTERS ======== */
 .filters {
-    margin-bottom: 3rem;
+    margin: 0 auto 3rem auto;
     text-align: center;
     padding: 2rem;
     background: var(--color-bg-card);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-lg);
     border: 2px solid var(--color-border);
+    max-width: 600px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .filters h3 {
@@ -70,8 +73,10 @@
     color: var(--color-text-primary);
     cursor: pointer;
     transition: var(--transition-normal);
-    min-width: 250px;
+    width: 100%;
+    max-width: 350px;
     font-weight: 600;
+    box-sizing: border-box;
 }
 
 .filters select:hover {
@@ -108,6 +113,7 @@
     .filters {
         padding: 1.5rem;
         margin-bottom: 2rem;
+        max-width: 100%;
     }
 
     .filters h3 {
@@ -117,7 +123,7 @@
     .filters select {
         padding: 0.9rem 1.2rem;
         font-size: 0.95rem;
-        min-width: 200px;
+        max-width: 100%;
     }
 
     .cinema-grid {
@@ -144,6 +150,7 @@
     .filters {
         padding: 1.2rem;
         margin-bottom: 1.5rem;
+        max-width: 100%;
     }
 
     .filters h3 {
@@ -153,7 +160,7 @@
     .filters select {
         padding: 0.8rem 1rem;
         font-size: 0.9rem;
-        min-width: 100%;
+        max-width: 100%;
     }
 
     .cinema-grid {
