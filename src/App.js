@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // Contextos
 import { AuthProvider } from './context/AuthContext';
 import { PurchaseProvider } from './context/PurchaseContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 // Componentes 
 import Navbar from './components/general/Navbar';
@@ -39,12 +40,13 @@ import './App.css';
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <PurchaseProvider>
-          <div className="App">
-            <NavigationGuard />
-            <Navbar />
-            <main>
+      <ThemeProvider>
+        <AuthProvider>
+          <PurchaseProvider>
+            <div className="App">
+              <NavigationGuard />
+              <Navbar />
+              <main>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/movies" element={<Movies />} />
@@ -67,6 +69,7 @@ function App() {
           </div>
         </PurchaseProvider>
       </AuthProvider>
+      </ThemeProvider>
     </Router>
   );
 }

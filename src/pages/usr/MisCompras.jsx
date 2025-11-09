@@ -52,6 +52,19 @@ function MisCompras() {
                                 id_orden_compra: boleta.detalles?.id_orden_compra
                             });
                             
+                            // Log detallado para vales corporativos
+                            if (boleta.tipo === 'vales_corporativos') {
+                                console.log(`🎟️ DETALLES DE VALE:`, {
+                                    id_boleta: boleta.id,
+                                    vales: boleta.vales,
+                                    detalles: boleta.detalles,
+                                    codigo_qr: boleta.codigo_qr?.substring(0, 50) + '...',
+                                    id_pago: boleta.detalles?.id_pago,
+                                    fecha_compra: boleta.detalles?.fecha_compra,
+                                    monto_total: boleta.detalles?.monto_total
+                                });
+                            }
+                            
                             // Obtener el id de orden asociado a esta boleta
                             // Para vales: usar id_pago_orden o detalles.id_orden_compra
                             // Para otros servicios: pueden tener id_pago_orden si hay pago asociado

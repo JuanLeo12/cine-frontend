@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LoginModal from "../../components/general/LoginModal";
+import ThemeToggle from "../../components/general/ThemeToggle";
 import { useAuth } from "../../context/AuthContext";
 import "./css/Navbar.css";
 
@@ -64,6 +65,9 @@ function Navbar() {
         </ul>
 
         <div className="nav-user">
+          {/* Toggle de tema */}
+          <ThemeToggle />
+          
           {isLoggedIn && user ? (
             <div className="dropdown">
               <button onClick={toggleUserMenu} className="user-btn">

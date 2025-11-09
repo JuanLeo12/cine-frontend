@@ -1,3 +1,148 @@
+/* ============================================
+   🎨 VARIABLES DE TEMA - CineStar Premium
+   ============================================ */
+
+:root {
+  /* Fuentes */
+  --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-mono: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  
+  /* Espaciado */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  
+  /* Transiciones */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* ============================================
+   🌙 MODO OSCURO (Por defecto)
+   ============================================ */
+:root,
+[data-theme="dark"] {
+  /* Colores principales */
+  --color-primary: #fbbf24; /* Amarillo CineStar */
+  --color-primary-hover: #f59e0b;
+  --color-primary-light: #fef3c7;
+  --color-secondary: #dc2626; /* Rojo cinema */
+  --color-secondary-hover: #b91c1c;
+  
+  /* Backgrounds */
+  --color-bg-primary: #0a0a0a; /* Negro profundo */
+  --color-bg-secondary: #1a1a1a;
+  --color-bg-tertiary: #2a2a2a;
+  --color-bg-elevated: #1f1f1f;
+  --color-bg-card: #151515;
+  --color-bg-hover: #252525;
+  
+  /* Textos */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #a1a1a1;
+  --color-text-tertiary: #737373;
+  --color-text-inverse: #0a0a0a;
+  
+  /* Bordes */
+  --color-border: #2a2a2a;
+  --color-border-hover: #3a3a3a;
+  --color-border-focus: var(--color-primary);
+  
+  /* Estados */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 20px rgba(251, 191, 36, 0.3);
+  
+  /* Toggle theme */
+  --color-toggle-bg: #2a2a2a;
+  --color-toggle-thumb: #fbbf24;
+  --color-toggle-icon: #0a0a0a;
+  
+  /* Gradientes */
+  --gradient-primary: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  --gradient-cinema: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+  --gradient-dark: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
+  --gradient-overlay: linear-gradient(0deg, rgba(10, 10, 10, 0.9) 0%, transparent 100%);
+}
+
+/* ============================================
+   ☀️ MODO CLARO
+   ============================================ */
+[data-theme="light"] {
+  /* Colores principales */
+  --color-primary: #d97706; /* Amarillo más oscuro para contraste */
+  --color-primary-hover: #b45309;
+  --color-primary-light: #fef3c7;
+  --color-secondary: #dc2626;
+  --color-secondary-hover: #b91c1c;
+  
+  /* Backgrounds */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f9fafb;
+  --color-bg-tertiary: #f3f4f6;
+  --color-bg-elevated: #ffffff;
+  --color-bg-card: #ffffff;
+  --color-bg-hover: #f3f4f6;
+  
+  /* Textos */
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-tertiary: #9ca3af;
+  --color-text-inverse: #ffffff;
+  
+  /* Bordes */
+  --color-border: #e5e7eb;
+  --color-border-hover: #d1d5db;
+  --color-border-focus: var(--color-primary);
+  
+  /* Estados (más suaves en modo claro) */
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --color-error: #dc2626;
+  --color-info: #2563eb;
+  
+  /* Sombras más suaves */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+  --shadow-glow: 0 0 20px rgba(217, 119, 6, 0.2);
+  
+  /* Toggle theme */
+  --color-toggle-bg: #e5e7eb;
+  --color-toggle-thumb: #f59e0b;
+  --color-toggle-icon: #ffffff;
+  
+  /* Gradientes */
+  --gradient-primary: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --gradient-cinema: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+  --gradient-dark: linear-gradient(180deg, #f9fafb 0%, #ffffff 100%);
+  --gradient-overlay: linear-gradient(0deg, rgba(255, 255, 255, 0.95) 0%, transparent 100%);
+}
+
+/* ============================================
+   🎯 ESTILOS BASE
+   ============================================ */
+
 * {
   box-sizing: border-box;
 }
@@ -9,16 +154,46 @@ html {
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: var(--font-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   width: 100%;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: var(--font-mono);
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-hover);
+}
+
+/* Selección de texto */
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+::-moz-selection {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
 }
