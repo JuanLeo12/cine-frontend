@@ -4,31 +4,41 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     z-index: 1000;
     overflow-y: auto;
-    padding: 20px 0;
+    padding: 40px 20px;
 }
 
 .modal-content {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
+    background: var(--color-bg-card);
+    padding: 2.5rem;
+    border-radius: var(--radius-xl);
     width: 90%;
-    max-width: 500px;
+    max-width: 550px;
     text-align: center;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    margin: auto;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        0 0 40px rgba(220, 10, 10, 0.2),
+        inset 0 0 0 1px rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.2);
+    position: relative;
 }
 
 .modal-content h2 {
     margin-top: 0;
-    color: #e60000;
-    font-size: 1.5rem;
+    margin-bottom: var(--spacing-lg);
+    color: #FFC107;
+    font-size: 2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 0 20px rgba(255, 193, 7, 0.3);
 }
 
 /* Selector de rol */
@@ -52,35 +62,37 @@
 }
 
 .rol-options label {
-    padding: 0.8rem;
-    border: 2px solid #ddd;
-    border-radius: 8px;
+    padding: 1rem;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: white;
-    color: #333;
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
     font-weight: 600;
     text-align: center;
     white-space: nowrap;
     box-sizing: border-box;
-    height: 48px;
+    height: 52px;
     line-height: 1;
 }
 
 .rol-options label:hover {
-    border-color: #e60000;
-    background: #fff5f5;
-    color: #e60000;
+    border-color: #FFC107;
+    background: rgba(255, 193, 7, 0.1);
+    color: #FFC107;
+    transform: translateY(-2px);
 }
 
 .rol-options label.active {
-    border-color: #e60000;
-    background: #e60000;
-    color: white;
+    border-color: #FFC107;
+    background: linear-gradient(135deg, #DC0A0A 0%, #B00808 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(220, 10, 10, 0.4);
 }
 
 .rol-options input[type="radio"] {
@@ -91,16 +103,24 @@
 .modal-content input,
 .modal-content select {
     width: 100%;
-    padding: 0.8rem;
+    padding: 1rem;
     margin: 0.5rem 0;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
     box-sizing: border-box;
-    font-size: 0.95rem;
-    transition: border-color 0.3s ease;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
 }
 
-/* Grupo de input con botón (para contraseñas) */
+.modal-content input:focus,
+.modal-content select:focus {
+    outline: none;
+    border-color: #FFC107;
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
+    background: var(--color-bg-tertiary);
+}
 .password-input-group {
     position: relative;
     width: 100%;
@@ -156,12 +176,7 @@
     background: transparent !important;
 }
 
-.modal-content input:focus,
-.modal-content select:focus {
-    outline: none;
-    border-color: #e60000;
-    box-shadow: 0 0 0 2px rgba(230, 0, 0, 0.1);
-}
+/* Grupo de input con botón (para contraseñas) */
 
 .modal-content select {
     cursor: pointer;
@@ -170,71 +185,85 @@
 /* Botones */
 .modal-content button {
     width: 100%;
-    padding: 0.8rem;
-    margin: 0.5rem 0;
+    padding: 1rem;
+    margin: 0.75rem 0;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 1.05rem;
+    font-weight: 700;
     transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .modal-content button[type="submit"] {
-    background: #e60000;
-    color: white;
+    background: linear-gradient(135deg, #DC0A0A 0%, #B00808 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(220, 10, 10, 0.3);
 }
 
 .modal-content button[type="submit"]:hover:not(:disabled) {
-    background: #cc0000;
+    background: linear-gradient(135deg, #FFC107 0%, #FFA000 100%);
+    color: #000000;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(230, 0, 0, 0.3);
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.5);
 }
 
 .modal-content button[type="submit"]:disabled {
-    background: #ccc;
+    background: var(--color-bg-hover);
+    color: var(--color-text-muted);
     cursor: not-allowed;
+    box-shadow: none;
 }
 
 .switch-text {
-    margin: 1rem 0;
-    color: #666;
+    margin: 1.5rem 0 1rem 0;
+    color: var(--color-text-secondary);
+    font-size: 1rem;
 }
 
 .switch-mode {
     background: none;
     border: none;
-    color: #e60000;
+    color: #FFC107;
     cursor: pointer;
     text-decoration: underline;
     padding: 0;
     width: auto;
     display: inline;
-    font-weight: normal;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: normal;
 }
 
 .switch-mode:hover:not(:disabled) {
-    color: #cc0000;
+    color: #FFA000;
 }
 
 .close-btn {
-    background: #f0f0f0;
-    color: #333;
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
     margin-top: 1rem;
+    border: 2px solid var(--color-border);
 }
 
 .close-btn:hover:not(:disabled) {
-    background: #e0e0e0;
+    background: var(--color-bg-hover);
+    border-color: #DC0A0A;
+    color: #DC0A0A;
+    transform: translateY(-2px);
 }
 
 /* Mensaje de error */
 .modal-content .error {
-    background: #ffe6e6;
-    color: #cc0000;
-    padding: 0.8rem;
-    border-radius: 6px;
+    background: rgba(220, 10, 10, 0.1);
+    color: #DC0A0A;
+    padding: 1rem;
+    border-radius: var(--radius-md);
     margin-bottom: 1rem;
-    border: 1px solid #ffcccc;
+    border: 2px solid rgba(220, 10, 10, 0.3);
+    font-weight: 600;
 }
 
 /* Campo de archivo (foto de perfil) */
@@ -253,24 +282,27 @@
 
 .form-group-file input[type="file"] {
     width: 100%;
-    padding: 0.6rem;
-    border: 2px dashed #ddd;
-    border-radius: 6px;
+    padding: 0.8rem;
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-md);
     cursor: pointer;
-    background: #f9f9f9;
-    transition: border-color 0.3s ease;
+    background: var(--color-bg-secondary);
+    transition: all 0.3s ease;
+    color: var(--color-text-primary);
 }
 
 .form-group-file input[type="file"]:hover {
-    border-color: #e60000;
+    border-color: #FFC107;
+    background: rgba(255, 193, 7, 0.05);
 }
 
 .preview-foto-modal {
     margin-top: 0.75rem;
     max-width: 120px;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     overflow: hidden;
-    border: 2px solid #ddd;
+    border: 2px solid #FFC107;
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
 }
 
 .preview-foto-modal img {
@@ -282,17 +314,16 @@
 /* ======== RESPONSIVE ======== */
 @media (max-width: 768px) {
     .modal-overlay {
-        padding: 10px;
+        padding: 20px 10px;
     }
 
     .modal-content {
         width: 95%;
-        padding: 1.5rem;
-        max-height: 85vh;
+        padding: 2rem 1.5rem;
     }
 
     .modal-content h2 {
-        font-size: 1.3rem;
+        font-size: 1.6rem;
     }
 
     .rol-options {
@@ -323,14 +354,17 @@
 }
 
 @media (max-width: 480px) {
+    .modal-overlay {
+        padding: 15px 5px;
+    }
+
     .modal-content {
         width: 98%;
-        padding: 1.2rem;
-        max-height: 90vh;
+        padding: 1.5rem 1.2rem;
     }
 
     .modal-content h2 {
-        font-size: 1.2rem;
+        font-size: 1.4rem;
     }
 
     .rol-options {
