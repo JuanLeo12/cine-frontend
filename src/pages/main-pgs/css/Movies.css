@@ -56,17 +56,18 @@
 .filters-row {
   display: flex;
   flex-direction: row;
-  gap: 2rem;
+  gap: 1.5rem;
   align-items: flex-start;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 /* ======== FILTER GROUPS ======== */
 .filter-group {
   margin: 0;
-  flex: 0 1 auto;
-  min-width: 150px;
-  max-width: 250px;
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 140px;
 }
 
 .filter-group label {
@@ -77,9 +78,10 @@
   color: #FFC107;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
-/* Radio buttons en fila horizontal */
+/* Radio buttons en columna */
 .filter-group > div {
   display: flex;
   flex-direction: column;
@@ -113,13 +115,13 @@
 
 /* ======== SELECTS ======== */
 .filter-group select {
-  width: 100%;
-  padding: 0.7rem 0.9rem;
+  width: 180px;
+  padding: 0.6rem 0.8rem;
   border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-bg-secondary);
   color: var(--color-text-primary);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
   transition: var(--transition-normal);
   cursor: pointer;
