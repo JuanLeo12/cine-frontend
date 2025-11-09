@@ -41,17 +41,17 @@
     text-shadow: 0 0 20px rgba(255, 193, 7, 0.3);
 }
 
-/* Selector de rol */
+/* Selector de rol - Bootstrap Form.Check override */
 .rol-selector {
     margin: 1rem 0 1.5rem 0;
     text-align: left;
 }
 
-.rol-selector label:first-child {
+.rol-selector .form-label {
     display: block;
     font-weight: bold;
     margin-bottom: 0.5rem;
-    color: #333;
+    color: var(--color-text-primary);
 }
 
 .rol-options {
@@ -61,7 +61,7 @@
     width: 100%;
 }
 
-.rol-options label {
+.rol-options .form-check {
     padding: 1rem;
     border: 2px solid var(--color-border);
     border-radius: var(--radius-md);
@@ -79,32 +79,38 @@
     box-sizing: border-box;
     height: 52px;
     line-height: 1;
+    margin: 0;
+    padding-left: 1rem;
 }
 
-.rol-options label:hover {
+.rol-options .form-check:hover {
     border-color: #FFC107;
     background: rgba(255, 193, 7, 0.1);
     color: #FFC107;
     transform: translateY(-2px);
 }
 
-.rol-options label.active {
+.rol-options .form-check.active {
     border-color: #FFC107;
     background: linear-gradient(135deg, #DC0A0A 0%, #B00808 100%);
     color: #ffffff;
     box-shadow: 0 4px 12px rgba(220, 10, 10, 0.4);
 }
 
-.rol-options input[type="radio"] {
+.rol-options .form-check .form-check-input {
     display: none;
 }
 
-/* Inputs y selects */
-.modal-content input,
-.modal-content select {
+.rol-options .form-check .form-check-label {
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Bootstrap Form Controls override */
+.modal-content .form-control,
+.modal-content .form-select {
     width: 100%;
     padding: 1rem;
-    margin: 0.5rem 0;
     border: 2px solid var(--color-border);
     border-radius: var(--radius-md);
     box-sizing: border-box;
@@ -114,145 +120,118 @@
     color: var(--color-text-primary);
 }
 
-.modal-content input:focus,
-.modal-content select:focus {
+.modal-content .form-control:focus,
+.modal-content .form-select:focus {
     outline: none;
     border-color: #FFC107;
     box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
     background: var(--color-bg-tertiary);
 }
-.password-input-group {
-    position: relative;
-    width: 100%;
-    margin: 0.5rem 0;
+
+.modal-content .form-select {
+    cursor: pointer;
 }
 
-.password-input-group input {
-    width: 100%;
-    padding-right: 45px !important;
+/* Bootstrap Input Group override */
+.modal-content .input-group .form-control {
     margin: 0;
-    box-sizing: border-box;
 }
 
-.toggle-password {
-    position: absolute !important;
-    right: 10px !important;
-    top: 0 !important;
-    bottom: 0 !important;
-    width: auto !important;
-    height: auto !important;
-    margin: 0 !important;
-    padding: 0 8px !important;
-    background: transparent !important;
-    border: none !important;
-    border-radius: 0 !important;
-    cursor: pointer;
+.modal-content .input-group .btn {
+    border: 2px solid var(--color-border);
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
     font-size: 1.4rem;
-    font-weight: 700 !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 1 !important;
-    transition: transform 0.2s ease !important;
-    transform: none !important;
-    box-shadow: none !important;
-    color: #000 !important;
-    line-height: 1;
-    user-select: none;
-    filter: none !important;
+    padding: 0 1rem;
 }
 
-.toggle-password:hover:not(:disabled) {
-    opacity: 1 !important;
-    background: rgba(0, 0, 0, 0.05) !important;
-    transform: none !important;
-    box-shadow: none !important;
-    color: #000 !important;
+.modal-content .input-group .btn:hover:not(:disabled) {
+    background: rgba(255, 193, 7, 0.1);
+    border-color: #FFC107;
+    color: var(--color-text-primary);
 }
 
-.toggle-password:disabled {
+.modal-content .input-group .btn:disabled {
     cursor: not-allowed;
-    opacity: 0.4 !important;
-    background: transparent !important;
+    opacity: 0.4;
 }
 
-/* Grupo de input con botón (para contraseñas) */
-
-.modal-content select {
-    cursor: pointer;
-}
-
-/* Botones */
-.modal-content button {
-    width: 100%;
-    padding: 1rem;
-    margin: 0.75rem 0;
+/* Bootstrap Buttons override */
+.modal-content .btn-primary {
+    background: linear-gradient(135deg, #DC0A0A 0%, #B00808 100%);
     border: none;
-    border-radius: var(--radius-md);
-    cursor: pointer;
+    color: #ffffff;
+    padding: 1rem;
     font-size: 1.05rem;
     font-weight: 700;
-    transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    box-shadow: 0 6px 16px rgba(220, 10, 10, 0.4);
+    transition: all 0.3s ease;
 }
 
-.modal-content button[type="submit"] {
-    background: linear-gradient(135deg, #DC0A0A 0%, #B00808 100%);
-    color: #ffffff;
-    box-shadow: 0 4px 12px rgba(220, 10, 10, 0.3);
-}
-
-.modal-content button[type="submit"]:hover:not(:disabled) {
-    background: linear-gradient(135deg, #FFC107 0%, #FFA000 100%);
-    color: #000000;
+.modal-content .btn-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #B00808 0%, #900606 100%);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.5);
+    box-shadow: 0 8px 20px rgba(220, 10, 10, 0.5);
 }
 
-.modal-content button[type="submit"]:disabled {
-    background: var(--color-bg-hover);
-    color: var(--color-text-muted);
+.modal-content .btn-primary:disabled {
+    background: #ccc;
     cursor: not-allowed;
+    transform: none;
     box-shadow: none;
 }
 
-.switch-text {
-    margin: 1.5rem 0 1rem 0;
-    color: var(--color-text-secondary);
+.modal-content .btn-secondary {
+    background: var(--color-bg-secondary);
+    border: 2px solid var(--color-border);
+    color: var(--color-text-primary);
+    padding: 0.8rem;
     font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.modal-content .btn-secondary:hover:not(:disabled) {
+    background: rgba(220, 10, 10, 0.1);
+    border-color: #DC0A0A;
+    color: #DC0A0A;
+    transform: translateY(-2px);
+}
+
+.modal-content .btn-link {
+    color: #DC0A0A;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0;
+    border: none;
+    background: none;
+    transition: color 0.3s ease;
+}
+
+.modal-content .btn-link:hover:not(:disabled) {
+    color: #FFC107;
+    text-decoration: underline;
+}
+
+/* Legacy button styles (fallback) */
+.switch-text {
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+    margin: 1rem 0 0.5rem 0;
 }
 
 .switch-mode {
     background: none;
-    border: none;
-    color: #FFC107;
-    cursor: pointer;
-    text-decoration: underline;
-    padding: 0;
-    width: auto;
-    display: inline;
+    color: #DC0A0A;
+    text-decoration: none;
     font-weight: 600;
-    text-transform: none;
-    letter-spacing: normal;
+    transition: color 0.3s ease;
 }
 
 .switch-mode:hover:not(:disabled) {
-    color: #FFA000;
-}
-
-.close-btn {
-    background: var(--color-bg-secondary);
-    color: var(--color-text-primary);
-    margin-top: 1rem;
-    border: 2px solid var(--color-border);
-}
-
-.close-btn:hover:not(:disabled) {
-    background: var(--color-bg-hover);
-    border-color: #DC0A0A;
-    color: #DC0A0A;
-    transform: translateY(-2px);
+    color: #FFC107;
 }
 
 /* Mensaje de error */
@@ -266,22 +245,17 @@
     font-weight: 600;
 }
 
-/* Campo de archivo (foto de perfil) */
-.form-group-file {
-    margin: 1rem 0;
+/* Campo de archivo (foto de perfil) - Bootstrap override */
+.modal-content .form-label {
+    display: block;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
     text-align: left;
 }
 
-.form-group-file label {
-    display: block;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-}
-
-.form-group-file input[type="file"] {
-    width: 100%;
+.modal-content input[type="file"].form-control {
     padding: 0.8rem;
     border: 2px dashed var(--color-border);
     border-radius: var(--radius-md);
@@ -291,7 +265,7 @@
     color: var(--color-text-primary);
 }
 
-.form-group-file input[type="file"]:hover {
+.modal-content input[type="file"].form-control:hover {
     border-color: #FFC107;
     background: rgba(255, 193, 7, 0.05);
 }

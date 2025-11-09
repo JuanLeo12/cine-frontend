@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { Form, Button, InputGroup } from 'react-bootstrap';
 import './css/LoginModal.css';
 
 function LoginModal({ onClose }) {
@@ -150,108 +151,124 @@ function LoginModal({ onClose }) {
                 <h2>{isLogin ? '🔐 Iniciar Sesión' : '✨ Crear Cuenta'}</h2>
                 {error && <p className="error">❌ {error}</p>}
                 
-                <form onSubmit={handleSubmit}>
+                <Form onSubmit={handleSubmit}>
                     {!isLogin && (
                         <div className="rol-selector">
-                            <label>Tipo de cuenta:</label>
+                            <Form.Label>Tipo de cuenta:</Form.Label>
                             <div className="rol-options">
-                                <label className={rol === 'cliente' ? 'active' : ''}>
-                                    <input
-                                        type="radio"
-                                        value="cliente"
-                                        checked={rol === 'cliente'}
-                                        onChange={(e) => {
-                                            setRol(e.target.value);
-                                            limpiarFormulario();
-                                        }}
-                                        disabled={loading}
-                                    />
-                                    👤 Cliente
-                                </label>
-                                <label className={rol === 'corporativo' ? 'active' : ''}>
-                                    <input
-                                        type="radio"
-                                        value="corporativo"
-                                        checked={rol === 'corporativo'}
-                                        onChange={(e) => {
-                                            setRol(e.target.value);
-                                            limpiarFormulario();
-                                        }}
-                                        disabled={loading}
-                                    />
-                                    🏢 Corporativo
-                                </label>
+                                <Form.Check
+                                    type="radio"
+                                    id="rol-cliente"
+                                    name="rol"
+                                    label="👤 Cliente"
+                                    value="cliente"
+                                    checked={rol === 'cliente'}
+                                    onChange={(e) => {
+                                        setRol(e.target.value);
+                                        limpiarFormulario();
+                                    }}
+                                    disabled={loading}
+                                    className={rol === 'cliente' ? 'active' : ''}
+                                />
+                                <Form.Check
+                                    type="radio"
+                                    id="rol-corporativo"
+                                    name="rol"
+                                    label="🏢 Corporativo"
+                                    value="corporativo"
+                                    checked={rol === 'corporativo'}
+                                    onChange={(e) => {
+                                        setRol(e.target.value);
+                                        limpiarFormulario();
+                                    }}
+                                    disabled={loading}
+                                    className={rol === 'corporativo' ? 'active' : ''}
+                                />
                             </div>
                         </div>
                     )}
 
                     {!isLogin && rol === 'cliente' && (
                         <>
-                            <input
-                                type="text"
-                                placeholder="Nombre *"
-                                value={nombre}
-                                onChange={(e) => setNombre(e.target.value)}
-                                required
-                                disabled={loading}
-                            />
-                            <input
-                                type="text"
-                                placeholder="Apellido *"
-                                value={apellido}
-                                onChange={(e) => setApellido(e.target.value)}
-                                required
-                                disabled={loading}
-                            />
-                            <input
-                                type="text"
-                                placeholder="DNI (8 dígitos) *"
-                                value={dni}
-                                onChange={(e) => setDni(e.target.value.replace(/\D/g, '').slice(0, 8))}
-                                required
-                                maxLength="8"
-                                pattern="\d{8}"
-                                disabled={loading}
-                            />
-                            <input
-                                type="tel"
-                                placeholder="Teléfono (9 dígitos) *"
-                                value={telefono}
-                                onChange={(e) => setTelefono(e.target.value.replace(/\D/g, '').slice(0, 9))}
-                                required
-                                maxLength="9"
-                                pattern="\d{9}"
-                                disabled={loading}
-                            />
-                            <input
-                                type="text"
-                                placeholder="Dirección *"
-                                value={direccion}
-                                onChange={(e) => setDireccion(e.target.value)}
-                                required
-                                disabled={loading}
-                            />
-                            <input
-                                type="date"
-                                placeholder="Fecha de Nacimiento *"
-                                value={fechaNacimiento}
-                                onChange={(e) => setFechaNacimiento(e.target.value)}
-                                required
-                                disabled={loading}
-                            />
-                            <select
-                                value={genero}
-                                onChange={(e) => setGenero(e.target.value)}
-                                required
-                                disabled={loading}
-                            >
-                                <option value="">Selecciona género *</option>
-                                <option value="masculino">Masculino</option>
-                                <option value="femenino">Femenino</option>
-                            </select>
-                            <div className="form-group-file">
-                                <label htmlFor="fotoPerfil">Foto de Perfil (opcional)</label>
-                                <input
+                            <Form.Group className="mb-3">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Nombre *"
+                                    value={nombre}
+                                    onChange={(e) => setNombre(e.target.value)}
+                                    required
+                                    disabled={loading}
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Apellido *"
+                                    value={apellido}
+                                    onChange={(e) => setApellido(e.target.value)}
+                                    required
+                                    disabled={loading}
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="DNI (8 dígitos) *"
+                                    value={dni}
+                                    onChange={(e) => setDni(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                                    required
+                                    maxLength="8"
+                                    pattern="\d{8}"
+                                    disabled={loading}
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Control
+                                    type="tel"
+                                    placeholder="Teléfono (9 dígitos) *"
+                                    value={telefono}
+                                    onChange={(e) => setTelefono(e.target.value.replace(/\D/g, '').slice(0, 9))}
+                                    required
+                                    maxLength="9"
+                                    pattern="\d{9}"
+                                    disabled={loading}
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Dirección *"
+                                    value={direccion}
+                                    onChange={(e) => setDireccion(e.target.value)}
+                                    required
+                                    disabled={loading}
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Control
+                                    type="date"
+                                    placeholder="Fecha de Nacimiento *"
+                                    value={fechaNacimiento}
+                                    onChange={(e) => setFechaNacimiento(e.target.value)}
+                                    required
+                                    disabled={loading}
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Select
+                                    value={genero}
+                                    onChange={(e) => setGenero(e.target.value)}
+                                    required
+                                    disabled={loading}
+                                >
+                                    <option value="">Selecciona género *</option>
+                                    <option value="masculino">Masculino</option>
+                                    <option value="femenino">Femenino</option>
+                                </Form.Select>
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label htmlFor="fotoPerfil">Foto de Perfil (opcional)</Form.Label>
+                                <Form.Control
                                     id="fotoPerfil"
                                     type="file"
                                     accept="image/*"
@@ -259,112 +276,128 @@ function LoginModal({ onClose }) {
                                     disabled={loading}
                                 />
                                 {fotoPerfil && (
-                                    <div className="preview-foto-modal">
+                                    <div className="preview-foto-modal mt-2">
                                         <img src={fotoPerfil} alt="Preview" />
                                     </div>
                                 )}
-                            </div>
+                            </Form.Group>
                         </>
                     )}
 
                     {!isLogin && rol === 'corporativo' && (
                         <>
-                            <input
-                                type="text"
-                                placeholder="Nombre de la Empresa *"
-                                value={nombre}
-                                onChange={(e) => setNombre(e.target.value)}
-                                required
-                                disabled={loading}
-                            />
-                            <input
-                                type="text"
-                                placeholder="RUC (11 dígitos) *"
-                                value={ruc}
-                                onChange={(e) => setRuc(e.target.value.replace(/\D/g, '').slice(0, 11))}
-                                required
-                                maxLength="11"
-                                pattern="\d{11}"
-                                disabled={loading}
-                            />
-                            <input
-                                type="text"
-                                placeholder="Nombre del Representante *"
-                                value={representante}
-                                onChange={(e) => setRepresentante(e.target.value)}
-                                required
-                                disabled={loading}
-                            />
-                            <input
-                                type="text"
-                                placeholder="Cargo del Representante *"
-                                value={cargo}
-                                onChange={(e) => setCargo(e.target.value)}
-                                required
-                                disabled={loading}
-                            />
-                            <input
-                                type="tel"
-                                placeholder="Teléfono (9 dígitos) *"
-                                value={telefono}
-                                onChange={(e) => setTelefono(e.target.value.replace(/\D/g, '').slice(0, 9))}
-                                required
-                                maxLength="9"
-                                pattern="\d{9}"
-                                disabled={loading}
-                            />
-                            <input
-                                type="text"
-                                placeholder="Dirección de la Empresa *"
-                                value={direccion}
-                                onChange={(e) => setDireccion(e.target.value)}
-                                required
-                                disabled={loading}
-                            />
+                            <Form.Group className="mb-3">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Nombre de la Empresa *"
+                                    value={nombre}
+                                    onChange={(e) => setNombre(e.target.value)}
+                                    required
+                                    disabled={loading}
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="RUC (11 dígitos) *"
+                                    value={ruc}
+                                    onChange={(e) => setRuc(e.target.value.replace(/\D/g, '').slice(0, 11))}
+                                    required
+                                    maxLength="11"
+                                    pattern="\d{11}"
+                                    disabled={loading}
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Nombre del Representante *"
+                                    value={representante}
+                                    onChange={(e) => setRepresentante(e.target.value)}
+                                    required
+                                    disabled={loading}
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Cargo del Representante *"
+                                    value={cargo}
+                                    onChange={(e) => setCargo(e.target.value)}
+                                    required
+                                    disabled={loading}
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Control
+                                    type="tel"
+                                    placeholder="Teléfono (9 dígitos) *"
+                                    value={telefono}
+                                    onChange={(e) => setTelefono(e.target.value.replace(/\D/g, '').slice(0, 9))}
+                                    required
+                                    maxLength="9"
+                                    pattern="\d{9}"
+                                    disabled={loading}
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Dirección de la Empresa *"
+                                    value={direccion}
+                                    onChange={(e) => setDireccion(e.target.value)}
+                                    required
+                                    disabled={loading}
+                                />
+                            </Form.Group>
                         </>
                     )}
 
-                    <input
-                        type="email"
-                        placeholder="Email *"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        disabled={loading}
-                    />
-                    
-                    <div className="password-input-group">
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Contraseña (8-16 caracteres) *"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                    <Form.Group className="mb-3">
+                        <Form.Control
+                            type="email"
+                            placeholder="Email *"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             required
                             disabled={loading}
-                            minLength={8}
-                            maxLength={16}
                         />
-                        <button
-                            type="button"
-                            className="toggle-password"
-                            onClick={() => setShowPassword(!showPassword)}
-                            disabled={loading}
-                            tabIndex="-1"
-                            title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                        >
-                            {showPassword ? '👁️‍🗨️' : '👁️'}
-                        </button>
-                    </div>
+                    </Form.Group>
                     
-                    <button type="submit" disabled={loading}>
+                    <Form.Group className="mb-3">
+                        <InputGroup>
+                            <Form.Control
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Contraseña (8-16 caracteres) *"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                disabled={loading}
+                                minLength={8}
+                                maxLength={16}
+                            />
+                            <Button
+                                variant="outline-secondary"
+                                onClick={() => setShowPassword(!showPassword)}
+                                disabled={loading}
+                                tabIndex="-1"
+                                title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                            >
+                                {showPassword ? '👁️‍🗨️' : '👁️'}
+                            </Button>
+                        </InputGroup>
+                    </Form.Group>
+                    
+                    <Button type="submit" variant="primary" className="w-100 mb-3" disabled={loading}>
                         {loading ? '⏳ Procesando...' : (isLogin ? '🔓 Iniciar Sesión' : '✅ Registrarse')}
-                    </button>
-                </form>
+                    </Button>
+                </Form>
                 
-                <p className="switch-text">
+                <p className="switch-text text-center">
                     {isLogin ? "¿No tienes cuenta?" : "¿Ya tienes cuenta?"}{' '}
-                    <button 
-                        className="switch-mode" 
+                    <Button 
+                        variant="link" 
+                        className="switch-mode p-0" 
                         onClick={() => {
                             setIsLogin(!isLogin);
                             limpiarFormulario();
@@ -372,12 +405,12 @@ function LoginModal({ onClose }) {
                         disabled={loading}
                     >
                         {isLogin ? 'Regístrate aquí' : 'Inicia sesión aquí'}
-                    </button>
+                    </Button>
                 </p>
                 
-                <button className="close-btn" onClick={onClose} disabled={loading}>
+                <Button variant="secondary" className="close-btn w-100" onClick={onClose} disabled={loading}>
                     ✖️ Cerrar
-                </button>
+                </Button>
             </div>
         </div>,
         document.body

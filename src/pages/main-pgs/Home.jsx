@@ -48,9 +48,13 @@ function Home() {
       {/* 🎬 En Cartelera */}
       <section className="section">
         <h2>En Cartelera</h2>
-        <div className="movie-grid">
+        <div className="row g-4">
           {peliculasCartelera.length > 0 ? (
-            peliculasCartelera.map((p) => <MovieCard key={p.id} pelicula={p} />)
+            peliculasCartelera.map((p) => (
+              <div key={p.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
+                <MovieCard pelicula={p} />
+              </div>
+            ))
           ) : (
             <p>No hay películas en cartelera.</p>
           )}
@@ -60,9 +64,13 @@ function Home() {
       {/* 🎥 Próximos Estrenos */}
       <section className="section">
         <h2>Próximos Estrenos</h2>
-        <div className="movie-grid">
+        <div className="row g-4">
           {peliculasEstrenos.length > 0 ? (
-            peliculasEstrenos.map((p) => <MovieCard key={p.id} pelicula={p} />)
+            peliculasEstrenos.map((p) => (
+              <div key={p.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
+                <MovieCard pelicula={p} />
+              </div>
+            ))
           ) : (
             <p>No hay próximos estrenos.</p>
           )}
