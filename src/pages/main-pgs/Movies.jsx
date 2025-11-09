@@ -110,134 +110,136 @@ function Movies() {
       <aside className="filters">
         <h3>Filtros</h3>
 
-        <Row className="g-3 align-items-end">
-          {/* Tipo */}
-          <Col xs={12} md={6} lg="auto">
-            <Form.Group>
-              <Form.Label className="filter-label">TIPO:</Form.Label>
-              <div className="d-flex flex-column gap-2">
-                <Form.Check
-                  type="radio"
-                  id="tipo-cartelera"
-                  name="tipo"
-                  label="En Cartelera"
-                  value="cartelera"
-                  checked={tipo === "cartelera"}
-                  onChange={() => setTipo("cartelera")}
-                  className="filter-radio"
-                />
-                <Form.Check
-                  type="radio"
-                  id="tipo-proximo"
-                  name="tipo"
-                  label="Próximos Estrenos"
-                  value="proxEstreno"
-                  checked={tipo === "proxEstreno"}
-                  onChange={() => setTipo("proxEstreno")}
-                  className="filter-radio"
-                />
-              </div>
-            </Form.Group>
-          </Col>
-
-          {/* Género */}
-          <Col xs={12} sm={6} md={4} lg={2}>
-            <Form.Group>
-              <Form.Label className="filter-label">GÉNERO:</Form.Label>
-              <Form.Select
-                value={genero}
-                onChange={(e) => setGenero(e.target.value)}
-                className="filter-select"
-              >
-                {generos.map((g) => (
-                  <option key={g} value={g}>
-                    {g || "Sin género"}
-                  </option>
-                ))}
-              </Form.Select>
-            </Form.Group>
-          </Col>
-
-          {/* Clasificación */}
-          <Col xs={12} sm={6} md={4} lg={2}>
-            <Form.Group>
-              <Form.Label className="filter-label">CLASIFICACIÓN:</Form.Label>
-              <Form.Select
-                value={clasificacion}
-                onChange={(e) => setClasificacion(e.target.value)}
-                className="filter-select"
-              >
-                {clasificaciones.map((c) => (
-                  <option key={c} value={c}>
-                    {c || "Sin clasificación"}
-                  </option>
-                ))}
-              </Form.Select>
-            </Form.Group>
-          </Col>
-
-          {/* Sede */}
-          {tipo === "cartelera" && (
-            <Col xs={12} sm={6} md={4} lg={2}>
+        <div className="filters-container">
+          <Row className="g-3 align-items-start">
+            {/* Tipo */}
+            <Col xs={12} lg={2}>
               <Form.Group>
-                <Form.Label className="filter-label">SEDE:</Form.Label>
+                <Form.Label className="filter-label">TIPO:</Form.Label>
+                <div className="d-flex flex-column gap-2">
+                  <Form.Check
+                    type="radio"
+                    id="tipo-cartelera"
+                    name="tipo"
+                    label="En Cartelera"
+                    value="cartelera"
+                    checked={tipo === "cartelera"}
+                    onChange={() => setTipo("cartelera")}
+                    className="filter-radio"
+                  />
+                  <Form.Check
+                    type="radio"
+                    id="tipo-proximo"
+                    name="tipo"
+                    label="Próximos Estrenos"
+                    value="proxEstreno"
+                    checked={tipo === "proxEstreno"}
+                    onChange={() => setTipo("proxEstreno")}
+                    className="filter-radio"
+                  />
+                </div>
+              </Form.Group>
+            </Col>
+
+            {/* Género */}
+            <Col xs={6} lg={2}>
+              <Form.Group>
+                <Form.Label className="filter-label">GÉNERO:</Form.Label>
                 <Form.Select
-                  value={sedeId}
-                  onChange={(e) => setSedeId(e.target.value)}
+                  value={genero}
+                  onChange={(e) => setGenero(e.target.value)}
                   className="filter-select"
                 >
-                  <option value="Todas">Todas las sedes</option>
-                  {sedes.map((sede) => (
-                    <option key={sede.id} value={sede.id}>
-                      {sede.nombre}
+                  {generos.map((g) => (
+                    <option key={g} value={g}>
+                      {g || "Sin género"}
                     </option>
                   ))}
                 </Form.Select>
               </Form.Group>
             </Col>
-          )}
 
-          {/* Fecha */}
-          {tipo === "cartelera" && (
-            <Col xs={12} sm={6} md={4} lg={2}>
+            {/* Clasificación */}
+            <Col xs={6} lg={2}>
               <Form.Group>
-                <Form.Label className="filter-label">FECHA:</Form.Label>
+                <Form.Label className="filter-label">CLASIFICACIÓN:</Form.Label>
                 <Form.Select
-                  value={fecha}
-                  onChange={(e) => setFecha(e.target.value)}
+                  value={clasificacion}
+                  onChange={(e) => setClasificacion(e.target.value)}
                   className="filter-select"
                 >
-                  <option value="">Todas las fechas</option>
-                  {fechasDisponibles.map((f) => (
-                    <option key={f} value={f}>
-                      {new Date(f + 'T00:00:00').toLocaleDateString('es-PE', {
-                        weekday: 'short',
-                        day: 'numeric',
-                        month: 'short'
-                      })}
+                  {clasificaciones.map((c) => (
+                    <option key={c} value={c}>
+                      {c || "Sin clasificación"}
                     </option>
                   ))}
                 </Form.Select>
               </Form.Group>
             </Col>
-          )}
 
-          {/* Botón limpiar */}
-          <Col xs={12} lg="auto" className="mt-3 mt-lg-0">
-            <Button
-              variant="outline-danger"
-              className="btn-clear-filters w-100"
-              onClick={() => {
-                setGenero("Todos");
-                setClasificacion("Todos");
-                setSedeId("Todas");
-                setFecha("");
-              }}
-            >
-              Limpiar Filtros
-            </Button>
-          </Col>
-        </Row>
+            {/* Sede */}
+            {tipo === "cartelera" && (
+              <Col xs={6} lg={2}>
+                <Form.Group>
+                  <Form.Label className="filter-label">SEDE:</Form.Label>
+                  <Form.Select
+                    value={sedeId}
+                    onChange={(e) => setSedeId(e.target.value)}
+                    className="filter-select"
+                  >
+                    <option value="Todas">Todas las sedes</option>
+                    {sedes.map((sede) => (
+                      <option key={sede.id} value={sede.id}>
+                        {sede.nombre}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+            )}
+
+            {/* Fecha */}
+            {tipo === "cartelera" && (
+              <Col xs={6} lg={2}>
+                <Form.Group>
+                  <Form.Label className="filter-label">FECHA:</Form.Label>
+                  <Form.Select
+                    value={fecha}
+                    onChange={(e) => setFecha(e.target.value)}
+                    className="filter-select"
+                  >
+                    <option value="">Todas las fechas</option>
+                    {fechasDisponibles.map((f) => (
+                      <option key={f} value={f}>
+                        {new Date(f + 'T00:00:00').toLocaleDateString('es-PE', {
+                          weekday: 'short',
+                          day: 'numeric',
+                          month: 'short'
+                        })}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+            )}
+
+            {/* Botón limpiar */}
+            <Col xs={12} lg="auto" className="d-flex align-items-end">
+              <Button
+                variant="outline-danger"
+                className="btn-clear-filters w-100"
+                onClick={() => {
+                  setGenero("Todos");
+                  setClasificacion("Todos");
+                  setSedeId("Todas");
+                  setFecha("");
+                }}
+              >
+                Limpiar Filtros
+              </Button>
+            </Col>
+          </Row>
+        </div>
       </aside>
 
       {/* 🔹 Sección principal de películas */}

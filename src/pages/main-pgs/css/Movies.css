@@ -43,7 +43,15 @@
 }
 
 .filters h3::before {
-    content: ' ';
+    content: '🎬 ';
+}
+
+.filters-container {
+  width: 100%;
+}
+
+.filters-container .row {
+  row-gap: 1rem;
 }
 
 .filter-label {
@@ -53,6 +61,7 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 0.5rem !important;
+  white-space: nowrap;
 }
 
 [data-theme="light"] .filter-label {
@@ -65,9 +74,10 @@
   border: 2px solid var(--color-border) !important;
   border-radius: var(--radius-md) !important;
   padding: 0.6rem 0.9rem !important;
-  font-size: 0.9rem !important;
+  font-size: 0.85rem !important;
   font-weight: 500;
   transition: var(--transition-normal);
+  min-height: 38px;
 }
 
 .filter-select:hover {
@@ -114,7 +124,7 @@
 
 .filter-radio .form-check-label {
   color: var(--color-text-primary);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
   user-select: none;
@@ -137,13 +147,15 @@
   background: var(--color-bg-secondary) !important;
   color: var(--color-text-primary) !important;
   border: 2px solid var(--color-border) !important;
-  padding: 0.6rem 1.5rem !important;
+  padding: 0.5rem 1.2rem !important;
   border-radius: var(--radius-md) !important;
   font-weight: 700 !important;
-  font-size: 0.85rem !important;
+  font-size: 0.8rem !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px;
   transition: var(--transition-normal);
+  min-height: 38px;
+  white-space: nowrap;
 }
 
 .btn-clear-filters:hover {
