@@ -13,8 +13,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   position: relative;
   overflow: hidden;
 }
@@ -43,9 +43,9 @@
 }
 
 .toggle-icon {
-  width: 20px;
-  height: 20px;
-  color: var(--color-text-secondary);
+  width: 24px;
+  height: 24px;
+  color: var(--color-text-primary);
   transition: all var(--transition-normal);
   position: relative;
   z-index: 1;
@@ -53,7 +53,7 @@
 
 .theme-toggle-btn:hover .toggle-icon {
   color: var(--color-primary);
-  transform: rotate(20deg) scale(1.1);
+  transform: rotate(20deg) scale(1.15);
 }
 
 /* Animación al cambiar de tema */
