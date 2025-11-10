@@ -42,9 +42,10 @@ function MisCompras() {
                     console.log('🎬 Boletas corporativas recibidas:', dataBoletas);
                     console.log('📊 Cantidad de boletas:', dataBoletas?.length || 0);
                     
+                    // FILTRAR: Si es cliente, solo mostrar funciones privadas (alquiler_salas)
+                    let boletasFiltradas = [];
                     if (dataBoletas && dataBoletas.length > 0) {
-                        // FILTRAR: Si es cliente, solo mostrar funciones privadas (alquiler_salas)
-                        let boletasFiltradas = dataBoletas;
+                        boletasFiltradas = dataBoletas;
                         if (user?.rol === 'cliente') {
                             boletasFiltradas = dataBoletas.filter(boleta => 
                                 boleta.tipo === 'funcion_privada' || boleta.tipo === 'alquiler_sala'
