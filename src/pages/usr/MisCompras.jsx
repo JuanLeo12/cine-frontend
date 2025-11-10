@@ -32,7 +32,9 @@ function MisCompras() {
             const ordenesPropias = dataOrdenes.filter(orden => orden.id_usuario === user?.id);
             console.log('🔒 Órdenes filtradas por seguridad (solo del usuario):', ordenesPropias.length);
             
-            // Cargar boletas corporativas primero (solo si es corporativo o cliente)
+            // Cargar boletas corporativas 
+            // - Corporativos: TODOS los servicios (vales, funciones privadas, alquiler, publicidad)
+            // - Clientes: SOLO funciones privadas (alquiler de sala)
             let idsOrdenesConBoleta = [];
             if (user?.rol === 'corporativo' || user?.rol === 'cliente') {
                 try {
@@ -41,7 +43,16 @@ function MisCompras() {
                     console.log('📊 Cantidad de boletas:', dataBoletas?.length || 0);
                     
                     if (dataBoletas && dataBoletas.length > 0) {
-                        dataBoletas.forEach((boleta, index) => {
+                        // FILTRAR: Si es cliente, solo mostrar funciones privadas (alquiler_salas)
+                        let boletasFiltradas = dataBoletas;
+                        if (user?.rol === 'cliente') {
+                            boletasFiltradas = dataBoletas.filter(boleta => 
+                                boleta.tipo === 'funcion_privada' || boleta.tipo === 'alquiler_sala'
+                            );
+                            console.log(`🔒 Usuario cliente: filtradas ${boletasFiltradas.length} de ${dataBoletas.length} boletas (solo funciones privadas)`);
+                        }
+                        
+                        boletasFiltradas.forEach((boleta, index) => {
                             console.log(`📋 Boleta ${index + 1}:`, {
                                 id: boleta.id,
                                 tipo: boleta.tipo,
@@ -78,11 +89,14 @@ function MisCompras() {
                     
                     console.log('🚫 IDs de órdenes a excluir de Tickets:', idsOrdenesConBoleta);
                     
-                    setBoletasCorporativas(dataBoletas || []);
+                    setBoletasCorporativas(boletasFiltradas || []);
                 } catch (error) {
                     console.error('❌ Error al cargar boletas corporativas:', error);
                     setBoletasCorporativas([]);
                 }
+            } else {
+                // Si no es corporativo ni cliente, no cargar boletas
+                setBoletasCorporativas([]);
             }
             
             // Filtrar órdenes: solo mostrar las que están pagadas O las pendientes que tienen contenido
@@ -1290,10 +1304,10 @@ function MisCompras() {
 
             <h2>Mis Compras</h2>
 
-            {/* Tabs para cambiar entre vistas - Mostrar siempre si es usuario corporativo/cliente */}
-            {(user?.rol === 'corporativo' || user?.rol === 'cliente') && (
+            {/* Tabs para cambiar entre vistas */}
+            {(ordenes.length > 0 || boletasCorporativas.length > 0) && (
                 <div className="compras-tabs">
-                    {/* Solo mostrar tab de Tickets si el usuario tiene órdenes regulares */}
+                    {/* Tab de Tickets - siempre visible si hay órdenes */}
                     {ordenes.length > 0 && (
                         <button 
                             className={`tab-btn ${vistaActiva === 'tickets' ? 'active' : ''}`}
@@ -1302,12 +1316,18 @@ function MisCompras() {
                             🎫 Tickets ({ordenes.length})
                         </button>
                     )}
-                    <button 
-                        className={`tab-btn ${vistaActiva === 'corporativo' ? 'active' : ''}`}
-                        onClick={() => setVistaActiva('corporativo')}
-                    >
-                        🏢 Servicios Corporativos ({boletasCorporativas.length})
-                    </button>
+                    {/* Tab de Servicios Corporativos - Para corporativos (todos) y clientes (solo funciones privadas) */}
+                    {boletasCorporativas.length > 0 && (user?.rol === 'corporativo' || user?.rol === 'cliente') && (
+                        <button 
+                            className={`tab-btn ${vistaActiva === 'corporativo' ? 'active' : ''}`}
+                            onClick={() => setVistaActiva('corporativo')}
+                        >
+                            {user?.rol === 'corporativo' 
+                                ? `🏢 Servicios Corporativos (${boletasCorporativas.length})`
+                                : `🎬 Funciones Privadas (${boletasCorporativas.length})`
+                            }
+                        </button>
+                    )}
                 </div>
             )}
 
@@ -1574,11 +1594,15 @@ function MisCompras() {
                     {boletasCorporativas.length === 0 ? (
                         <div className="sin-compras">
                             <div className="sin-compras-icono">🏢</div>
-                            <h3>No tienes servicios corporativos registrados aún</h3>
+                            <h3>
+                                {user?.rol === 'corporativo' 
+                                    ? 'No tienes servicios corporativos registrados aún'
+                                    : 'No tienes funciones privadas reservadas'}
+                            </h3>
                             <p>
                                 {user?.rol === 'corporativo' 
                                     ? 'Cuando contrates servicios corporativos, aparecerán aquí.' 
-                                    : 'Los servicios corporativos están disponibles solo para usuarios empresariales.'}
+                                    : 'Las funciones privadas que reserves aparecerán aquí.'}
                             </p>
                             {user?.rol === 'corporativo' && (
                                 <button 
