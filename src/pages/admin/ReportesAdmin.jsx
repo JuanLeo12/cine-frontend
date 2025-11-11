@@ -230,7 +230,8 @@ function ReportesAdmin() {
 
             // Obtener todas las boletas corporativas (admin)
             const todasBoletas = await obtenerTodasBoletasCorporativas();
-            console.log('🎫 Boletas corporativas recibidas:', todasBoletas);
+            console.log('🎫 Total boletas corporativas recibidas:', todasBoletas.length);
+            console.log('🎫 Boletas corporativas:', todasBoletas);
 
             // FILTRAR BOLETAS CORPORATIVAS
             let boletasCorporativas = todasBoletas.filter(boleta => {
@@ -279,6 +280,9 @@ function ReportesAdmin() {
                 
                 return cumpleFiltros;
             });
+
+            console.log('✅ Boletas corporativas filtradas:', boletasCorporativas.length, 'de', todasBoletas.length);
+            console.log('🎫 Boletas filtradas:', boletasCorporativas);
 
             // Filtrar boletas del período anterior con los MISMOS filtros
             const boletasAnterior = todasBoletas.filter(boleta => {
@@ -389,34 +393,60 @@ function ReportesAdmin() {
             let publicidades = 0;
             let valesCorporativos = 0;
 
+            console.log('💰 Calculando ingresos corporativos de', boletasCorporativas.length, 'boletas');
+
             boletasCorporativas.forEach(boleta => {
+                console.log(`💳 Procesando boleta tipo: ${boleta.tipo}`, boleta.detalles);
+                
                 // Contar por tipo
                 if (boleta.tipo === 'funcion_privada') {
                     funcionesPrivadas++;
                     // Sumar precio_corporativo de funciones privadas
                     if (boleta.detalles && boleta.detalles.precio_corporativo) {
-                        ingresosCorporativos += parseFloat(boleta.detalles.precio_corporativo);
+                        const monto = parseFloat(boleta.detalles.precio_corporativo);
+                        console.log(`  ✅ Función privada: +S/ ${monto}`);
+                        ingresosCorporativos += monto;
+                    } else {
+                        console.log(`  ⚠️ Función privada sin precio_corporativo`);
                     }
                 } else if (boleta.tipo === 'alquiler_sala') {
                     alquilerSalas++;
                     // Sumar precio de alquiler de salas
                     if (boleta.detalles && boleta.detalles.precio) {
-                        ingresosCorporativos += parseFloat(boleta.detalles.precio);
+                        const monto = parseFloat(boleta.detalles.precio);
+                        console.log(`  ✅ Alquiler sala: +S/ ${monto}`);
+                        ingresosCorporativos += monto;
+                    } else {
+                        console.log(`  ⚠️ Alquiler sala sin precio`);
                     }
                 } else if (boleta.tipo === 'publicidad') {
                     publicidades++;
                     // Sumar precio de publicidad
                     if (boleta.detalles && boleta.detalles.precio) {
-                        ingresosCorporativos += parseFloat(boleta.detalles.precio);
+                        const monto = parseFloat(boleta.detalles.precio);
+                        console.log(`  ✅ Publicidad: +S/ ${monto}`);
+                        ingresosCorporativos += monto;
+                    } else {
+                        console.log(`  ⚠️ Publicidad sin precio`);
                     }
                 } else if (boleta.tipo === 'vales_corporativos') {
                     valesCorporativos++;
                     // Sumar valor de vales
                     if (boleta.detalles && boleta.detalles.valor) {
-                        ingresosCorporativos += parseFloat(boleta.detalles.valor);
+                        const monto = parseFloat(boleta.detalles.valor);
+                        console.log(`  ✅ Vale corporativo: +S/ ${monto}`);
+                        ingresosCorporativos += monto;
+                    } else if (boleta.detalles && boleta.detalles.monto_total) {
+                        const monto = parseFloat(boleta.detalles.monto_total);
+                        console.log(`  ✅ Vale corporativo (monto_total): +S/ ${monto}`);
+                        ingresosCorporativos += monto;
+                    } else {
+                        console.log(`  ⚠️ Vale corporativo sin valor ni monto_total`);
                     }
                 }
             });
+
+            console.log(`💰 Total ingresos corporativos: S/ ${ingresosCorporativos}`);
 
             const serviciosCorporativos = boletasCorporativas.length;
 
