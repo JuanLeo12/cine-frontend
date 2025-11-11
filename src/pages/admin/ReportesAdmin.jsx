@@ -239,6 +239,12 @@ function ReportesAdmin() {
                 
                 // Filtro por sede
                 if (sedeSeleccionada !== 'todas') {
+                    // Los vales corporativos NO tienen sede, por lo que se excluyen cuando se filtra por sede
+                    if (boleta.tipo === 'vales_corporativos') {
+                        console.log(`🔍 Excluir vale corporativo (no tiene sede específica)`);
+                        return false;
+                    }
+                    
                     let idSedeBoleta = null;
                     
                     // Funciones privadas y alquileres tienen sede en sala.sede
@@ -253,16 +259,11 @@ function ReportesAdmin() {
                             idSedeBoleta = boleta.detalles.sede.id.toString();
                         }
                     }
-                    // Vales corporativos no tienen sede específica
-                    else if (boleta.tipo === 'vales_corporativos') {
-                        // No filtrar vales por sede
-                        idSedeBoleta = 'vale'; // Marcador especial
-                    }
                     
                     console.log(`🔍 Boleta ${boleta.tipo} - Sede: ${idSedeBoleta} vs ${sedeSeleccionada}`);
                     
-                    // Excluir si no tiene sede o no coincide (excepto vales)
-                    if (idSedeBoleta !== 'vale' && (!idSedeBoleta || idSedeBoleta !== sedeSeleccionada)) {
+                    // Excluir si no tiene sede o no coincide
+                    if (!idSedeBoleta || idSedeBoleta !== sedeSeleccionada) {
                         return false;
                     }
                 }
@@ -288,6 +289,11 @@ function ReportesAdmin() {
                 
                 // Filtro por sede
                 if (sedeSeleccionada !== 'todas') {
+                    // Excluir vales corporativos cuando se filtra por sede
+                    if (boleta.tipo === 'vales_corporativos') {
+                        return false;
+                    }
+                    
                     let idSedeBoleta = null;
                     
                     if (boleta.tipo === 'funcion_privada' || boleta.tipo === 'alquiler_sala') {
@@ -298,11 +304,9 @@ function ReportesAdmin() {
                         if (boleta.detalles?.sede?.id) {
                             idSedeBoleta = boleta.detalles.sede.id.toString();
                         }
-                    } else if (boleta.tipo === 'vales_corporativos') {
-                        idSedeBoleta = 'vale';
                     }
                     
-                    if (idSedeBoleta !== 'vale' && (!idSedeBoleta || idSedeBoleta !== sedeSeleccionada)) {
+                    if (!idSedeBoleta || idSedeBoleta !== sedeSeleccionada) {
                         return false;
                     }
                 }
