@@ -167,10 +167,62 @@ function ReportesAdmin() {
                 return cumpleFiltros;
             });
 
-            // Obtener órdenes del período anterior para comparativa
+            // Obtener órdenes del período anterior para comparativa (con los MISMOS filtros)
             const ordenesAnterior = todasOrdenes.filter(orden => {
                 const fechaOrden = new Date(orden.fecha_compra);
-                return fechaOrden >= fechaInicioAnterior && fechaOrden <= fechaFinAnterior;
+                let cumpleFiltros = fechaOrden >= fechaInicioAnterior && fechaOrden <= fechaFinAnterior;
+                
+                // Aplicar los MISMOS filtros que el período actual
+                
+                // Filtro por sede
+                if (sedeSeleccionada !== 'todas') {
+                    if (!orden.funcion?.sala?.sede?.id) {
+                        return false;
+                    }
+                    const idSede = orden.funcion.sala.sede.id.toString();
+                    if (idSede !== sedeSeleccionada) {
+                        return false;
+                    }
+                }
+                
+                // Filtro por película
+                if (peliculaSeleccionada !== 'todas') {
+                    if (!orden.funcion?.pelicula?.id) {
+                        return false;
+                    }
+                    const idPelicula = orden.funcion.pelicula.id.toString();
+                    if (idPelicula !== peliculaSeleccionada) {
+                        return false;
+                    }
+                }
+                
+                // Filtro por método de pago
+                if (metodoPagoSeleccionado !== 'todos') {
+                    if (!orden.pago?.metodoPago?.id) {
+                        return false;
+                    }
+                    const idMetodo = orden.pago.metodoPago.id.toString();
+                    if (idMetodo !== metodoPagoSeleccionado) {
+                        return false;
+                    }
+                }
+                
+                // Filtro por tipo de servicio
+                if (tipoServicio === 'tickets') {
+                    const tieneTickets = orden.ordenTickets && orden.ordenTickets.length > 0;
+                    if (!tieneTickets) {
+                        return false;
+                    }
+                } else if (tipoServicio === 'combos') {
+                    const tieneCombos = orden.ordenCombos && orden.ordenCombos.length > 0;
+                    if (!tieneCombos) {
+                        return false;
+                    }
+                } else if (tipoServicio === 'corporativos') {
+                    return false;
+                }
+                
+                return cumpleFiltros;
             });
 
             console.log('✅ Órdenes filtradas:', ordenes.length, 'de', todasOrdenes.length);
@@ -227,9 +279,42 @@ function ReportesAdmin() {
                 return cumpleFiltros;
             });
 
+            // Filtrar boletas del período anterior con los MISMOS filtros
             const boletasAnterior = todasBoletas.filter(boleta => {
                 const fechaBoleta = new Date(boleta.fecha_emision);
-                return fechaBoleta >= fechaInicioAnterior && fechaBoleta <= fechaFinAnterior;
+                let cumpleFiltros = fechaBoleta >= fechaInicioAnterior && fechaBoleta <= fechaFinAnterior;
+                
+                // Aplicar los MISMOS filtros que el período actual
+                
+                // Filtro por sede
+                if (sedeSeleccionada !== 'todas') {
+                    let idSedeBoleta = null;
+                    
+                    if (boleta.tipo === 'funcion_privada' || boleta.tipo === 'alquiler_sala') {
+                        if (boleta.detalles?.sala?.sede?.id) {
+                            idSedeBoleta = boleta.detalles.sala.sede.id.toString();
+                        }
+                    } else if (boleta.tipo === 'publicidad') {
+                        if (boleta.detalles?.sede?.id) {
+                            idSedeBoleta = boleta.detalles.sede.id.toString();
+                        }
+                    } else if (boleta.tipo === 'vales_corporativos') {
+                        idSedeBoleta = 'vale';
+                    }
+                    
+                    if (idSedeBoleta !== 'vale' && (!idSedeBoleta || idSedeBoleta !== sedeSeleccionada)) {
+                        return false;
+                    }
+                }
+                
+                // Filtro por tipo de servicio
+                if (tipoServicio === 'corporativos') {
+                    cumpleFiltros = cumpleFiltros && true;
+                } else if (tipoServicio !== 'todos') {
+                    return false;
+                }
+                
+                return cumpleFiltros;
             });
 
             console.log('🎫 Boletas filtradas por período:', boletasCorporativas);
