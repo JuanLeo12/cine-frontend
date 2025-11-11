@@ -604,7 +604,7 @@ function MisCompras() {
                         <div class="total-section">
                             <h3>💰 Resumen de Pago</h3>
                             ${(() => {
-                                // Calcular si hubo descuento
+                                // Calcular subtotal ORIGINAL (antes de descuentos)
                                 let subtotalOriginal = 0;
                                 let descuentoTotal = 0;
                                 let porcentajeDescuento = 0;
@@ -613,13 +613,15 @@ function MisCompras() {
                                 // Tickets
                                 if (orden.ordenTickets && orden.ordenTickets.length > 0) {
                                     orden.ordenTickets.forEach(ot => {
-                                        const subtotal = Number(ot.precio_unitario || 0) * Number(ot.cantidad || 1);
-                                        const desc = Number(ot.descuento || 0);
-                                        subtotalOriginal += subtotal;
-                                        descuentoTotal += desc;
+                                        const precioUnitario = Number(ot.precio_unitario || 0);
+                                        const cantidad = Number(ot.cantidad || 1);
+                                        const descUnitario = Number(ot.descuento || 0);
                                         
-                                        if (desc > 0 && subtotal > 0) {
-                                            porcentajeDescuento = (desc / subtotal) * 100;
+                                        subtotalOriginal += precioUnitario * cantidad;
+                                        descuentoTotal += descUnitario * cantidad; // Descuento total es por cantidad
+                                        
+                                        if (descUnitario > 0 && precioUnitario > 0) {
+                                            porcentajeDescuento = (descUnitario / precioUnitario) * 100;
                                             tipoDescuento = 'Tickets';
                                         }
                                     });
@@ -628,17 +630,22 @@ function MisCompras() {
                                 // Combos
                                 if (orden.ordenCombos && orden.ordenCombos.length > 0) {
                                     orden.ordenCombos.forEach(oc => {
-                                        const subtotal = Number(oc.precio_unitario || 0) * Number(oc.cantidad || 0);
-                                        const desc = Number(oc.descuento || 0);
-                                        subtotalOriginal += subtotal;
-                                        descuentoTotal += desc;
+                                        const precioUnitario = Number(oc.precio_unitario || 0);
+                                        const cantidad = Number(oc.cantidad || 0);
+                                        const descUnitario = Number(oc.descuento || 0);
                                         
-                                        if (desc > 0 && subtotal > 0 && !tipoDescuento) {
-                                            porcentajeDescuento = (desc / subtotal) * 100;
+                                        subtotalOriginal += precioUnitario * cantidad;
+                                        descuentoTotal += descUnitario * cantidad;
+                                        
+                                        if (descUnitario > 0 && precioUnitario > 0 && !tipoDescuento) {
+                                            porcentajeDescuento = (descUnitario / precioUnitario) * 100;
                                             tipoDescuento = 'Combos';
                                         }
                                     });
                                 }
+                                
+                                // Calcular total final
+                                const totalFinal = subtotalOriginal - descuentoTotal;
                                 
                                 if (descuentoTotal > 0) {
                                     return `
@@ -650,22 +657,37 @@ function MisCompras() {
                                             <span>💎 Descuento Vale (${porcentajeDescuento.toFixed(0)}% en ${tipoDescuento}):</span>
                                             <span>- S/ ${descuentoTotal.toFixed(2)}</span>
                                         </div>
+                                        <div class="total-row">
+                                            <span>Método de pago:</span>
+                                            <span>${orden.pago?.metodoPago?.nombre || 'N/A'}</span>
+                                        </div>
+                                        <div class="total-row">
+                                            <span>Estado:</span>
+                                            <span>${orden.pago?.estado_pago?.toUpperCase() || 'N/A'}</span>
+                                        </div>
+                                        <div class="total-row total-final">
+                                            <span>TOTAL PAGADO:</span>
+                                            <span>S/ ${totalFinal.toFixed(2)}</span>
+                                        </div>
                                     `;
                                 }
-                                return '';
+                                
+                                // Si no hay descuento, solo mostrar método, estado y total
+                                return `
+                                    <div class="total-row">
+                                        <span>Método de pago:</span>
+                                        <span>${orden.pago?.metodoPago?.nombre || 'N/A'}</span>
+                                    </div>
+                                    <div class="total-row">
+                                        <span>Estado:</span>
+                                        <span>${orden.pago?.estado_pago?.toUpperCase() || 'N/A'}</span>
+                                    </div>
+                                    <div class="total-row total-final">
+                                        <span>TOTAL PAGADO:</span>
+                                        <span>S/ ${subtotalOriginal.toFixed(2)}</span>
+                                    </div>
+                                `;
                             })()}
-                            <div class="total-row">
-                                <span>Método de pago:</span>
-                                <span>${orden.pago?.metodoPago?.nombre || 'N/A'}</span>
-                            </div>
-                            <div class="total-row">
-                                <span>Estado:</span>
-                                <span>${orden.pago?.estado_pago?.toUpperCase() || 'N/A'}</span>
-                            </div>
-                            <div class="total-row total-final">
-                                <span>TOTAL PAGADO:</span>
-                                <span>S/ ${total.toFixed(2)}</span>
-                            </div>
                         </div>
 
                         <div class="section qr-section">
