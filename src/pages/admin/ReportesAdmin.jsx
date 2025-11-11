@@ -95,7 +95,15 @@ function ReportesAdmin() {
             // Obtener todas las órdenes (admin puede ver todas)
             const todasOrdenes = await getOrdenesUsuario();
             
-            console.log('📊 Órdenes recibidas:', todasOrdenes);
+            console.log('📊 ===== FILTROS ACTIVOS =====');
+            console.log('📅 Período:', periodo);
+            console.log('🏢 Sede:', sedeSeleccionada);
+            console.log('🎬 Película:', peliculaSeleccionada);
+            console.log('💳 Método Pago:', metodoPagoSeleccionado);
+            console.log('🎯 Tipo Servicio:', tipoServicio);
+            console.log('📆 Fecha Personalizada:', modoFechaPersonalizada);
+            console.log('📊 Total órdenes recibidas:', todasOrdenes.length);
+            console.log('📊 ===========================');
 
             // FILTRAR ÓRDENES
             let ordenes = todasOrdenes.filter(orden => {
@@ -103,25 +111,38 @@ function ReportesAdmin() {
                 let cumpleFiltros = fechaOrden >= fechaInicioCalc && fechaOrden <= fechaFinCalc;
                 
                 // Filtro por sede
-                if (sedeSeleccionada !== 'todas' && orden.funcion?.sala?.id_sede) {
-                    cumpleFiltros = cumpleFiltros && orden.funcion.sala.id_sede.toString() === sedeSeleccionada;
+                if (sedeSeleccionada !== 'todas' && orden.funcion?.sala?.sede?.id) {
+                    const idSede = orden.funcion.sala.sede.id.toString();
+                    console.log(`🔍 Comparando sede: ${idSede} === ${sedeSeleccionada}`, idSede === sedeSeleccionada);
+                    cumpleFiltros = cumpleFiltros && idSede === sedeSeleccionada;
                 }
                 
                 // Filtro por película
-                if (peliculaSeleccionada !== 'todas' && orden.funcion?.id_pelicula) {
-                    cumpleFiltros = cumpleFiltros && orden.funcion.id_pelicula.toString() === peliculaSeleccionada;
+                if (peliculaSeleccionada !== 'todas' && orden.funcion?.pelicula?.id) {
+                    const idPelicula = orden.funcion.pelicula.id.toString();
+                    console.log(`🔍 Comparando película: ${idPelicula} === ${peliculaSeleccionada}`, idPelicula === peliculaSeleccionada);
+                    cumpleFiltros = cumpleFiltros && idPelicula === peliculaSeleccionada;
                 }
                 
                 // Filtro por método de pago
-                if (metodoPagoSeleccionado !== 'todos' && orden.pago?.id_metodo_pago) {
-                    cumpleFiltros = cumpleFiltros && orden.pago.id_metodo_pago.toString() === metodoPagoSeleccionado;
+                if (metodoPagoSeleccionado !== 'todos' && orden.pago?.metodoPago?.id) {
+                    const idMetodo = orden.pago.metodoPago.id.toString();
+                    console.log(`🔍 Comparando método pago: ${idMetodo} === ${metodoPagoSeleccionado}`, idMetodo === metodoPagoSeleccionado);
+                    cumpleFiltros = cumpleFiltros && idMetodo === metodoPagoSeleccionado;
                 }
                 
                 // Filtro por tipo de servicio (tickets/combos)
                 if (tipoServicio === 'tickets') {
-                    cumpleFiltros = cumpleFiltros && orden.ordenTickets && orden.ordenTickets.length > 0;
+                    const tieneTickets = orden.ordenTickets && orden.ordenTickets.length > 0;
+                    console.log(`🔍 Verificando si tiene tickets:`, tieneTickets);
+                    cumpleFiltros = cumpleFiltros && tieneTickets;
                 } else if (tipoServicio === 'combos') {
-                    cumpleFiltros = cumpleFiltros && orden.ordenCombos && orden.ordenCombos.length > 0;
+                    const tieneCombos = orden.ordenCombos && orden.ordenCombos.length > 0;
+                    console.log(`🔍 Verificando si tiene combos:`, tieneCombos);
+                    cumpleFiltros = cumpleFiltros && tieneCombos;
+                } else if (tipoServicio === 'corporativos') {
+                    // Excluir órdenes normales cuando se filtran corporativos
+                    return false;
                 }
                 
                 return cumpleFiltros;
@@ -133,7 +154,8 @@ function ReportesAdmin() {
                 return fechaOrden >= fechaInicioAnterior && fechaOrden <= fechaFinAnterior;
             });
 
-            console.log('📊 Órdenes filtradas por período:', ordenes);
+            console.log('✅ Órdenes filtradas:', ordenes.length, 'de', todasOrdenes.length);
+            console.log('📊 Órdenes filtradas:', ordenes);
 
             // Obtener todas las boletas corporativas (admin)
             const todasBoletas = await obtenerTodasBoletasCorporativas();
