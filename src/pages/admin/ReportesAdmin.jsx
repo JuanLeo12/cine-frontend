@@ -248,14 +248,19 @@ function ReportesAdmin() {
                     
                     let idSedeBoleta = null;
                     
+                    console.log(`🔍 Analizando boleta tipo ${boleta.tipo}:`, boleta.detalles);
+                    
                     // Funciones privadas y alquileres tienen sede en sala.sede
                     if (boleta.tipo === 'funcion_privada' || boleta.tipo === 'alquiler_sala') {
+                        console.log(`  - Sala:`, boleta.detalles?.sala);
+                        console.log(`  - Sede:`, boleta.detalles?.sala?.sede);
                         if (boleta.detalles?.sala?.sede?.id) {
                             idSedeBoleta = boleta.detalles.sala.sede.id.toString();
                         }
                     } 
                     // Publicidad tiene sede directamente en detalles.sede
                     else if (boleta.tipo === 'publicidad') {
+                        console.log(`  - Sede:`, boleta.detalles?.sede);
                         if (boleta.detalles?.sede?.id) {
                             idSedeBoleta = boleta.detalles.sede.id.toString();
                         }
