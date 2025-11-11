@@ -246,7 +246,7 @@ function ReportesAdmin() {
                         return false;
                     }
                     
-                    let idSedeBoleta = null;
+                    let nombreSedeBoleta = null;
                     
                     console.log(`🔍 Analizando boleta tipo ${boleta.tipo}:`, boleta.detalles);
                     
@@ -254,22 +254,26 @@ function ReportesAdmin() {
                     if (boleta.tipo === 'funcion_privada' || boleta.tipo === 'alquiler_sala') {
                         console.log(`  - Sala:`, boleta.detalles?.sala);
                         console.log(`  - Sede:`, boleta.detalles?.sala?.sede);
-                        if (boleta.detalles?.sala?.sede?.id) {
-                            idSedeBoleta = boleta.detalles.sala.sede.id.toString();
+                        if (boleta.detalles?.sala?.sede?.nombre) {
+                            nombreSedeBoleta = boleta.detalles.sala.sede.nombre;
                         }
                     } 
                     // Publicidad tiene sede directamente en detalles.sede
                     else if (boleta.tipo === 'publicidad') {
                         console.log(`  - Sede:`, boleta.detalles?.sede);
-                        if (boleta.detalles?.sede?.id) {
-                            idSedeBoleta = boleta.detalles.sede.id.toString();
+                        if (boleta.detalles?.sede?.nombre) {
+                            nombreSedeBoleta = boleta.detalles.sede.nombre;
                         }
                     }
                     
-                    console.log(`🔍 Boleta ${boleta.tipo} - Sede: ${idSedeBoleta} vs ${sedeSeleccionada}`);
+                    // Buscar la sede seleccionada en el array de sedes para obtener su nombre
+                    const sedeObj = sedes.find(s => s.id.toString() === sedeSeleccionada);
+                    const nombreSedeSeleccionada = sedeObj?.nombre;
+                    
+                    console.log(`🔍 Boleta ${boleta.tipo} - Sede: "${nombreSedeBoleta}" vs "${nombreSedeSeleccionada}"`);
                     
                     // Excluir si no tiene sede o no coincide
-                    if (!idSedeBoleta || idSedeBoleta !== sedeSeleccionada) {
+                    if (!nombreSedeBoleta || nombreSedeBoleta !== nombreSedeSeleccionada) {
                         return false;
                     }
                 }
@@ -303,19 +307,23 @@ function ReportesAdmin() {
                         return false;
                     }
                     
-                    let idSedeBoleta = null;
+                    let nombreSedeBoleta = null;
                     
                     if (boleta.tipo === 'funcion_privada' || boleta.tipo === 'alquiler_sala') {
-                        if (boleta.detalles?.sala?.sede?.id) {
-                            idSedeBoleta = boleta.detalles.sala.sede.id.toString();
+                        if (boleta.detalles?.sala?.sede?.nombre) {
+                            nombreSedeBoleta = boleta.detalles.sala.sede.nombre;
                         }
                     } else if (boleta.tipo === 'publicidad') {
-                        if (boleta.detalles?.sede?.id) {
-                            idSedeBoleta = boleta.detalles.sede.id.toString();
+                        if (boleta.detalles?.sede?.nombre) {
+                            nombreSedeBoleta = boleta.detalles.sede.nombre;
                         }
                     }
                     
-                    if (!idSedeBoleta || idSedeBoleta !== sedeSeleccionada) {
+                    // Buscar la sede seleccionada en el array de sedes para obtener su nombre
+                    const sedeObj = sedes.find(s => s.id.toString() === sedeSeleccionada);
+                    const nombreSedeSeleccionada = sedeObj?.nombre;
+                    
+                    if (!nombreSedeBoleta || nombreSedeBoleta !== nombreSedeSeleccionada) {
                         return false;
                     }
                 }
