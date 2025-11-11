@@ -44,11 +44,11 @@ function ReportesAdmin() {
         cargarDatosIniciales();
     }, []);
 
-    // Recargar reportes cuando cambien los filtros
+    // Recargar reportes cuando cambien los filtros (excepto fechas para evitar recargas mientras se escribe)
     useEffect(() => {
         cargarReportes();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [periodo, sedeSeleccionada, peliculaSeleccionada, metodoPagoSeleccionado, tipoServicio, fechaInicio, fechaFin]);
+    }, [periodo, sedeSeleccionada, peliculaSeleccionada, metodoPagoSeleccionado, tipoServicio, modoFechaPersonalizada]);
 
     const cargarDatosIniciales = async () => {
         try {
@@ -185,9 +185,34 @@ function ReportesAdmin() {
                 const fechaBoleta = new Date(boleta.fecha_emision);
                 let cumpleFiltros = fechaBoleta >= fechaInicioCalc && fechaBoleta <= fechaFinCalc;
                 
-                // Filtro por sede (si aplica según el tipo de servicio)
-                if (sedeSeleccionada !== 'todas' && boleta.detalles?.id_sede) {
-                    cumpleFiltros = cumpleFiltros && boleta.detalles.id_sede.toString() === sedeSeleccionada;
+                // Filtro por sede
+                if (sedeSeleccionada !== 'todas') {
+                    let idSedeBoleta = null;
+                    
+                    // Funciones privadas y alquileres tienen sede en sala.sede
+                    if (boleta.tipo === 'funcion_privada' || boleta.tipo === 'alquiler_sala') {
+                        if (boleta.detalles?.sala?.sede?.id) {
+                            idSedeBoleta = boleta.detalles.sala.sede.id.toString();
+                        }
+                    } 
+                    // Publicidad tiene sede directamente en detalles.sede
+                    else if (boleta.tipo === 'publicidad') {
+                        if (boleta.detalles?.sede?.id) {
+                            idSedeBoleta = boleta.detalles.sede.id.toString();
+                        }
+                    }
+                    // Vales corporativos no tienen sede específica
+                    else if (boleta.tipo === 'vales_corporativos') {
+                        // No filtrar vales por sede
+                        idSedeBoleta = 'vale'; // Marcador especial
+                    }
+                    
+                    console.log(`🔍 Boleta ${boleta.tipo} - Sede: ${idSedeBoleta} vs ${sedeSeleccionada}`);
+                    
+                    // Excluir si no tiene sede o no coincide (excepto vales)
+                    if (idSedeBoleta !== 'vale' && (!idSedeBoleta || idSedeBoleta !== sedeSeleccionada)) {
+                        return false;
+                    }
                 }
                 
                 // Filtro por tipo de servicio corporativo
@@ -502,7 +527,7 @@ function ReportesAdmin() {
 
                         {modoFechaPersonalizada && (
                             <>
-                                <Col md={4}>
+                                <Col md={3}>
                                     <Form.Label><strong>Fecha Inicio</strong></Form.Label>
                                     <Form.Control 
                                         type="date" 
@@ -510,13 +535,22 @@ function ReportesAdmin() {
                                         onChange={(e) => setFechaInicio(e.target.value)}
                                     />
                                 </Col>
-                                <Col md={4}>
+                                <Col md={3}>
                                     <Form.Label><strong>Fecha Fin</strong></Form.Label>
                                     <Form.Control 
                                         type="date" 
                                         value={fechaFin}
                                         onChange={(e) => setFechaFin(e.target.value)}
                                     />
+                                </Col>
+                                <Col md={2} className="d-flex align-items-end">
+                                    <Button 
+                                        variant="danger" 
+                                        onClick={cargarReportes}
+                                        disabled={!fechaInicio || !fechaFin}
+                                    >
+                                        📊 Aplicar Fechas
+                                    </Button>
                                 </Col>
                             </>
                         )}
