@@ -1,5 +1,72 @@
 .reportes-admin {
     padding: 2rem;
+    background: #121212;
+    min-height: 100vh;
+}
+
+/* Estilos para Bootstrap Cards */
+.reportes-admin .card {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    color: white;
+}
+
+.reportes-admin .card-body h5 {
+    color: #e60000;
+    font-weight: bold;
+}
+
+.reportes-admin .form-label {
+    color: #ccc;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.reportes-admin .form-select,
+.reportes-admin .form-control {
+    background: #2a2a2a;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 6px;
+}
+
+.reportes-admin .form-select:focus,
+.reportes-admin .form-control:focus {
+    background: #2a2a2a;
+    color: white;
+    border-color: #e60000;
+    box-shadow: 0 0 0 0.2rem rgba(230, 0, 0, 0.25);
+}
+
+.reportes-admin .form-select:disabled {
+    background: #1a1a1a;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.reportes-admin .form-check-input {
+    background-color: #2a2a2a;
+    border-color: #444;
+}
+
+.reportes-admin .form-check-input:checked {
+    background-color: #e60000;
+    border-color: #e60000;
+}
+
+.reportes-admin .form-check-label {
+    color: #ccc;
+}
+
+.reportes-admin .btn-outline-secondary {
+    color: #ccc;
+    border-color: #444;
+}
+
+.reportes-admin .btn-outline-secondary:hover {
+    background-color: #e60000;
+    border-color: #e60000;
+    color: white;
 }
 
 .section-header {
