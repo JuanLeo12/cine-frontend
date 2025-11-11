@@ -111,35 +111,54 @@ function ReportesAdmin() {
                 let cumpleFiltros = fechaOrden >= fechaInicioCalc && fechaOrden <= fechaFinCalc;
                 
                 // Filtro por sede
-                if (sedeSeleccionada !== 'todas' && orden.funcion?.sala?.sede?.id) {
+                if (sedeSeleccionada !== 'todas') {
+                    if (!orden.funcion?.sala?.sede?.id) {
+                        return false; // Excluir si no tiene sede
+                    }
                     const idSede = orden.funcion.sala.sede.id.toString();
                     console.log(`🔍 Comparando sede: ${idSede} === ${sedeSeleccionada}`, idSede === sedeSeleccionada);
-                    cumpleFiltros = cumpleFiltros && idSede === sedeSeleccionada;
+                    if (idSede !== sedeSeleccionada) {
+                        return false;
+                    }
                 }
                 
                 // Filtro por película
-                if (peliculaSeleccionada !== 'todas' && orden.funcion?.pelicula?.id) {
+                if (peliculaSeleccionada !== 'todas') {
+                    if (!orden.funcion?.pelicula?.id) {
+                        return false; // Excluir si no tiene película
+                    }
                     const idPelicula = orden.funcion.pelicula.id.toString();
                     console.log(`🔍 Comparando película: ${idPelicula} === ${peliculaSeleccionada}`, idPelicula === peliculaSeleccionada);
-                    cumpleFiltros = cumpleFiltros && idPelicula === peliculaSeleccionada;
+                    if (idPelicula !== peliculaSeleccionada) {
+                        return false;
+                    }
                 }
                 
                 // Filtro por método de pago
-                if (metodoPagoSeleccionado !== 'todos' && orden.pago?.metodoPago?.id) {
+                if (metodoPagoSeleccionado !== 'todos') {
+                    if (!orden.pago?.metodoPago?.id) {
+                        return false; // Excluir si no tiene método de pago
+                    }
                     const idMetodo = orden.pago.metodoPago.id.toString();
                     console.log(`🔍 Comparando método pago: ${idMetodo} === ${metodoPagoSeleccionado}`, idMetodo === metodoPagoSeleccionado);
-                    cumpleFiltros = cumpleFiltros && idMetodo === metodoPagoSeleccionado;
+                    if (idMetodo !== metodoPagoSeleccionado) {
+                        return false;
+                    }
                 }
                 
                 // Filtro por tipo de servicio (tickets/combos)
                 if (tipoServicio === 'tickets') {
                     const tieneTickets = orden.ordenTickets && orden.ordenTickets.length > 0;
                     console.log(`🔍 Verificando si tiene tickets:`, tieneTickets);
-                    cumpleFiltros = cumpleFiltros && tieneTickets;
+                    if (!tieneTickets) {
+                        return false;
+                    }
                 } else if (tipoServicio === 'combos') {
                     const tieneCombos = orden.ordenCombos && orden.ordenCombos.length > 0;
                     console.log(`🔍 Verificando si tiene combos:`, tieneCombos);
-                    cumpleFiltros = cumpleFiltros && tieneCombos;
+                    if (!tieneCombos) {
+                        return false;
+                    }
                 } else if (tipoServicio === 'corporativos') {
                     // Excluir órdenes normales cuando se filtran corporativos
                     return false;
